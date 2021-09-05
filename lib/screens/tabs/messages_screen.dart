@@ -1,0 +1,449 @@
+import 'dart:io';
+
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:dana/models/models.dart';
+import 'package:dana/models/user_model.dart';
+import 'package:dana/screens/pages/create_group.dart';
+import 'package:dana/screens/pages/direct_messages/nested_screens/chat_screen.dart';
+import 'package:dana/screens/tabs/contacts_screen.dart';
+import 'package:dana/services/services.dart';
+import 'package:dana/utilities/constants.dart';
+import 'package:dana/utilities/themes.dart';
+import 'package:dana/utils/constants.dart';
+import 'package:dana/widgets/confirm_delete_dialog.dart';
+import 'package:dana/widgets/slide_menu.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:provider/provider.dart';
+import 'package:timeago/timeago.dart' as timeago;
+
+class MessagesScreen extends StatefulWidget {
+  AppUser currentUser;
+  bool isReadIcon = false;
+  final SearchFrom searchFrom;
+  final File imageFile;
+  MessagesScreen(
+      {@required this.searchFrom,
+      this.isReadIcon,
+      this.currentUser,
+      this.imageFile});
+
+  @override
+  _MessagesScreenState createState() => _MessagesScreenState();
+}
+
+class _MessagesScreenState extends State<MessagesScreen> {
+  Stream<List<Chat>> chatsStream;
+  AppUser _currentUser;
+  List<AppUser> users;
+  String deleteUserID, userName;
+
+  @override
+  void initState() {
+    super.initState();
+    final AppUser currentUser =
+        Provider.of<UserData>(context, listen: false).currentUser;
+    setState(() => _currentUser = currentUser);
+    AuthService.updateTokenWithUser(currentUser);
+  }
+
+  Stream<List<Chat>> getChats() async* {
+    try {
+      List<Chat> dataToReturn = List();
+
+      Stream<QuerySnapshot> stream = FirebaseFirestore.instance
+          .collection('chats')
+          .where('memberIds', arrayContains: _currentUser.id)
+          // .orderBy('recentTimestamp', descending: true)
+          .snapshots();
+
+      await for (QuerySnapshot q in stream) {
+        for (var doc in q.docs) {
+          Chat chatFromDoc = Chat.fromDoc(doc);
+          List<dynamic> memberIds = chatFromDoc.memberIds;
+          int receiverIndex;
+
+          // Getting receiver index
+          memberIds.forEach((userId) {
+            if (userId != _currentUser.id) {
+              receiverIndex = memberIds.indexOf(userId);
+            }
+          });
+
+          List<AppUser> membersInfo = [];
+
+          AppUser receiverUser =
+              await DatabaseService.getUserWithId(memberIds[receiverIndex]);
+
+          if (memberIds.length > 2) {
+            for (String userId in memberIds) {
+              AppUser user = await DatabaseService.getUserWithId(userId);
+              membersInfo.add(user);
+            }
+          } else {
+            membersInfo.add(_currentUser);
+            membersInfo.add(receiverUser);
+          }
+
+          Chat chatWithUserInfo = Chat(
+              id: chatFromDoc.id,
+              memberIds: chatFromDoc.memberIds,
+              memberInfo: membersInfo,
+              readStatus: chatFromDoc.readStatus,
+              recentMessage: chatFromDoc.recentMessage,
+              recentSender: chatFromDoc.recentSender,
+              recentTimestamp: chatFromDoc.recentTimestamp,
+              admin: chatFromDoc.admin,
+              groupName: chatFromDoc.groupName);
+
+          dataToReturn.removeWhere((chat) => chat.id == chatWithUserInfo.id);
+
+          dataToReturn.add(chatWithUserInfo);
+        }
+        yield dataToReturn;
+      }
+    } catch (err) {
+      print('////$err');
+    }
+  }
+
+  deleteChats(String receiverID) {
+    try {
+      var stream = FirebaseFirestore.instance
+          .collection('chats')
+          .where('recentSender', isEqualTo: _currentUser.id)
+          .snapshots()
+          .forEach((docs) {
+        for (QueryDocumentSnapshot snapshot in docs.docs) {
+          setState(() {
+            snapshot.reference
+                .collection('messages')
+                .snapshots()
+                .forEach((element) {
+              for (QueryDocumentSnapshot snap in element.docs) {
+                snap.reference.delete();
+              }
+            });
+            snapshot.reference.delete();
+          });
+        }
+      });
+
+      //   then((doc) {
+      //     doc.docs.forEach((docs) {
+      //               for (QueryDocumentSnapshot snapshot in docs) {
+      //   snapshot.reference.delete();
+      // }
+      //       setState(() {
+      //         docs.reference;
+
+      //       });
+      //     });
+      //   });
+
+      // for (var doc in stream) {
+      //   Chat chatFromDoc = Chat.fromDoc(doc);
+      //   List<dynamic> memberIds = chatFromDoc.memberIds;
+      //   int receiverIndex;
+
+      //   // Getting receiver index
+      //   memberIds.forEach((userId) {
+      //     if (userId != _currentUser.id) {
+      //       receiverIndex = memberIds.indexOf(userId);
+      //     }
+      //   });
+      // }
+    } catch (err) {
+      print('////$err');
+    }
+  }
+
+  _buildChat(Chat chat, String currentUserId) {
+    final bool isRead = chat.readStatus[currentUserId];
+    widget.isReadIcon = isRead;
+    print("=============$isRead");
+    final TextStyle readStyle = TextStyle(
+        color: isRead ? Colors.white : lightColor,
+        fontSize: 12,
+        fontWeight: isRead ? FontWeight.w400 : FontWeight.bold);
+
+    users = chat.memberInfo;
+    int receiverIndex = users.indexWhere((user) => user.id != _currentUser.id);
+    int senderIndex = users.indexWhere((user) => user.id == chat.recentSender);
+
+    userName = users[receiverIndex].name;
+
+    if (widget.searchFrom == SearchFrom.createStoryScreen) {
+      return ListTile(
+        leading: Container(
+          height: 40,
+          child: CircleAvatar(
+            backgroundColor: Colors.white,
+            radius: 20,
+            backgroundImage: users[receiverIndex].profileImageUrl.isEmpty
+                ? AssetImage(placeHolderImageRef)
+                : CachedNetworkImageProvider(
+                    users[receiverIndex].profileImageUrl),
+          ),
+        ),
+        title: Text(users[receiverIndex].name,
+            style: TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.w600,
+                fontSize: 18)),
+        trailing: FlatButton(
+          child: Text(
+            'Send',
+            style: kFontSize18TextStyle.copyWith(color: Colors.white),
+          ),
+          color: Colors.blue,
+          onPressed: () => {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) => ChatScreen(
+                  receiverUser: users[receiverIndex],
+                  imageFile: widget.imageFile,
+                ),
+              ),
+            ),
+          },
+        ),
+        // onTap: () =>
+      );
+    }
+    return ListTile(
+      leading: Container(
+        height: 40,
+        child: (chat.memberIds.length > 2)
+            ? Icon(Icons.group, color: Colors.white, size: 35)
+            : CircleAvatar(
+                backgroundColor: Colors.white,
+                radius: 28.0,
+                backgroundImage: users[receiverIndex].profileImageUrl.isEmpty
+                    ? AssetImage(placeHolderImageRef)
+                    : CachedNetworkImageProvider(
+                        users[receiverIndex].profileImageUrl),
+              ),
+      ),
+      title: Text(
+          (chat.memberIds.length > 2)
+              ? chat.groupName
+              : users[receiverIndex].name,
+          style: TextStyle(
+              color: Colors.white, fontWeight: FontWeight.w600, fontSize: 18)),
+      subtitle: chat.recentSender.isEmpty
+          ? Text(
+              (chat.memberIds.length > 2) ? 'You were added' : 'Chat Created',
+              overflow: TextOverflow.ellipsis,
+              style: readStyle,
+            )
+          : chat.recentMessage != null
+              ? Text(
+                  '${chat.recentMessage}',
+                  overflow: TextOverflow.ellipsis,
+                  style: readStyle,
+                )
+              : Text(
+                  'Sent an attachment',
+                  overflow: TextOverflow.ellipsis,
+                  style: readStyle,
+                ),
+      trailing: Text(
+        timeago.format(chat.recentTimestamp.toDate()),
+        // timeFormat.format(
+        //   chat.recentTimestamp.toDate(),
+        // ),
+        style: readStyle,
+      ),
+      onTap: () => Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) => ChatScreen(
+              receiverUser: users[receiverIndex],
+              userIds: chat.memberIds,
+              groupMembers: users,
+              admin: chat.admin,
+              chat: chat,
+              isGroup: (chat.memberIds.length > 2) ? true : false,
+              groupName: chat.groupName),
+        ),
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Stack(children: [
+      Container(
+        height: double.infinity,
+        color: darkColor,
+        child: Image.asset(
+          'assets/images/background.png',
+          width: double.infinity,
+          height: 300,
+          fit: BoxFit.cover,
+        ),
+      ),
+      Scaffold(
+        backgroundColor: Colors.transparent,
+        appBar: PreferredSize(
+            preferredSize: const Size.fromHeight(50),
+            child: AppBar(
+              title: Text('Messages',
+                  style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 30,
+                      fontFamily: 'Poppins-Regular',
+                      fontWeight: FontWeight.bold)),
+              backgroundColor: Colors.transparent,
+              centerTitle: false,
+              automaticallyImplyLeading: false,
+              elevation: 0,
+              brightness: Brightness.dark,
+            )),
+        body: StreamBuilder(
+            stream: getChats(),
+            builder: (BuildContext context, AsyncSnapshot snapshot) {
+              if (!snapshot.hasData) {
+                return Center(
+                  child: SpinKitWanderingCubes(color: Colors.white, size: 40),
+                );
+              }
+              return Padding(
+                padding:
+                    const EdgeInsets.symmetric(vertical: 10, horizontal: 0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    GestureDetector(
+                      onTap: () => Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (_) => ContactScreen(
+                                    searchFrom: SearchFrom.messagesScreen,
+                                    imageFile: widget.imageFile,
+                                    currentUser: _currentUser,
+                                  ))),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                        child: Row(
+                          children: [
+                            Icon(Icons.search, color: Colors.white),
+                            SizedBox(width: 10),
+                            Text('Search',
+                                style: TextStyle(color: Colors.grey)),
+                          ],
+                        ),
+                      ),
+                    ),
+                    Expanded(
+                        child: ListView.builder(
+                      itemBuilder: (BuildContext context, int index) {
+                        Chat chat = snapshot.data[index];
+                        return Dismissible(
+                            key: UniqueKey(),
+                            confirmDismiss: (direction) async {
+                              // users = chat.memberInfo;
+                              // int receiverIndex = users.indexWhere(
+                              //     (user) => user.id != _currentUser.id);
+                              // setState(() {
+                              //   deleteChats(chat.memberIds[receiverIndex]);
+                              //   // users.removeAt(receiverIndex);
+                              // });
+
+                              // await chatsRef
+                              //     .doc(chat.id)
+                              //     .collection('messages')
+                              //     .get()
+                              //     .then((docs) {
+                              //   docs.docs.forEach((element) {
+                              //     element.reference.delete().then((value) {
+                              //       chatsRef
+                              //           .doc(chat.id)
+                              //           .delete()
+                              //           .then((value) {
+                              //         print('======= it is succesful');
+                              //       });
+                              //     });
+                              //   });
+                              //   print('=======succesful');
+                              //   setState(() {});
+                              // });
+                              return showDialog(
+                                  context: context,
+                                  builder: (BuildContext context) {
+                                    return DeleteDialog(
+                                      userName: userName,
+                                      onPressed: () async {
+                                        await chatsRef
+                                            .doc(chat.id)
+                                            .collection('messages')
+                                            .get()
+                                            .then((docs) {
+                                          docs.docs.forEach((element) {
+                                            element.reference
+                                                .delete()
+                                                .then((value) {
+                                              chatsRef
+                                                  .doc(chat.id)
+                                                  .delete()
+                                                  .then((value) {
+                                                print(
+                                                    '======= it is succesful');
+                                                setState(() {
+                                                  Navigator.of(context,
+                                                          rootNavigator: true)
+                                                      .pop();
+                                                });
+                                              });
+                                            });
+                                          });
+                                          print('=======succesful');
+                                        });
+
+                                        print('delete');
+                                      },
+                                    );
+                                  });
+                            },
+                            direction: DismissDirection.endToStart,
+                            background: Container(
+                                color: Colors.redAccent,
+                                child: Align(
+                                    alignment: Alignment.centerRight,
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(10),
+                                      child: Icon(Icons.delete,
+                                          color: Colors.white),
+                                    ))),
+                            child: _buildChat(chat, _currentUser.id));
+                      },
+                      itemCount: snapshot.data.length,
+                    )),
+                  ],
+                ),
+              );
+            }),
+        floatingActionButton: new FloatingActionButton(
+          backgroundColor: lightColor,
+          child: const Icon(Icons.group_add),
+          onPressed: () async {
+            // Navigator.push(
+            //     context,
+            //     MaterialPageRoute(
+            //         builder: (_) => CreateGroup(
+            //               currentUser: _currentUser,
+            //               searchFrom: widget.searchFrom,
+            //             )));
+          },
+          elevation: 5,
+          isExtended: true,
+        ),
+      )
+    ]);
+  }
+}

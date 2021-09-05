@@ -1,0 +1,10 @@
+{
+  "@@locale": "ar_SA",
+  "formFieldChangeLanguage":  "تغيير اللغة", 
+  "formFieldEmail":  "البريد الإلكتروني", 
+  "formFieldPassword":  "كلمه السر",
+  "forgotPassword":  "هل نسيت كلمة السر؟", 
+  "login":  "تسجيل الدخول", 
+  "noAccount":  "لا تملك حسابا حتى الآن؟", 
+  "signUp":  "اشتراك", 
+}
