@@ -164,6 +164,7 @@ class _PickupScreenState extends State<PickupScreen> {
                             context,
                             MaterialPageRoute(
                               builder: (context) => CallScreen(
+                                currentUserId: widget.call.receiverId,
                                   call: widget.call,
                                   isAudio: widget.call.isAudio),
                             ),

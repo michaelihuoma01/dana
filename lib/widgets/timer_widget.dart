@@ -35,6 +35,7 @@ class TimerViewState extends State<TimerView> {
         setState(() {
           _counter++;
         });
+        print('++++++++++++++++++++++++$_counter');
       });
     }
   }

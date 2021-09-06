@@ -13,18 +13,19 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
 
-class CreateGroup extends StatefulWidget {
+class BroadcastMessage extends StatefulWidget {
   final SearchFrom searchFrom;
   final File imageFile;
   AppUser currentUser;
 
-  CreateGroup({@required this.searchFrom, this.currentUser, this.imageFile});
+  BroadcastMessage(
+      {@required this.searchFrom, this.currentUser, this.imageFile});
 
   @override
-  _CreateGroupState createState() => _CreateGroupState();
+  _BroadcastMessageState createState() => _BroadcastMessageState();
 }
 
-class _CreateGroupState extends State<CreateGroup> {
+class _BroadcastMessageState extends State<BroadcastMessage> {
   TextEditingController _searchController = TextEditingController();
   Future<QuerySnapshot> _users;
   String _searchText = '';
@@ -36,10 +37,9 @@ class _CreateGroupState extends State<CreateGroup> {
   bool _isLoading = false;
 
   final TextEditingController textEditingController = TextEditingController();
-  final _formKey = GlobalKey<FormState>();
 
-  Future<Chat> createGroup() async {
-    _selectedUsers.add(widget.currentUser);
+  sendBroadcastMessage() async {
+    // _selectedUsers.add(widget.currentUser);
 
     Timestamp timestamp = Timestamp.now();
     Map<String, dynamic> readStatus = {};
@@ -52,28 +52,57 @@ class _CreateGroupState extends State<CreateGroup> {
 
     String groupName = textEditingController.text;
 
-    DocumentReference res = await chatsRef.add({
-      'groupName': groupName,
-      'admin': widget.currentUser.id,
-      // 'photoUrl': groupPhoto,
+    _selectedUsers.forEach((element) async {
+      print('sent to ${element.name}');
 
-      'memberIds': _selectedUsers.map((item) => item.id).toList(),
-      'recentMessage': 'Chat Created',
-      'recentSender': '',
-      'recentTimestamp': timestamp,
-      'readStatus': readStatus
+      Chat chat =
+          await ChatService.getChatByUsers([widget.currentUser.id, element.id]);
+
+      bool isChatExist = chat != null;
+      DocumentReference res;
+
+      if (isChatExist == false) {
+        res = await chatsRef.add({
+          'groupName': '',
+          'admin': '',
+          'memberIds': [widget.currentUser.id, element.id],
+          'recentMessage': groupName,
+          'recentSender': widget.currentUser.id,
+          'recentTimestamp': timestamp,
+          'readStatus': readStatus
+        });
+      }
+
+      Chat _chat = Chat(
+        id: (isChatExist == false) ? res.id : chat.id,
+        recentMessage: groupName,
+        admin: '',
+        groupName: '',
+        recentSender: widget.currentUser.id,
+        recentTimestamp: timestamp,
+        memberIds: [widget.currentUser.id, element.id],
+        readStatus: readStatus,
+      );
+
+      Message message = Message(
+        senderId: widget.currentUser.id,
+        text: groupName,
+        imageUrl: null,
+        fileName: null,
+        giphyUrl: null,
+        audioUrl: null,
+        videoUrl: null,
+        fileUrl: null,
+        timestamp: Timestamp.now(),
+        isLiked: false,
+      );
+
+      ChatService.sendChatMessage(_chat, message, element);
+      chatsRef.doc(_chat.id).update({
+        'readStatus.${element.id}': false,
+        'readStatus.${widget.currentUser.id}': true
+      });
     });
-
-    return Chat(
-      id: res.id,
-      recentMessage: 'Chat Created',
-      admin: widget.currentUser.id,
-      groupName: groupName,
-      recentSender: '',
-      recentTimestamp: timestamp,
-      memberIds: _selectedUsers.map((item) => item.id).toList(),
-      readStatus: readStatus,
-    );
   }
 
   @override
@@ -231,9 +260,10 @@ class _CreateGroupState extends State<CreateGroup> {
           appBar: PreferredSize(
               preferredSize: const Size.fromHeight(50),
               child: AppBar(
-                title: Text('Create Group',
+                title: Text('Broadcast Message',
                     style: TextStyle(
-                        color: Colors.white, fontFamily: 'Poppins-Regular')),
+                        color: Colors.white,
+                        fontFamily: 'Poppins-Regular' )),
                 backgroundColor: darkColor,
                 centerTitle: true,
                 elevation: 5,
@@ -243,11 +273,13 @@ class _CreateGroupState extends State<CreateGroup> {
               )),
           floatingActionButton: new FloatingActionButton(
             backgroundColor: lightColor,
-            child: const Icon(Icons.done),
+            child: const Icon(Icons.send_rounded, size: 19),
             mini: true,
             onPressed: () {
-              createGroup();
-              Navigator.pop(context);
+              if (textEditingController.value != null) {
+                sendBroadcastMessage();
+                Navigator.pop(context);
+              }
             },
             elevation: 5,
             isExtended: true,
@@ -260,8 +292,11 @@ class _CreateGroupState extends State<CreateGroup> {
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 10.0),
                   child: TextField(
+                    maxLines: 5,
                     controller: textEditingController,
-                    decoration: InputDecoration(
+                     decoration: InputDecoration(
+                       hintText: 'Enter Message',
+                       hintStyle: TextStyle(color: Colors.grey),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(5),
                         borderSide: BorderSide(color: lightColor, width: 1),
@@ -272,10 +307,8 @@ class _CreateGroupState extends State<CreateGroup> {
                       ),
                       focusedBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(5),
-                          borderSide: BorderSide(color: lightColor, width: 1)),
-                      hintText: 'Group name',
-                      hintStyle: TextStyle(color: Colors.grey),
-                    ),
+                          borderSide:
+                              BorderSide(color: lightColor, width: 1))),
                     style: TextStyle(color: Colors.white),
                     cursorColor: lightColor,
                   ),

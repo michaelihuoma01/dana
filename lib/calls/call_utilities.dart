@@ -45,7 +45,7 @@ class CallUtils {
         context,
         MaterialPageRoute(
           builder: (context) =>
-              CallScreen(call: call, currentUser: from, isAudio: isAudio),
+              CallScreen(call: call, currentUserId: from.id, isAudio: isAudio),
         ),
       );
     }

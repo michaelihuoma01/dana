@@ -4,6 +4,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dana/models/models.dart';
 import 'package:dana/models/user_model.dart';
+import 'package:dana/screens/pages/broadcast_message.dart';
 import 'package:dana/screens/pages/create_group.dart';
 import 'package:dana/screens/pages/direct_messages/nested_screens/chat_screen.dart';
 import 'package:dana/screens/tabs/contacts_screen.dart';
@@ -16,6 +17,7 @@ import 'package:dana/widgets/slide_menu.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
@@ -292,6 +294,20 @@ class _MessagesScreenState extends State<MessagesScreen> {
         appBar: PreferredSize(
             preferredSize: const Size.fromHeight(50),
             child: AppBar(
+              actions: [
+                GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (_) => CreateGroup(
+                                    currentUser: _currentUser,
+                                    searchFrom: widget.searchFrom,
+                                  )));
+                    },
+                    child: Icon(Icons.group_add, color: lightColor, size: 30)),
+                SizedBox(width: 15)
+              ],
               title: Text('Messages',
                   style: TextStyle(
                       color: Colors.white,
@@ -430,15 +446,16 @@ class _MessagesScreenState extends State<MessagesScreen> {
             }),
         floatingActionButton: new FloatingActionButton(
           backgroundColor: lightColor,
-          child: const Icon(Icons.group_add),
+          mini: true,
+          child: const Icon(Icons.record_voice_over),
           onPressed: () async {
-            // Navigator.push(
-            //     context,
-            //     MaterialPageRoute(
-            //         builder: (_) => CreateGroup(
-            //               currentUser: _currentUser,
-            //               searchFrom: widget.searchFrom,
-            //             )));
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (_) => BroadcastMessage(
+                          currentUser: _currentUser,
+                          searchFrom: widget.searchFrom,
+                        )));
           },
           elevation: 5,
           isExtended: true,

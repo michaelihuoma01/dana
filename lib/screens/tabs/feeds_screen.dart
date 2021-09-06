@@ -71,11 +71,6 @@ class _FeedsScreenState extends State<FeedsScreen> {
       _isLoadingFeed = false;
     });
 
-    QuerySnapshot userActivitiesSnapshot = await activitiesRef
-        .doc(widget.currentUser.id)
-        .collection('userActivities')
-        .get();
-
     stream = activitiesRef
         .doc(widget.currentUser.id)
         .collection('userActivities')
@@ -83,6 +78,7 @@ class _FeedsScreenState extends State<FeedsScreen> {
         // .orderBy('recentTimestamp', descending: true)
         .snapshots()
         .listen((snapshot) {
+      
       setState(() {
         unreadNotifications = true;
       });
@@ -166,6 +162,7 @@ class _FeedsScreenState extends State<FeedsScreen> {
         appBar: PreferredSize(
             preferredSize: const Size.fromHeight(60),
             child: AppBar(
+              automaticallyImplyLeading: false,
               title: Row(
                 children: [
                   Container(

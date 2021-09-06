@@ -19,6 +19,17 @@ class CallMethods {
 
       await callCollection.doc(call.callerId).set(hasDialledMap);
       await callCollection.doc(call.receiverId).set(hasNotDialledMap);
+
+      //  await callCollection
+      //     .doc(call.callerId)
+      //     .collection('calls')
+      //     .add(hasDialledMap);
+      // await callCollection
+      //     .doc(call.receiverId)
+      //     .collection('calls')
+      //     .add(hasNotDialledMap);
+
+
       return true;
     } catch (e) {
       print(e);

@@ -6,7 +6,10 @@ import 'package:dana/calls/call.dart';
 import 'package:dana/calls/call_methods.dart';
 import 'package:dana/calls/callscreens/pickup/cached_image.dart';
 import 'package:dana/calls/configs/agora_configs.dart';
+import 'package:dana/calls/constants/strings.dart';
 import 'package:dana/models/user_model.dart';
+import 'package:dana/screens/home.dart';
+import 'package:dana/screens/pages/direct_messages/nested_screens/chat_screen.dart';
 import 'package:dana/utils/constants.dart';
 import 'package:dana/widgets/timer_widget.dart';
 import 'package:flutter/material.dart';
@@ -19,10 +22,10 @@ import 'package:agora_rtc_engine/rtc_remote_view.dart' as rtc_remote_view;
 
 class CallScreen extends StatefulWidget {
   final Call call;
-  final AppUser currentUser;
+  final String currentUserId;
   final bool isAudio;
 
-  CallScreen({@required this.call, this.isAudio, this.currentUser});
+  CallScreen({@required this.call, this.isAudio, this.currentUserId});
 
   @override
   _CallScreenState createState() => _CallScreenState();
@@ -75,10 +78,11 @@ class _CallScreenState extends State<CallScreen> {
       // userProvider = Provider.of<UserProvider>(context, listen: false);
 
       callStreamSubscription = callMethods
-          .callStream(uid: widget.currentUser.id)
+          .callStream(uid: widget.currentUserId)
           .listen((DocumentSnapshot ds) {
+        print('===========================${ds.id}');
         // defining the logic
-        switch (ds.data) {
+        switch (ds.data()) {
           case null:
             // snapshot is null which means that call is hanged and documents are deleted
             Navigator.pop(context);
@@ -120,10 +124,13 @@ class _CallScreenState extends State<CallScreen> {
     }, userJoined: (int uid, int elapsed) {
       setState(() {
         final info = 'onUserJoined: $uid';
-        start = true;
+        setState(() {
+          start = true;
+        });
         _infoStrings.add(info);
         _users.add(uid);
         _remoteUid = uid;
+        print('user left + ${_users}');
       });
     }, userInfoUpdated: (var userInfo, i) {
       setState(() {
@@ -150,12 +157,19 @@ class _CallScreenState extends State<CallScreen> {
     }, leaveChannel: (var i) {
       setState(() {
         _infoStrings.add('onLeaveChannel ====> $i');
+
         _users.clear();
-        print('user left + $i');
+        callMethods.endCall(call: widget.call);
+
+        Navigator.pop(context);
+        print('user left + ${i.duration}');
+        print('user left + ${_users}');
       });
     }, connectionLost: () {
       setState(() {
         final info = 'onConnectionLost';
+        _users.clear();
+
         _infoStrings.add(info);
       });
     },
@@ -370,7 +384,7 @@ class _CallScreenState extends State<CallScreen> {
               onTap: () async {
                 await _engine.leaveChannel();
                 callMethods.endCall(call: widget.call);
-                Navigator.pop(context);
+                // Navigator.pop(context);
               },
               child: Container(
                   decoration: BoxDecoration(
@@ -429,116 +443,119 @@ class _CallScreenState extends State<CallScreen> {
   @override
   Widget build(BuildContext context) {
     return SafeArea(
-      child: (widget.isAudio == false)
-          ? Scaffold(
-              backgroundColor: Colors.black,
-              body: Stack(
-                children: [
-                  (_remoteUid != null)
-                      ? Center(
-                          child: rtc_remote_view.SurfaceView(uid: _remoteUid))
-                      : Center(
-                          child: Text('Calling...',
-                              style: TextStyle(color: Colors.white))),
-                  Positioned(
-                    top: 0,
-                    left: 0,
-                    right: 0,
-                    child: Container(
-                      height: 380,
-                      width: 100,
-                      child: (_remoteUid != null)
-                          ? Center(child: rtc_local_view.SurfaceView())
-                          : Center(
-                              child: Text('Calling...',
-                                  style: TextStyle(color: Colors.white))),
-                    ),
-                  ),
-
-                  if (start == true)
-                    Positioned(
-                        top: 10,
-                        left: 10,
-                        right: 0,
-                        child: Row(
-                          children: [
-                            Text(' ${widget.call.receiverName} | ',
-                                style: TextStyle(
-                                    fontFamily: 'Poppins-Regular',
-                                    fontSize: 16,
-                                    color: Colors.white)),
-                            TimerView(
-                              key: _timerKey,
-                              start: start,
-                            ),
-                          ],
-                        )),
-
-                  // Stack(
-                  //   children: <Widget>[
-                  //     // _viewRows(),
-                  //     Center(
-                  //       child: rtc_remote_view.SurfaceView(uid: _remoteUid),
-                  //     ),
-                  //     Align(
-                  //       alignment: Alignment.topLeft,
-                  //       child: Container(
-                  //         height: 120,
-                  //         width: 150,
-                  //         child: Center(child: rtc_local_view.SurfaceView())
-                  //       ),
-                  //     ),
-                  //     // _panel(),
-                  //     _toolbar(),
-                  //   ],
-                  // ),
-                ],
-              ),
-              bottomNavigationBar: _toolbar(),
-            )
-          : Container(
-              height: double.infinity,
-              decoration: new BoxDecoration(
-                  gradient: new LinearGradient(
-                      begin: Alignment.topCenter,
-                      colors: [Color(0xff6fcf97), Color(0xff52bac6)])),
-              child: Scaffold(
-                backgroundColor: Colors.transparent,
+        child: (widget.isAudio == false)
+            ? Scaffold(
+                backgroundColor: Colors.black,
                 body: Stack(
                   children: [
-                    Center(
-                      child: CachedImage(
-                        widget.call.receiverPic,
-                        isRound: true,
-                        radius: 150,
+                    (_remoteUid != null)
+                        ? Center(
+                            child: rtc_remote_view.SurfaceView(uid: _remoteUid))
+                        : Center(
+                            child: Text('Calling...',
+                                style: TextStyle(color: Colors.white))),
+                    Positioned(
+                      top: 0,
+                      left: 0,
+                      right: 0,
+                      child: Container(
+                        height: 380,
+                        width: 100,
+                        child: (_remoteUid != null)
+                            ? Center(child: rtc_local_view.SurfaceView())
+                            : Center(
+                                child: Text('Calling...',
+                                    style: TextStyle(color: Colors.white))),
                       ),
                     ),
-                    // if (start == true)
 
-                    Positioned(
-                        top: 10,
-                        left: 15,
-                        right: 0,
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(widget.call.receiverName,
-                                style: TextStyle(
-                                    fontFamily: 'Poppins-Regular',
-                                    fontSize: 16,
-                                    color: Colors.white)),
-                            TimerView(
-                              key: _timerKey,
-                              start: start,
-                            ),
-                          ],
-                        )),
-                    // _toolbar(),
+                    if (start == true)
+                      Positioned(
+                          top: 10,
+                          left: 10,
+                          right: 0,
+                          child: Row(
+                            children: [
+                              Text(' ${widget.call.receiverName} | ',
+                                  style: TextStyle(
+                                      fontFamily: 'Poppins-Regular',
+                                      fontSize: 16,
+                                      color: Colors.white)),
+                              TimerView(
+                                key: _timerKey,
+                                start: start,
+                              ),
+                            ],
+                          )),
+
+                    // Stack(
+                    //   children: <Widget>[
+                    //     // _viewRows(),
+                    //     Center(
+                    //       child: rtc_remote_view.SurfaceView(uid: _remoteUid),
+                    //     ),
+                    //     Align(
+                    //       alignment: Alignment.topLeft,
+                    //       child: Container(
+                    //         height: 120,
+                    //         width: 150,
+                    //         child: Center(child: rtc_local_view.SurfaceView())
+                    //       ),
+                    //     ),
+                    //     // _panel(),
+                    //     _toolbar(),
+                    //   ],
+                    // ),
                   ],
                 ),
                 bottomNavigationBar: _toolbar(),
-              ),
-            ),
-    );
+              )
+            : Container(
+                height: double.infinity,
+                decoration: new BoxDecoration(
+                    gradient: new LinearGradient(
+                        begin: Alignment.topCenter,
+                        colors: [Color(0xff6fcf97), Color(0xff52bac6)])),
+                child: Scaffold(
+                  backgroundColor: Colors.transparent,
+                  body: Stack(
+                    children: [
+                      Center(
+                        child: CachedImage(
+                          (widget.call.receiverId == widget.currentUserId)
+                              ? widget.call.callerPic
+                              : widget.call.receiverPic,
+                          isRound: true,
+                          radius: 150,
+                        ),
+                      ),
+                      if (start == true)
+                        Positioned(
+                            top: 10,
+                            left: 15,
+                            right: 0,
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                    (widget.call.receiverId ==
+                                            widget.currentUserId)
+                                        ? widget.call.callerName
+                                        : widget.call.receiverName,
+                                    style: TextStyle(
+                                        fontFamily: 'Poppins-Regular',
+                                        fontSize: 16,
+                                        color: Colors.white)),
+                                TimerView(
+                                  key: _timerKey,
+                                  start: start,
+                                ),
+                              ],
+                            )),
+                      // _toolbar(),
+                    ],
+                  ),
+                  bottomNavigationBar: _toolbar(),
+                )));
   }
 }

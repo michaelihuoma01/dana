@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:camera/camera.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:dana/calls/callscreens/pickup/pickup_layout.dart';
 import 'package:dana/models/chat_model.dart';
 import 'package:dana/models/user_data.dart';
 import 'package:dana/models/user_model.dart';
@@ -284,114 +285,118 @@ class _HomeScreenState extends State<HomeScreen>
             fit: BoxFit.cover,
           ),
         ),
-        Scaffold(
-            bottomNavigationBar: BottomNavigationBar(
-              items: <BottomNavigationBarItem>[
-                BottomNavigationBarItem(
-                    icon: GestureDetector(
-                      onTap: () {
-                        if (isSelected1 == true) {
-                          homeController.animateTo(0.0,
-                              duration: const Duration(milliseconds: 300),
-                              curve: Curves.easeOut);
-                        } else {
-                          // onItemClicked();
-                        }
-                      },
-                      child: SvgPicture.asset('assets/images/feeds.svg',
-                          color: isSelected1 ? lightColor : Colors.grey),
-                    ),
-                    title: Text(isSelected1 ? 'Feeds' : '',
-                        style: TextStyle(
-                            fontSize: 10,
-                            color: isSelected1
-                                ? lightColor
-                                : Colors.transparent))),
-                BottomNavigationBarItem(
-                    icon: Stack(
-                      children: [
-                        SvgPicture.asset('assets/images/message.svg',
-                            color: isSelected2 ? lightColor : Colors.grey),
-                        if (isRead == false)
-                          Positioned(
-                              left: 11,
-                              child: Icon(Icons.circle,
-                                  color: Colors.red, size: 12))
-                      ],
-                    ),
-                    title: Text(isSelected2 ? 'Messages' : '',
-                        style: TextStyle(
-                            fontSize: 10,
-                            color: isSelected2
-                                ? lightColor
-                                : Colors.transparent))),
-                BottomNavigationBarItem(
-                    icon: SvgPicture.asset('assets/images/call.svg',
-                        color: isSelected3 ? lightColor : Colors.grey),
-                    title: Text(isSelected3 ? 'Calls' : '',
-                        style: TextStyle(
-                            fontSize: 10,
-                            color: isSelected3
-                                ? lightColor
-                                : Colors.transparent))),
-                BottomNavigationBarItem(
-                    icon: SvgPicture.asset('assets/images/groups.svg',
-                        color: isSelected4 ? lightColor : Colors.grey),
-                    title: Text(isSelected4 ? 'Friends' : '',
-                        style: TextStyle(
-                            fontSize: 10,
-                            color: isSelected4
-                                ? lightColor
-                                : Colors.transparent))),
-                BottomNavigationBarItem(
-                    icon: (_currentUser?.profileImageUrl == null)
-                        ? Icon(FontAwesomeIcons.userAlt,
-                            size: 17,
-                            color: isSelected5 ? lightColor : Colors.grey)
-                        : Container(
-                            height: 28,
-                            width: 28,
-                            child: CircleAvatar(
-                              radius: 25.0,
-                              backgroundColor: Colors.grey,
-                              backgroundImage: CachedNetworkImageProvider(
-                                  _currentUser?.profileImageUrl),
+        PickupLayout(
+          currentUser: _currentUser,
+          scaffold: Scaffold(
+            
+              bottomNavigationBar: BottomNavigationBar(
+                items: <BottomNavigationBarItem>[
+                  BottomNavigationBarItem(
+                      icon: GestureDetector(
+                        onTap: () {
+                          if (isSelected1 == true) {
+                            homeController.animateTo(0.0,
+                                duration: const Duration(milliseconds: 300),
+                                curve: Curves.easeOut);
+                          } else {
+                            // onItemClicked();
+                          }
+                        },
+                        child: SvgPicture.asset('assets/images/feeds.svg',
+                            color: isSelected1 ? lightColor : Colors.grey),
+                      ),
+                      title: Text(isSelected1 ? 'Feeds' : '',
+                          style: TextStyle(
+                              fontSize: 10,
+                              color: isSelected1
+                                  ? lightColor
+                                  : Colors.transparent))),
+                  BottomNavigationBarItem(
+                      icon: Stack(
+                        children: [
+                          SvgPicture.asset('assets/images/message.svg',
+                              color: isSelected2 ? lightColor : Colors.grey),
+                          if (isRead == false)
+                            Positioned(
+                                left: 11,
+                                child: Icon(Icons.circle,
+                                    color: Colors.red, size: 12))
+                        ],
+                      ),
+                      title: Text(isSelected2 ? 'Messages' : '',
+                          style: TextStyle(
+                              fontSize: 10,
+                              color: isSelected2
+                                  ? lightColor
+                                  : Colors.transparent))),
+                  BottomNavigationBarItem(
+                      icon: SvgPicture.asset('assets/images/call.svg',
+                          color: isSelected3 ? lightColor : Colors.grey),
+                      title: Text(isSelected3 ? 'Calls' : '',
+                          style: TextStyle(
+                              fontSize: 10,
+                              color: isSelected3
+                                  ? lightColor
+                                  : Colors.transparent))),
+                  BottomNavigationBarItem(
+                      icon: SvgPicture.asset('assets/images/groups.svg',
+                          color: isSelected4 ? lightColor : Colors.grey),
+                      title: Text(isSelected4 ? 'Friends' : '',
+                          style: TextStyle(
+                              fontSize: 10,
+                              color: isSelected4
+                                  ? lightColor
+                                  : Colors.transparent))),
+                  BottomNavigationBarItem(
+                      icon: (_currentUser?.profileImageUrl == null)
+                          ? Icon(FontAwesomeIcons.userAlt,
+                              size: 17,
+                              color: isSelected5 ? lightColor : Colors.grey)
+                          : Container(
+                              height: 28,
+                              width: 28,
+                              child: CircleAvatar(
+                                radius: 25.0,
+                                backgroundColor: Colors.grey,
+                                backgroundImage: CachedNetworkImageProvider(
+                                    _currentUser?.profileImageUrl),
+                              ),
                             ),
-                          ),
-                    title: Text(isSelected5 ? 'Profile' : '',
-                        style: TextStyle(
-                            fontSize: 9,
-                            color: isSelected4
-                                ? lightColor
-                                : Colors.transparent))),
-              ],
-              backgroundColor: darkColor,
-              selectedItemColor: lightColor,
-              showUnselectedLabels: true,
-              selectedLabelStyle: TextStyle(fontSize: 12),
-              type: BottomNavigationBarType.fixed,
-              onTap: onItemClicked,
-            ),
-            backgroundColor: Colors.transparent,
-            body: TabBarView(
-              // physics: NeverScrollableScrollPhysics(),
-              controller: tabController,
-              children: [
-                FeedsScreen(
-                  homeController: homeController,
-                  currentUser: _currentUser,
-                  goToCameraScreen: _goToCameraScreen,
-                ),
-                MessagesScreen(
+                      title: Text(isSelected5 ? 'Profile' : '',
+                          style: TextStyle(
+                              fontSize: 9,
+                              color: isSelected4
+                                  ? lightColor
+                                  : Colors.transparent))),
+                ],
+                backgroundColor: darkColor,
+                selectedItemColor: lightColor,
+                showUnselectedLabels: true,
+                selectedLabelStyle: TextStyle(fontSize: 12),
+                type: BottomNavigationBarType.fixed,
+                onTap: onItemClicked,
+              ),
+              backgroundColor: Colors.transparent,
+              body: TabBarView(
+                // physics: NeverScrollableScrollPhysics(),
+                controller: tabController,
+                children: [
+                  FeedsScreen(
+                    homeController: homeController,
                     currentUser: _currentUser,
-                    searchFrom: SearchFrom.homeScreen),
-                CallsScreen(currentUser: _currentUser),
-                ContactScreen(
-                    currentUser: _currentUser,
-                    searchFrom: SearchFrom.homeScreen),
-                ProfileScreen(user: _currentUser),
-              ],
-            )),
+                    goToCameraScreen: _goToCameraScreen,
+                  ),
+                  MessagesScreen(
+                      currentUser: _currentUser,
+                      searchFrom: SearchFrom.homeScreen),
+                  CallsScreen(currentUser: _currentUser),
+                  ContactScreen(
+                      currentUser: _currentUser,
+                      searchFrom: SearchFrom.homeScreen),
+                  ProfileScreen(user: _currentUser),
+                ],
+              )),
+        ),
       ],
     );
   }
