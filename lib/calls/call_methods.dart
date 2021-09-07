@@ -20,16 +20,6 @@ class CallMethods {
       await callCollection.doc(call.callerId).set(hasDialledMap);
       await callCollection.doc(call.receiverId).set(hasNotDialledMap);
 
-      //  await callCollection
-      //     .doc(call.callerId)
-      //     .collection('calls')
-      //     .add(hasDialledMap);
-      // await callCollection
-      //     .doc(call.receiverId)
-      //     .collection('calls')
-      //     .add(hasNotDialledMap);
-
-
       return true;
     } catch (e) {
       print(e);
@@ -41,6 +31,25 @@ class CallMethods {
     try {
       await callCollection.doc(call.callerId).delete();
       await callCollection.doc(call.receiverId).delete();
+
+      call.hasDialled = true;
+      Map<String, dynamic> hasDialledMap = call.toMap(call);
+
+      call.hasDialled = false;
+      Map<String, dynamic> hasNotDialledMap = call.toMap(call);
+
+      await FirebaseFirestore.instance
+          .collection('calls')
+          .doc(call.callerId)
+          .collection('callHistory')
+          .add(hasDialledMap);
+
+      await FirebaseFirestore.instance
+          .collection('calls')
+          .doc(call.receiverId)
+          .collection('callHistory')
+          .add(hasNotDialledMap);
+
       return true;
     } catch (e) {
       print(e);

@@ -39,7 +39,7 @@ class MessagesScreen extends StatefulWidget {
 class _MessagesScreenState extends State<MessagesScreen> {
   Stream<List<Chat>> chatsStream;
   AppUser _currentUser;
-  List<AppUser> users;
+  // List<AppUser> users;
   String deleteUserID, userName;
 
   @override
@@ -132,31 +132,6 @@ class _MessagesScreenState extends State<MessagesScreen> {
           });
         }
       });
-
-      //   then((doc) {
-      //     doc.docs.forEach((docs) {
-      //               for (QueryDocumentSnapshot snapshot in docs) {
-      //   snapshot.reference.delete();
-      // }
-      //       setState(() {
-      //         docs.reference;
-
-      //       });
-      //     });
-      //   });
-
-      // for (var doc in stream) {
-      //   Chat chatFromDoc = Chat.fromDoc(doc);
-      //   List<dynamic> memberIds = chatFromDoc.memberIds;
-      //   int receiverIndex;
-
-      //   // Getting receiver index
-      //   memberIds.forEach((userId) {
-      //     if (userId != _currentUser.id) {
-      //       receiverIndex = memberIds.indexOf(userId);
-      //     }
-      //   });
-      // }
     } catch (err) {
       print('////$err');
     }
@@ -165,17 +140,18 @@ class _MessagesScreenState extends State<MessagesScreen> {
   _buildChat(Chat chat, String currentUserId) {
     final bool isRead = chat.readStatus[currentUserId];
     widget.isReadIcon = isRead;
-    print("=============$isRead");
     final TextStyle readStyle = TextStyle(
         color: isRead ? Colors.white : lightColor,
         fontSize: 12,
         fontWeight: isRead ? FontWeight.w400 : FontWeight.bold);
 
-    users = chat.memberInfo;
-    int receiverIndex = users.indexWhere((user) => user.id != _currentUser.id);
-    int senderIndex = users.indexWhere((user) => user.id == chat.recentSender);
+    // users = chat.memberInfo;
+    int receiverIndex =
+        chat.memberInfo.indexWhere((user) => user.id != _currentUser.id);
+    int senderIndex =
+        chat.memberInfo.indexWhere((user) => user.id == chat.recentSender);
 
-    userName = users[receiverIndex].name;
+    userName = chat.memberInfo[receiverIndex].name;
 
     if (widget.searchFrom == SearchFrom.createStoryScreen) {
       return ListTile(
@@ -184,13 +160,14 @@ class _MessagesScreenState extends State<MessagesScreen> {
           child: CircleAvatar(
             backgroundColor: Colors.white,
             radius: 20,
-            backgroundImage: users[receiverIndex].profileImageUrl.isEmpty
-                ? AssetImage(placeHolderImageRef)
-                : CachedNetworkImageProvider(
-                    users[receiverIndex].profileImageUrl),
+            backgroundImage:
+                chat.memberInfo[receiverIndex].profileImageUrl.isEmpty
+                    ? AssetImage(placeHolderImageRef)
+                    : CachedNetworkImageProvider(
+                        chat.memberInfo[receiverIndex].profileImageUrl),
           ),
         ),
-        title: Text(users[receiverIndex].name,
+        title: Text(chat.memberInfo[receiverIndex].name,
             style: TextStyle(
                 color: Colors.white,
                 fontWeight: FontWeight.w600,
@@ -203,77 +180,76 @@ class _MessagesScreenState extends State<MessagesScreen> {
           color: Colors.blue,
           onPressed: () => {
             Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (_) => ChatScreen(
-                  receiverUser: users[receiverIndex],
-                  imageFile: widget.imageFile,
-                ),
-              ),
-            ),
+                context,
+                MaterialPageRoute(
+                    builder: (_) => ChatScreen(
+                        receiverUser: chat.memberInfo[receiverIndex],
+                        imageFile: widget.imageFile))),
           },
         ),
         // onTap: () =>
       );
     }
     return ListTile(
-      leading: Container(
-        height: 40,
-        child: (chat.memberIds.length > 2)
-            ? Icon(Icons.group, color: Colors.white, size: 35)
-            : CircleAvatar(
-                backgroundColor: Colors.white,
-                radius: 28.0,
-                backgroundImage: users[receiverIndex].profileImageUrl.isEmpty
-                    ? AssetImage(placeHolderImageRef)
-                    : CachedNetworkImageProvider(
-                        users[receiverIndex].profileImageUrl),
-              ),
-      ),
-      title: Text(
-          (chat.memberIds.length > 2)
-              ? chat.groupName
-              : users[receiverIndex].name,
-          style: TextStyle(
-              color: Colors.white, fontWeight: FontWeight.w600, fontSize: 18)),
-      subtitle: chat.recentSender.isEmpty
-          ? Text(
-              (chat.memberIds.length > 2) ? 'You were added' : 'Chat Created',
-              overflow: TextOverflow.ellipsis,
-              style: readStyle,
-            )
-          : chat.recentMessage != null
-              ? Text(
-                  '${chat.recentMessage}',
-                  overflow: TextOverflow.ellipsis,
-                  style: readStyle,
-                )
-              : Text(
-                  'Sent an attachment',
-                  overflow: TextOverflow.ellipsis,
-                  style: readStyle,
+        leading: Container(
+          height: 40,
+          child: (chat.memberIds.length > 2)
+              ? Icon(Icons.group, color: Colors.white, size: 35)
+              : CircleAvatar(
+                  backgroundColor: Colors.white,
+                  radius: 28.0,
+                  backgroundImage:
+                      chat.memberInfo[receiverIndex].profileImageUrl.isEmpty
+                          ? AssetImage(placeHolderImageRef)
+                          : CachedNetworkImageProvider(
+                              chat.memberInfo[receiverIndex].profileImageUrl),
                 ),
-      trailing: Text(
-        timeago.format(chat.recentTimestamp.toDate()),
-        // timeFormat.format(
-        //   chat.recentTimestamp.toDate(),
-        // ),
-        style: readStyle,
-      ),
-      onTap: () => Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (_) => ChatScreen(
-              receiverUser: users[receiverIndex],
-              userIds: chat.memberIds,
-              groupMembers: users,
-              admin: chat.admin,
-              chat: chat,
-              isGroup: (chat.memberIds.length > 2) ? true : false,
-              groupName: chat.groupName),
         ),
-      ),
-    );
+        title: Text(
+            (chat.memberIds.length > 2)
+                ? chat.groupName
+                : chat.memberInfo[receiverIndex].name,
+            style: TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.w600,
+                fontSize: 18)),
+        subtitle: chat.recentSender.isEmpty
+            ? Text(
+                (chat.memberIds.length > 2) ? 'You were added' : 'Chat Created',
+                overflow: TextOverflow.ellipsis,
+                style: readStyle,
+              )
+            : chat.recentMessage != null
+                ? Text(
+                    '${chat.recentMessage}',
+                    overflow: TextOverflow.ellipsis,
+                    style: readStyle,
+                  )
+                : Text(
+                    'Sent an attachment',
+                    overflow: TextOverflow.ellipsis,
+                    style: readStyle,
+                  ),
+        trailing: Text(
+          timeago.format(chat.recentTimestamp.toDate()),
+          // timeFormat.format(
+          //   chat.recentTimestamp.toDate(),
+          // ),
+          style: readStyle,
+        ),
+        onTap: () {
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (_) => ChatScreen(
+                      receiverUser: chat.memberInfo[receiverIndex],
+                      userIds: chat.memberIds,
+                      groupMembers: chat.memberInfo,
+                      admin: chat.admin,
+                      chat: chat,
+                      isGroup: (chat.memberIds.length > 2) ? true : false,
+                      groupName: chat.groupName)));
+        });
   }
 
   @override
@@ -410,11 +386,11 @@ class _MessagesScreenState extends State<MessagesScreen> {
                                                   .then((value) {
                                                 print(
                                                     '======= it is succesful');
-                                                setState(() {
-                                                  Navigator.of(context,
-                                                          rootNavigator: true)
-                                                      .pop();
-                                                });
+                                                // setState(() {
+                                                //   Navigator.of(context,
+                                                //           rootNavigator: true)
+                                                //       .pop();
+                                                // });
                                               });
                                             });
                                           });

@@ -36,7 +36,7 @@ class Call {
     return callMap;
   }
 
-  Call.fromMap(Map callMap) {
+  Call.fromMap(var callMap) {
     this.callerId = callMap["caller_id"];
     this.callerName = callMap["caller_name"];
     this.callerPic = callMap["caller_pic"];

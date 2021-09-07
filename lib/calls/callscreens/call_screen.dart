@@ -80,7 +80,6 @@ class _CallScreenState extends State<CallScreen> {
       callStreamSubscription = callMethods
           .callStream(uid: widget.currentUserId)
           .listen((DocumentSnapshot ds) {
-        print('===========================${ds.id}');
         // defining the logic
         switch (ds.data()) {
           case null:
@@ -384,7 +383,7 @@ class _CallScreenState extends State<CallScreen> {
               onTap: () async {
                 await _engine.leaveChannel();
                 callMethods.endCall(call: widget.call);
-                // Navigator.pop(context);
+                
               },
               child: Container(
                   decoration: BoxDecoration(

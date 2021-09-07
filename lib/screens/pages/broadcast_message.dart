@@ -273,7 +273,7 @@ class _BroadcastMessageState extends State<BroadcastMessage> {
               )),
           floatingActionButton: new FloatingActionButton(
             backgroundColor: lightColor,
-            child: const Icon(Icons.send_rounded, size: 19),
+            child: const Icon(Icons.send_rounded, size: 19   ),
             mini: true,
             onPressed: () {
               if (textEditingController.value != null) {

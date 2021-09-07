@@ -484,6 +484,7 @@ class _UserProfileState extends State<UserProfile> {
                                                 from: _currentUser,
                                                 to: _profileUser,
                                                 context: context,
+                                                isAudio: false
                                               );
                                             } catch (e) {
                                               print('=============$e');
@@ -493,7 +494,18 @@ class _UserProfileState extends State<UserProfile> {
                                               color: Colors.white, size: 15)),
                                       SizedBox(width: 15),
                                       GestureDetector(
-                                          onTap: () {},
+                                          onTap: () {
+                                             try {
+                                              CallUtils.dial(
+                                                from: _currentUser,
+                                                to: _profileUser,
+                                                context: context,
+                                                isAudio: true
+                                              );
+                                            } catch (e) {
+                                              print('=============$e');
+                                            }
+                                          },
                                           child: Icon(FontAwesomeIcons.phoneAlt,
                                               color: Colors.white, size: 15)),
                                     ]),
@@ -529,8 +541,7 @@ class _UserProfileState extends State<UserProfile> {
                                                 fontFamily:
                                                     'Poppins-Regular'))),
                                   ],
-                                )),
-                            SizedBox(height: 5),
+                                )), 
                             BrandDivider(),
                             Padding(
                               padding:

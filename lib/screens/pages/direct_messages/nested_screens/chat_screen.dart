@@ -843,11 +843,7 @@ class _ChatScreenState extends State<ChatScreen> {
                                     isAudio: false);
                               } catch (e) {
                                 print('=============$e');
-                              }
-                              // Navigator.push(
-                              //     context,
-                              //     MaterialPageRoute(
-                              //         builder: (_) => OutgoingAudioCall()));
+                              } 
                             },
                             child: Icon(FontAwesomeIcons.video, size: 18)),
                         SizedBox(width: 20),
