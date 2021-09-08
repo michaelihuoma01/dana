@@ -13,7 +13,9 @@ import 'package:liquid_swipe/liquid_swipe.dart';
 
 class EditPhotoScreen extends StatefulWidget {
   final File imageFile;
-  EditPhotoScreen({@required this.imageFile});
+  final Function backToHomeScreen;
+
+  EditPhotoScreen({@required this.imageFile, this.backToHomeScreen});
   @override
   _EditPhotoScreenState createState() => _EditPhotoScreenState();
 }
@@ -79,7 +81,8 @@ class _EditPhotoScreenState extends State<EditPhotoScreen>
                   child: GestureDetector(
                       onTap: convertFilteredImageToImageFile,
                       child: Text('Next',
-                          style: TextStyle(color: Colors.white, fontSize: 20)))),
+                          style:
+                              TextStyle(color: Colors.white, fontSize: 20)))),
             ],
           ),
           body: Column(
@@ -150,25 +153,26 @@ class _EditPhotoScreenState extends State<EditPhotoScreen>
                     ),
                     Expanded(child: SizedBox()),
                     Padding(
-                      padding: const EdgeInsets.only(bottom: 30),
-                      child: Text('Filters', style: TextStyle(color: Colors.white, fontSize: 20))
-                      // TabBar(
-                      //   controller: _tabController,
-                      //   indicatorWeight: 3.0,
-                      //   indicatorColor: Colors.blue,
-                      //   labelColor: Colors.blue,
-                      //   labelStyle: TextStyle(
-                      //     fontSize: 18.0,
-                      //     fontWeight: FontWeight.w600,
-                      //   ),
-                      //   unselectedLabelStyle: TextStyle(fontSize: 18.0),
-                      //   unselectedLabelColor:
-                      //       Theme.of(context).accentColor.withOpacity(0.7),
-                      //   tabs: <Widget>[
-                      //     Tab(text: 'Filters'),
-                      //   ],
-                      // ),
-                    ),
+                        padding: const EdgeInsets.only(bottom: 30),
+                        child: Text('Filters',
+                            style: TextStyle(color: Colors.white, fontSize: 20))
+                        // TabBar(
+                        //   controller: _tabController,
+                        //   indicatorWeight: 3.0,
+                        //   indicatorColor: Colors.blue,
+                        //   labelColor: Colors.blue,
+                        //   labelStyle: TextStyle(
+                        //     fontSize: 18.0,
+                        //     fontWeight: FontWeight.w600,
+                        //   ),
+                        //   unselectedLabelStyle: TextStyle(fontSize: 18.0),
+                        //   unselectedLabelColor:
+                        //       Theme.of(context).accentColor.withOpacity(0.7),
+                        //   tabs: <Widget>[
+                        //     Tab(text: 'Filters'),
+                        //   ],
+                        // ),
+                        ),
                   ],
                 ),
               )
@@ -184,8 +188,7 @@ class _EditPhotoScreenState extends State<EditPhotoScreen>
     Navigator.of(_globalKey.currentContext).push(
       MaterialPageRoute(
         builder: (context) => CreatePostScreen(
-          imageFile: file,
-        ),
+            imageFile: file, backToHomeScreen: widget.backToHomeScreen),
       ),
     );
   }

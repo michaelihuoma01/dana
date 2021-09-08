@@ -54,8 +54,8 @@ dependencies:
   geocoder: ^0.2.1
   giphy_get: ^2.0.2
   http: ^0.13.3
-  image_cropper: ^1.3.1
-  image_cropping: ^0.0.5
+  # image_cropper: ^1.3.1
+  # image_cropping: ^0.0.5
   image_downloader: ^0.30.0 
   intl: ^0.17.0
   ionicons: ^0.1.2
@@ -82,6 +82,7 @@ dependencies:
   # chat_bubbles: ^1.1.0
   flutter_slidable: ^0.6.0
   flutter_email_sender: ^5.0.2
+  switcher_button: ^0.0.4
   # intl_translation: ^0.17.10+1
 
 

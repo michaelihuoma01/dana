@@ -11,12 +11,13 @@ import 'package:dana/utils/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:gallery_saver/gallery_saver.dart';
-import 'package:image_cropping/constant/enums.dart';
-import 'package:image_cropping/image_cropping.dart';
-import 'package:image_cropper/image_cropper.dart';
+// import 'package:image_cropping/constant/enums.dart';
+// import 'package:image_cropping/image_cropping.dart';
+// import 'package:image_cropper/image_cropper.dart';
 import 'package:image_gallery_saver/image_gallery_saver.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:images_picker/images_picker.dart' as A;
+import 'package:images_picker/images_picker.dart';
 import 'package:ionicons/ionicons.dart';
 import 'package:mime/mime.dart';
 import 'package:path_provider/path_provider.dart';
@@ -346,8 +347,14 @@ class _CameraScreenState extends State<CameraScreen>
   }
 
   void getGalleryImage() async {
-    var pickedFile =
-        await A.ImagesPicker.pick(pickType: A.PickType.all, count: 1);
+    var pickedFile = await A.ImagesPicker.pick(
+      pickType: A.PickType.all,
+      count: 1,
+      cropOpt: CropOption(
+        aspectRatio: CropAspectRatio.custom,
+        cropType: CropType.rect, // currently for android
+      ),
+    );
     // .getImage(source: ImageSource.gallery);
     if (pickedFile != null) {
       print(
@@ -369,12 +376,13 @@ class _CameraScreenState extends State<CameraScreen>
             MaterialPageRoute(
                 builder: (_) => CreatePostScreen(
                       imageFile: imgFile,
+                      backToHomeScreen: widget.backToHomeScreen,
                     )),
           );
           print('===========ITS a video');
         } else {
-          final ByteData bytes = await rootBundle.load(pickedFile.first.path);
-          final Uint8List list = bytes.buffer.asUint8List();
+          // final ByteData bytes = await rootBundle.load(pickedFile.first.path);
+          // final Uint8List list = bytes.buffer.asUint8List();
 
           // var croppedImage;
           // ImageCropping.cropImage(
@@ -406,23 +414,25 @@ class _CameraScreenState extends State<CameraScreen>
           //   colorForWhiteSpace: Colors.white,
           // );
 
-          var croppedImage = await ImageCropper.cropImage(
-            androidUiSettings: AndroidUiSettings(
-              backgroundColor: Theme.of(context).backgroundColor,
-              toolbarColor: Theme.of(context).appBarTheme.color,
-              toolbarWidgetColor: Theme.of(context).accentColor,
-              toolbarTitle: 'Crop Photo',
-              activeControlsWidgetColor: Colors.blue,
-            ),
-            sourcePath: pickedFile.first.path,
-            aspectRatio: CropAspectRatio(ratioX: 1.0, ratioY: 1.0),
-          );
+          // var croppedImage = await ImageCropper.cropImage(
+          //   androidUiSettings: AndroidUiSettings(
+          //     backgroundColor: Theme.of(context).backgroundColor,
+          //     toolbarColor: Theme.of(context).appBarTheme.color,
+          //     toolbarWidgetColor: Theme.of(context).accentColor,
+          //     toolbarTitle: 'Crop Photo',
+          //     activeControlsWidgetColor: Colors.blue,
+          //   ),
+          //   sourcePath: pickedFile.first.path,
+          //   aspectRatio: CropAspectRatio(ratioX: 1.0, ratioY: 1.0),
+          // );
 
           Navigator.push(
             context,
             MaterialPageRoute(
                 builder: (_) => EditPhotoScreen(
-                      imageFile: croppedImage,
+                      imageFile: File(imagePath),
+                    backToHomeScreen: widget.backToHomeScreen
+
                     )
                 //  CreatePostScreen(
                 //   imageFile: croppedImage,
@@ -445,7 +455,7 @@ class _CameraScreenState extends State<CameraScreen>
 
   void setCameraResult() async {
     if (_cameraConsumer == CameraConsumer.post) {
-      var croppedImage = await _cropImage(XFile(imagePath));
+      var croppedImage = await _cropImage(File(imagePath));
 
       if (croppedImage == null) {
         return;
@@ -461,6 +471,7 @@ class _CameraScreenState extends State<CameraScreen>
           MaterialPageRoute(
               builder: (_) => CreatePostScreen(
                     imageFile: imgFile,
+                    backToHomeScreen: widget.backToHomeScreen
                   )),
         );
         print('===========ITS a video');
@@ -470,6 +481,8 @@ class _CameraScreenState extends State<CameraScreen>
           MaterialPageRoute(
               builder: (_) => EditPhotoScreen(
                     imageFile: croppedImage,
+                    backToHomeScreen: widget.backToHomeScreen
+
                   )
               //  CreatePostScreen(
               //   imageFile: croppedImage,
@@ -560,58 +573,71 @@ class _CameraScreenState extends State<CameraScreen>
     return filePath;
   }
 
-  _cropImage(XFile imageFile) async {
+  _cropImage(var imageFile) async {
     if (fromCamera == true) {
       String mimeStr = lookupMimeType(imageFile.path);
       var fileType = mimeStr.split('/');
       print('file type $fileType');
 
       if (fileType.first.contains('image')) {
-        imageFile = await ImagePicker().pickImage(source: ImageSource.gallery);
-
-        var croppedImage = await ImageCropper.cropImage(
-          androidUiSettings: AndroidUiSettings(
-            backgroundColor: Theme.of(context).backgroundColor,
-            toolbarColor: Theme.of(context).appBarTheme.color,
-            toolbarWidgetColor: Theme.of(context).accentColor,
-            toolbarTitle: 'Crop Photo',
-            activeControlsWidgetColor: Colors.blue,
+        // imageFile = await ImagePicker().pickImage(source: ImageSource.gallery,);
+      var  imageFile = await A.ImagesPicker.pick(
+          pickType: A.PickType.image,
+          count: 1,
+          cropOpt: CropOption(
+            aspectRatio: CropAspectRatio.custom,
+            cropType: CropType.rect, // currently for android
           ),
-          sourcePath: imageFile.path,
-          aspectRatio: CropAspectRatio(ratioX: 1.0, ratioY: 1.0),
         );
+
+
+    
+
+        
+
+        // var croppedImage = await ImageCropper.cropImage(
+        //   androidUiSettings: AndroidUiSettings(
+        //     backgroundColor: Theme.of(context).backgroundColor,
+        //     toolbarColor: Theme.of(context).appBarTheme.color,
+        //     toolbarWidgetColor: Theme.of(context).accentColor,
+        //     toolbarTitle: 'Crop Photo',
+        //     activeControlsWidgetColor: Colors.blue,
+        //   ),
+        //   sourcePath: imageFile.path,
+        //   aspectRatio: CropAspectRatio(ratioX: 1.0, ratioY: 1.0),
+        // );
 
 // final ByteData bytes = await rootBundle.load(imageFile.path);
 //           final Uint8List list = bytes.buffer.asUint8List();
 
-          // var croppedImage;
-          // ImageCropping.cropImage(
-          //   context,
-          //   list,
-          //   () {
-          //     CircularProgressIndicator(color: lightColor);
-          //   },
-          //   () {
-          //     // hideLoader();
-          //     print('done============');
-          //   },
-          //   (data) {
-          //     setState(
-          //       () {
-          //         // imageFile.path = data;
-          //         croppedImage = data;
-          //       },
-          //     );
-          //   },
-          //   selectedImageRatio: ImageRatio.RATIO_1_1,
-          //   visibleOtherAspectRatios: true,
-          //   squareBorderWidth: 2,
-          //   squareCircleColor: Colors.black,
-          //   defaultTextColor: lightColor,
-          //   selectedTextColor: Colors.black,
-          //   colorForWhiteSpace: Colors.white,
-          // );
-        return croppedImage;
+        // var croppedImage;
+        // ImageCropping.cropImage(
+        //   context,
+        //   list,
+        //   () {
+        //     CircularProgressIndicator(color: lightColor);
+        //   },
+        //   () {
+        //     // hideLoader();
+        //     print('done============');
+        //   },
+        //   (data) {
+        //     setState(
+        //       () {
+        //         // imageFile.path = data;
+        //         croppedImage = data;
+        //       },
+        //     );
+        //   },
+        //   selectedImageRatio: ImageRatio.RATIO_1_1,
+        //   visibleOtherAspectRatios: true,
+        //   squareBorderWidth: 2,
+        //   squareCircleColor: Colors.black,
+        //   defaultTextColor: lightColor,
+        //   selectedTextColor: Colors.black,
+        //   colorForWhiteSpace: Colors.white,
+        // );
+        return File(imageFile.first.path);
       } else {
         imageFile = await ImagePicker().pickVideo(source: ImageSource.gallery);
         return imageFile;

@@ -21,11 +21,10 @@ class CreatePostScreen extends StatefulWidget {
   final Post post;
   final PostStatus postStatus;
   final File imageFile;
-  CreatePostScreen({
-    this.post,
-    this.postStatus,
-    this.imageFile,
-  });
+  final Function backToHomeScreen;
+
+  CreatePostScreen(
+      {this.post, this.postStatus, this.imageFile, this.backToHomeScreen});
 
   @override
   _CreatePostScreenState createState() => _CreatePostScreenState();
@@ -118,6 +117,8 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
         //Create new Post
         if (isVideo == false) {
           String imageUrl = (await StroageService.uploadPost(widget.imageFile));
+
+          print(imageUrl);
           Post post = Post(
               imageUrl: imageUrl,
               caption: _captionController.text,
@@ -151,13 +152,14 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
           DatabaseService.createPost(post);
         }
       }
-      // _goToHomeScreen();
+      widget.backToHomeScreen();
     }
   }
 
-  void _goToHomeScreen() {
-    CustomNavigation.navigateToHomeScreen(context, _currentUserId);
-  }
+  // void _goToHomeScreen() {
+  //   print(_currentUserId);
+  //   CustomNavigation.navigateToHomeScreen(context, _currentUserId);
+  // }
 
   @override
   Widget build(BuildContext context) {

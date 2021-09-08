@@ -22,13 +22,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.10.24"
-  archive:
-    dependency: transitive
-    description:
-      name: archive
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "3.1.2"
   async:
     dependency: transitive
     description:
@@ -476,27 +469,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "4.0.0"
-  image:
-    dependency: transitive
-    description:
-      name: image
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "3.0.2"
-  image_cropper:
-    dependency: "direct main"
-    description:
-      name: image_cropper
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "1.4.1"
-  image_cropping:
-    dependency: "direct main"
-    description:
-      name: image_cropping
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "0.0.5"
   image_downloader:
     dependency: "direct main"
     description:
@@ -887,6 +859,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.1.0"
+  switcher_button:
+    dependency: "direct main"
+    description:
+      name: switcher_button
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.0.4"
   synchronized:
     dependency: transitive
     description:

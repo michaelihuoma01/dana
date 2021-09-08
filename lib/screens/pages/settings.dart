@@ -1,14 +1,20 @@
 import 'package:dana/classes/language.dart';
 import 'package:dana/localization/language_constants.dart';
 import 'package:dana/main.dart';
+import 'package:dana/models/user_model.dart';
 import 'package:dana/screens/pages/report_issue.dart';
 import 'package:dana/services/api/auth_service.dart';
+import 'package:dana/utilities/constants.dart';
 import 'package:dana/utils/constants.dart';
 import 'package:dana/widgets/BrandDivider.dart';
 import 'package:dana/widgets/add_post_appbar.dart';
 import 'package:flutter/material.dart';
+import 'package:switcher_button/switcher_button.dart';
 
 class SettingsScreen extends StatefulWidget {
+  AppUser currentUser;
+
+  SettingsScreen({this.currentUser});
   @override
   SettingsScreenState createState() => SettingsScreenState();
 }
@@ -17,6 +23,13 @@ class SettingsScreenState extends State<SettingsScreen> {
   void _changeLanguage(Language language) async {
     Locale _locale = await setLocale(language.languageCode);
     MyApp.setLocale(context, _locale);
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    print(widget.currentUser.isPublic);
   }
 
   @override
@@ -66,6 +79,38 @@ class SettingsScreenState extends State<SettingsScreen> {
                     Text('Report Issue',
                         style: TextStyle(color: Colors.white, fontSize: 18)),
                     Icon(Icons.chevron_right, color: Colors.white)
+                  ],
+                ),
+              ),
+              SizedBox(height: 10),
+              BrandDivider(),
+              SizedBox(height: 10),
+              GestureDetector(
+                onTap: () {
+                  Navigator.push(context,
+                      MaterialPageRoute(builder: (_) => ReportScreen()));
+                },
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text('Private Account',
+                        style: TextStyle(color: Colors.white, fontSize: 18)),
+                    SwitcherButton(
+                      onColor: lightColor,
+                      offColor: Colors.grey,
+                      size: 40,
+                      value:
+                          (widget.currentUser.isPublic == true) ? false : true,
+                      onChange: (value) {
+                        usersRef.doc(widget.currentUser.id).update({
+                          'isPublic': (widget.currentUser.isPublic == true)
+                              ? false
+                              : true
+                        });
+                        setState(() {});
+                        print(value);
+                      },
+                    )
                   ],
                 ),
               ),

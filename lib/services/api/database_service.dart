@@ -12,6 +12,8 @@ class DatabaseService {
       'profileImageUrl': user.profileImageUrl,
       'bio': user.bio,
       'pin': user.pin,
+      'dob': user.dob,
+      'gender': user.gender
     });
   }
 
@@ -28,7 +30,6 @@ class DatabaseService {
       'status': 'offline',
     });
   }
- 
 
   static Future<QuerySnapshot> searchUsers(String name) {
     Future<QuerySnapshot> users;
@@ -50,6 +51,7 @@ class DatabaseService {
         'videoUrl': post.videoUrl,
         'caption': post.caption,
         'likeCount': post.likeCount,
+        'commentCount': post.commentCount,
         'authorId': post.authorId,
         'location': post.location,
         'commentsAllowed': post.commentsAllowed,
@@ -94,6 +96,7 @@ class DatabaseService {
       'imageUrl': post.imageUrl,
       'caption': post.caption,
       'likeCount': post.likeCount,
+      'commentCount': post.commentCount,
       'authorId': post.authorId,
       'location': post.location,
       'timestamp': post.timestamp
@@ -110,6 +113,7 @@ class DatabaseService {
       'imageUrl': post.imageUrl,
       'caption': post.caption,
       'likeCount': post.likeCount,
+      'commentCount': post.commentCount,
       'authorId': post.authorId,
       'location': post.location,
       'timestamp': post.timestamp
@@ -128,6 +132,7 @@ class DatabaseService {
         'imageUrl': post.imageUrl,
         'caption': post.caption,
         'likeCount': post.likeCount,
+        'commentCount': post.commentCount,
         'authorId': post.authorId,
         'location': post.location,
         'commentsAllowed': post.commentsAllowed,
@@ -316,8 +321,6 @@ class DatabaseService {
     return allPosts;
   }
 
-  
-
   static Future<List<Post>> getDeletedPosts(
       String userId, PostStatus postStatus) async {
     String collection;
@@ -423,14 +426,13 @@ class DatabaseService {
       'authorId': currentUserId,
       'timestamp': Timestamp.fromDate(DateTime.now())
     });
-     DocumentReference postRef =
+    DocumentReference postRef =
         postsRef.doc(post.authorId).collection('userPosts').doc(post.id);
     postRef.get().then((doc) {
       int commentCount = doc['commentCount'];
       postRef.update({'commentCount': commentCount + 1});
       // commentsRef.doc(post.id).collection('postLikes').doc(currentUserId).set({});
     });
-
 
     addActivityItem(
       currentUserId: currentUserId,
@@ -457,6 +459,7 @@ class DatabaseService {
     String recieverToken,
   }) {
     if (currentUserId != post.authorId) {
+      
       activitiesRef.doc(post.authorId).collection('userActivities').add({
         'fromUserId': currentUserId,
         'postId': post.id,

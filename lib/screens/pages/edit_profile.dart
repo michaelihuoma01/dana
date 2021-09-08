@@ -94,11 +94,7 @@ class _EditProfileState extends State<EditProfile> {
           message: 'Profile updated',
           pulsate: false,
           bgColor: Colors.green[600]);
-      // Navigator.push(
-      //     context,
-      //     MaterialPageRoute(
-      //         builder: (context) => HomeScreen(currentUserId: widget.userId)));
-    } on PlatformException catch (err) {
+    } catch (err) {
       print(err.message);
       Utility.showMessage(context,
           message: err.message,
@@ -161,8 +157,8 @@ class _EditProfileState extends State<EditProfile> {
                 bottomNavigationBar: Container(
                   color: Colors.transparent,
                   child: Padding(
-                    padding: const EdgeInsets.only(
-                        bottom: 50, left: 20, right: 20),
+                    padding:
+                        const EdgeInsets.only(bottom: 50, left: 20, right: 20),
                     child: ButtonWidget(
                       title: 'Save',
                       onPressed: () {
@@ -186,7 +182,7 @@ class _EditProfileState extends State<EditProfile> {
                       const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
                   child: SingleChildScrollView(
                     child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start, 
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Center(
                           child: Stack(

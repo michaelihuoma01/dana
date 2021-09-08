@@ -25,8 +25,13 @@ class ContactScreen extends StatefulWidget {
   final SearchFrom searchFrom;
   final File imageFile;
   AppUser currentUser;
+  bool isReadIcon = false;
 
-  ContactScreen({@required this.searchFrom, this.currentUser, this.imageFile});
+  ContactScreen(
+      {@required this.searchFrom,
+      this.currentUser,
+      this.isReadIcon,
+      this.imageFile});
 
   @override
   _ContactScreenState createState() => _ContactScreenState();

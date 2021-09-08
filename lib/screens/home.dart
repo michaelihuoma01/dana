@@ -52,7 +52,7 @@ class _HomeScreenState extends State<HomeScreen>
   List<CameraDescription> _cameras;
   CameraConsumer _cameraConsumer = CameraConsumer.post;
   final ScrollController homeController = ScrollController();
-  bool isRead = false;
+  bool isRead = true;
 
   AppUser user;
   TabController tabController;
@@ -78,6 +78,8 @@ class _HomeScreenState extends State<HomeScreen>
     tabController.addListener(() {
       onItemClicked(tabController.index);
     });
+
+    print('============//////////////=====$isRead');
   }
 
   @override
@@ -121,7 +123,6 @@ class _HomeScreenState extends State<HomeScreen>
         }
       }
     }
-    print('============//////////////=====$isRead');
   }
 
   Future<Null> _getCameras() async {
@@ -288,7 +289,6 @@ class _HomeScreenState extends State<HomeScreen>
         PickupLayout(
           currentUser: _currentUser,
           scaffold: Scaffold(
-            
               bottomNavigationBar: BottomNavigationBar(
                 items: <BottomNavigationBarItem>[
                   BottomNavigationBarItem(

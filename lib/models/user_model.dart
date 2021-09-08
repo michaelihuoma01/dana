@@ -8,6 +8,9 @@ class AppUser {
   final String email;
   final String bio;
   final String token;
+  final String dob;
+  final String gender;
+  final bool isPublic;
   final bool isBanned;
   // final List<String> favoritePosts;
   // final List<String> blockedUsers;
@@ -34,6 +37,9 @@ class AppUser {
       this.status,
       this.isVerified,
       this.role,
+      this.dob,
+      this.isPublic,
+      this.gender,
       this.timeCreated,
       this.lastSeenOffline,
       this.lastSeenOnline});
@@ -48,10 +54,13 @@ class AppUser {
       bio: doc['bio'] ?? '',
       status: doc['status'] ?? '',
       token: doc['token'] ?? '',
+      dob: doc['dob'] ?? '',
+      gender: doc['gender'] ?? '',
       lastSeenOffline: doc['lastSeenOffline'] ?? null,
       lastSeenOnline: doc['lastSeenOnline'] ?? null,
       isVerified: doc['isVerified'] ?? false,
       isBanned: doc['isBanned'] ?? false,
+      isPublic: doc['isPublic'] ?? false,
       role: doc['role'] ?? 'user',
       timeCreated: doc['timeCreated'] ?? null,
     );

@@ -657,11 +657,12 @@ class _ChatScreenState extends State<ChatScreen> {
                           boxShadow: [
                             BoxShadow(
                                 color: isRecording
-                                    ? Colors.white.withOpacity(0.4)
+                                    ? lightColor.withOpacity(0.8)
                                     : Colors.transparent,
-                                spreadRadius: 9)
+                                spreadRadius: 10)
                           ]),
-                      padding: const EdgeInsets.all(5),
+                      padding:
+                          isRecording ? EdgeInsets.all(15) : EdgeInsets.all(5),
                       // width: 30.0,
                       child:
                           Icon(Icons.mic_outlined, color: darkColor, size: 18),
@@ -745,7 +746,9 @@ class _ChatScreenState extends State<ChatScreen> {
       );
 
       ChatService.sendChatMessage(_chat, message, widget.receiverUser);
-      chatsRef.doc(_chat.id).update({'readStatus.${widget.receiverUser.id}': false});
+      chatsRef
+          .doc(_chat.id)
+          .update({'readStatus.${widget.receiverUser.id}': false});
       setState(() => isSending = false);
     }
   }
@@ -843,7 +846,7 @@ class _ChatScreenState extends State<ChatScreen> {
                                     isAudio: false);
                               } catch (e) {
                                 print('=============$e');
-                              } 
+                              }
                             },
                             child: Icon(FontAwesomeIcons.video, size: 18)),
                         SizedBox(width: 20),

@@ -585,9 +585,6 @@ PODS:
     - gRPC-Core/Interface (= 1.28.2)
   - gRPC-Core/Interface (1.28.2)
   - GTMSessionFetcher/Core (1.6.1)
-  - image_cropper (0.0.4):
-    - Flutter
-    - TOCropViewController (~> 2.6.0)
   - image_downloader (0.0.1):
     - Flutter
   - image_gallery_saver (1.5.0):
@@ -640,7 +637,6 @@ PODS:
     - Flutter
     - FMDB (>= 2.7.5)
   - SwiftyGif (5.4.0)
-  - TOCropViewController (2.6.0)
   - url_launcher (0.0.1):
     - Flutter
   - video_compress (0.3.0):
@@ -671,7 +667,6 @@ DEPENDENCIES:
   - flutter_image_compress (from `.symlinks/plugins/flutter_image_compress/ios`)
   - gallery_saver (from `.symlinks/plugins/gallery_saver/ios`)
   - geocoder (from `.symlinks/plugins/geocoder/ios`)
-  - image_cropper (from `.symlinks/plugins/image_cropper/ios`)
   - image_downloader (from `.symlinks/plugins/image_downloader/ios`)
   - image_gallery_saver (from `.symlinks/plugins/image_gallery_saver/ios`)
   - image_picker (from `.symlinks/plugins/image_picker/ios`)
@@ -722,7 +717,6 @@ SPEC REPOS:
     - SDWebImage
     - SDWebImageWebPCoder
     - SwiftyGif
-    - TOCropViewController
     - ZLPhotoBrowser
 
 EXTERNAL SOURCES:
@@ -760,8 +754,6 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/gallery_saver/ios"
   geocoder:
     :path: ".symlinks/plugins/geocoder/ios"
-  image_cropper:
-    :path: ".symlinks/plugins/image_cropper/ios"
   image_downloader:
     :path: ".symlinks/plugins/image_downloader/ios"
   image_gallery_saver:
@@ -836,7 +828,6 @@ SPEC CHECKSUMS:
   "gRPC-C++": 13d8ccef97d5c3c441b7e3c529ef28ebee86fad2
   gRPC-Core: 4afa11bfbedf7cdecd04de535a9e046893404ed5
   GTMSessionFetcher: 36689134877faeb055b27dfa4ccc9ceaa42e029e
-  image_cropper: f1668dd8d2cad2d357955caad15a40547856edcb
   image_downloader: 73e190d6c9f286f2649554051348d9cb319cd4b3
   image_gallery_saver: 259eab68fb271cfd57d599904f7acdc7832e7ef2
   image_picker: e06f7a68f000bd36f552c1847e33cda96ed31f1f
@@ -857,7 +848,6 @@ SPEC CHECKSUMS:
   shared_preferences: af6bfa751691cdc24be3045c43ec037377ada40d
   sqflite: 6d358c025f5b867b29ed92fc697fd34924e11904
   SwiftyGif: 5d4af95df24caf1c570dbbcb32a3b8a0763bc6d7
-  TOCropViewController: 3105367e808b7d3d886a74ff59bf4804e7d3ab38
   url_launcher: 6fef411d543ceb26efce54b05a0a40bfd74cbbef
   video_compress: fce97e4fb1dfd88175aa07d2ffc8a2f297f87fbe
   video_player: 9cc823b1d9da7e8427ee591e8438bfbcde500e6e

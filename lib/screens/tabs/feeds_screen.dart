@@ -78,11 +78,18 @@ class _FeedsScreenState extends State<FeedsScreen> {
         // .orderBy('recentTimestamp', descending: true)
         .snapshots()
         .listen((snapshot) {
+
+         
+        print('===============//////////////${ snapshot.docChanges.length}');
+      snapshot.docChanges.forEach((element) {
+        setState(() {
+          unreadNotifications = true;
+        });
+
+        {}
+
       
-      setState(() {
-        unreadNotifications = true;
       });
-      print('=============${snapshot.docChanges.first.doc.get('postId')}');
     });
   }
 
@@ -221,6 +228,7 @@ class _FeedsScreenState extends State<FeedsScreen> {
                     setState(() {
                       unreadNotifications = false;
                     });
+                    
                     Navigator.push(
                         context,
                         MaterialPageRoute(
