@@ -375,15 +375,14 @@ class _UserProfileState extends State<UserProfile> {
                       Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: GestureDetector(
-                                    onTap: () {
-                                      showDialog(
-                                          context: context,
-                                          builder: (BuildContext context) =>
-                                              QrDialog());
-                                    },
-                                    child: Icon(Icons.qr_code,
-                                        color: Colors.white, size: 20),
-                                  ),
+                          onTap: () {
+                            showDialog(
+                                context: context,
+                                builder: (BuildContext context) => QrDialog());
+                          },
+                          child: Icon(Icons.qr_code,
+                              color: Colors.white, size: 20),
+                        ),
                       )
                     ],
                     // actions: [
@@ -461,53 +460,57 @@ class _UserProfileState extends State<UserProfile> {
                                                 fontSize: 18)),
                                       ),
                                       SizedBox(width: 15),
-                                      GestureDetector(
-                                          onTap: () {
-                                            Navigator.push(
-                                                context,
-                                                MaterialPageRoute(
-                                                    builder: (_) => ChatScreen(
-                                                        receiverUser:
-                                                            _profileUser,
-                                                        isGroup: false,
-                                                        imageFile:
-                                                            widget.imageFile)));
-                                            print(_profileUser.id);
-                                          },
-                                          child: Icon(Icons.chat_bubble,
-                                              color: Colors.white, size: 17)),
+                                      if (!user.isPublic && isFriends)
+                                        GestureDetector(
+                                            onTap: () {
+                                              Navigator.push(
+                                                  context,
+                                                  MaterialPageRoute(
+                                                      builder: (_) =>
+                                                          ChatScreen(
+                                                              receiverUser:
+                                                                  _profileUser,
+                                                              isGroup: false,
+                                                              imageFile: widget
+                                                                  .imageFile)));
+                                              print(_profileUser.id);
+                                            },
+                                            child: Icon(Icons.chat_bubble,
+                                                color: Colors.white, size: 17)),
                                       SizedBox(width: 15),
-                                      GestureDetector(
-                                          onTap: () {
-                                            try {
-                                              CallUtils.dial(
-                                                from: _currentUser,
-                                                to: _profileUser,
-                                                context: context,
-                                                isAudio: false
-                                              );
-                                            } catch (e) {
-                                              print('=============$e');
-                                            }
-                                          },
-                                          child: Icon(FontAwesomeIcons.video,
-                                              color: Colors.white, size: 15)),
+                                      if (!user.isPublic && isFriends)
+                                        GestureDetector(
+                                            onTap: () {
+                                              try {
+                                                CallUtils.dial(
+                                                    from: _currentUser,
+                                                    to: _profileUser,
+                                                    context: context,
+                                                    isAudio: false);
+                                              } catch (e) {
+                                                print('=============$e');
+                                              }
+                                            },
+                                            child: Icon(FontAwesomeIcons.video,
+                                                color: Colors.white, size: 15)),
                                       SizedBox(width: 15),
-                                      GestureDetector(
-                                          onTap: () {
-                                             try {
-                                              CallUtils.dial(
-                                                from: _currentUser,
-                                                to: _profileUser,
-                                                context: context,
-                                                isAudio: true
-                                              );
-                                            } catch (e) {
-                                              print('=============$e');
-                                            }
-                                          },
-                                          child: Icon(FontAwesomeIcons.phoneAlt,
-                                              color: Colors.white, size: 15)),
+                                      if (!user.isPublic && isFriends)
+                                        GestureDetector(
+                                            onTap: () {
+                                              try {
+                                                CallUtils.dial(
+                                                    from: _currentUser,
+                                                    to: _profileUser,
+                                                    context: context,
+                                                    isAudio: true);
+                                              } catch (e) {
+                                                print('=============$e');
+                                              }
+                                            },
+                                            child: Icon(
+                                                FontAwesomeIcons.phoneAlt,
+                                                color: Colors.white,
+                                                size: 15)),
                                     ]),
                                     OutlinedButton(
                                         style: ButtonStyle(
@@ -541,7 +544,7 @@ class _UserProfileState extends State<UserProfile> {
                                                 fontFamily:
                                                     'Poppins-Regular'))),
                                   ],
-                                )), 
+                                )),
                             BrandDivider(),
                             Padding(
                               padding:
@@ -561,55 +564,79 @@ class _UserProfileState extends State<UserProfile> {
                           ],
                         ),
                       ),
-                      ListView.builder(
-                        shrinkWrap: true,
-                        physics: NeverScrollableScrollPhysics(),
-                        itemCount: _posts.length > 0 ? _posts.length : 1,
-                        itemBuilder: (BuildContext context, int index) {
-                          if (_posts.length == 0) {
-                            //If there is no posts
-                            return Center(
-                                child: Text('No post yet',
-                                    style: TextStyle(color: Colors.white)));
-                          }
+                      (!user.isPublic && isFriends)
+                          ? ListView.builder(
+                              shrinkWrap: true,
+                              physics: NeverScrollableScrollPhysics(),
+                              itemCount: _posts.length > 0 ? _posts.length : 1,
+                              itemBuilder: (BuildContext context, int index) {
+                                if (_posts.length == 0) {
+                                  //If there is no posts
+                                  return Center(
+                                      child: Text('No post yet',
+                                          style:
+                                              TextStyle(color: Colors.white)));
+                                }
 
-                          Post post = _posts[index];
+                                Post post = _posts[index];
 
-                          return FutureBuilder(
-                            future:
-                                DatabaseService.getUserWithId(post.authorId),
-                            builder:
-                                (BuildContext context, AsyncSnapshot snapshot) {
-                              if (!snapshot.hasData) {
-                                return SizedBox.shrink();
-                              }
+                                return FutureBuilder(
+                                  future: DatabaseService.getUserWithId(
+                                      post.authorId),
+                                  builder: (BuildContext context,
+                                      AsyncSnapshot snapshot) {
+                                    if (!snapshot.hasData) {
+                                      return SizedBox.shrink();
+                                    }
 
-                              AppUser author = snapshot.data;
+                                    AppUser author = snapshot.data;
 
-                              return (post.imageUrl == null)
-                                  ? TextPost(
-                                      postStatus: PostStatus.feedPost,
-                                      currentUserId: widget.currentUserId,
-                                      author: author,
-                                      post: post,
-                                    )
-                                  : (post.videoUrl != null)
-                                      ? VideoPostView(
-                                          postStatus: PostStatus.feedPost,
-                                          currentUserId: widget.currentUserId,
-                                          author: author,
-                                          post: post,
-                                        )
-                                      : PostView(
-                                          postStatus: PostStatus.feedPost,
-                                          currentUserId: widget.currentUserId,
-                                          author: author,
-                                          post: post,
-                                        );
-                            },
-                          );
-                        },
-                      ),
+                                    return (post.imageUrl == null)
+                                        ? TextPost(
+                                            postStatus: PostStatus.feedPost,
+                                            currentUserId: widget.currentUserId,
+                                            author: author,
+                                            post: post,
+                                          )
+                                        : (post.videoUrl != null)
+                                            ? VideoPostView(
+                                                postStatus: PostStatus.feedPost,
+                                                currentUserId:
+                                                    widget.currentUserId,
+                                                author: author,
+                                                post: post,
+                                              )
+                                            : PostView(
+                                                postStatus: PostStatus.feedPost,
+                                                currentUserId:
+                                                    widget.currentUserId,
+                                                author: author,
+                                                post: post,
+                                              );
+                                  },
+                                );
+                              })
+                          : Center(
+                              child: Column(
+                                children: [
+                                  SizedBox(height: 40),
+                                  Container(
+                                      decoration: BoxDecoration(
+                                          shape: BoxShape.circle,
+                                          border:
+                                              Border.all(color: Colors.white)),
+                                      padding: const EdgeInsets.all(15),
+                                      child: Icon(Icons.lock,
+                                          color: Colors.white, size: 26)),
+                                  SizedBox(height: 5),
+                                  Text('This Account is Private',
+                                      style: TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 18,
+                                          fontWeight: FontWeight.bold)),
+                                ],
+                              ),
+                            )
                     ],
                   ),
                 ));

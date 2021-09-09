@@ -18,8 +18,10 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:intl/intl.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 
@@ -45,12 +47,18 @@ class _RegisterScreenState extends State<RegisterScreen> {
   String _imagePath;
   int radInt;
   TextEditingController pinController = new TextEditingController();
+  TextEditingController dobController = new TextEditingController();
+  TextEditingController genderController = new TextEditingController();
 
   FirebaseAuth firebaseUser = FirebaseAuth.instance;
 
   String _name = '';
   String _bio = '';
+  String _gender = '';
+  String _dob = '';
+
   File _profileImage;
+  Locale myLocale;
 
   @override
   void initState() {
@@ -133,6 +141,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
         pin: pinController.text,
         profileImageUrl: _profileImageUrl,
         bio: _bio.trim(),
+        gender: _gender.trim(),
+        dob: _dob,
         role: widget.user.role,
         isVerified: widget.user.isVerified);
 
@@ -164,7 +174,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
     final pickedFile =
         await picker.pickImage(source: ImageSource.gallery, imageQuality: 30);
 
-    if (pickedFile != null) { 
+    if (pickedFile != null) {
       print(pickedFile.path);
       setState(() {
         _profileImage = File(pickedFile.path);
@@ -183,6 +193,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   @override
   Widget build(BuildContext context) {
+    myLocale = Localizations.localeOf(context);
+    print(myLocale.languageCode);
     return Stack(
       children: [
         Container(
@@ -202,11 +214,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
               color: Colors.transparent,
               child: Padding(
                 padding:
-                    const EdgeInsets.symmetric(vertical: 50, horizontal: 25),
+                    const EdgeInsets.symmetric(vertical: 20, horizontal: 25),
                 child: ButtonWidget(
                   title: 'Continue',
                   onPressed: () {
                     updateProfile();
+
                     // Navigator.push(context,
                     //     MaterialPageRoute(builder: (context) => HomeScreen()));
                   },
@@ -228,7 +241,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
             backgroundColor: Colors.transparent,
             key: _scaffoldKey,
             body: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 50),
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 0),
               child: SingleChildScrollView(
                 child: Column(
                   children: [
@@ -292,6 +305,70 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         onChanged: (value) => _bio = value,
                         type: TextInputType.name),
                     SizedBox(height: 25),
+                    Container(
+                      decoration: BoxDecoration(
+                      color: Colors.white,
+
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 15),
+                        child: DropdownButton(
+                          hint: Text(
+                           (_gender == '') ?  'Gender' : _gender,
+                            style: TextStyle(color: Colors.grey, fontSize: 16),
+                          ),
+                          isExpanded: true,
+                          iconSize: 30.0,
+                          iconEnabledColor: lightColor,
+                          iconDisabledColor: lightColor,
+                       
+                          items: ['Male', 'Female', 'Other'].map(
+                            (val) {
+                              return DropdownMenuItem<String>(
+                                value: val,
+                                child: Text(val),
+                              );
+                            },
+                          ).toList(),
+                          onChanged: (val) {
+                            setState(
+                              () {
+                                _gender = val;
+                              },
+                            );
+                          },
+                        ),
+                      ),
+                    ),
+                    SizedBox(height: 25),
+                    GestureDetector(
+                      onTap: () {
+                        DatePicker.showDatePicker(context,
+                            showTitleActions: true,
+                            minTime: DateTime(1920, 3, 5),
+                            maxTime: DateTime(2021, 6, 7), onChanged: (date) {
+                          print('change $date');
+                        }, onConfirm: (date) {
+                          var d12 = DateFormat('MM/dd/yyyy').format(date);
+                          setState(() {
+                            _dob = d12;
+                            dobController.text = d12;
+                          });
+                          print('confirm $date');
+                        }, currentTime: DateTime.now(), locale: LocaleType.en);
+                      },
+                      child: TextFormFieldWidget(
+                          hintText: 'Date of Birth',
+                          fillColor: Colors.white,
+                          enabled: false,
+                          iconData: Icons.refresh,
+                          prefixIconData: Icons.date_range,
+                          onIconTap: () {},
+                          controller: dobController,
+                          type: TextInputType.name),
+                    ),
+                    SizedBox(height: 25),
                     Stack(
                       children: [
                         TextFormFieldWidget(
@@ -309,7 +386,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         Padding(
                             padding: const EdgeInsets.only(top: 5),
                             child: Align(
-                                alignment: Alignment.centerRight,
+                                alignment: (myLocale.languageCode == 'en')
+                                    ? Alignment.centerRight
+                                    : Alignment.centerLeft,
                                 child: IconButton(
                                     icon: Icon(Icons.refresh),
                                     color: lightColor,

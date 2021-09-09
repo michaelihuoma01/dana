@@ -270,26 +270,29 @@ class _TextPostState extends State<TextPost> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(children: [
-            Container(
-              height: 35,
-              child: CircleAvatar(
-                backgroundColor: Colors.grey,
-                backgroundImage: widget.author.profileImageUrl.isEmpty
-                    ? AssetImage(placeHolderImageRef)
-                    : CachedNetworkImageProvider(
-                        widget.author.profileImageUrl,
-                      ),
+          GestureDetector(
+            onTap: () => _goToUserProfile(context, widget.post),
+            child: Row(children: [
+              Container(
+                height: 35,
+                child: CircleAvatar(
+                  backgroundColor: Colors.grey,
+                  backgroundImage: widget.author.profileImageUrl.isEmpty
+                      ? AssetImage(placeHolderImageRef)
+                      : CachedNetworkImageProvider(
+                          widget.author.profileImageUrl,
+                        ),
+                ),
               ),
-            ),
-            SizedBox(width: 10),
-            Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              Text(widget.author.name,
-                  style: TextStyle(color: Colors.white, fontSize: 16)),
-              Text(timeago.format(_post.timestamp.toDate()),
-                  style: TextStyle(color: Colors.grey, fontSize: 12)),
+              SizedBox(width: 10),
+              Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                Text(widget.author.name,
+                    style: TextStyle(color: Colors.white, fontSize: 16)),
+                Text(timeago.format(_post.timestamp.toDate()),
+                    style: TextStyle(color: Colors.grey, fontSize: 12)),
+              ]),
             ]),
-          ]),
+          ),
           SizedBox(height: 8),
           Text(_post.caption,
               style: TextStyle(color: Colors.white, fontSize: 16)),

@@ -133,7 +133,7 @@ class _CallsScreenState extends State<CallsScreen> {
             ),
           ],
         ),
-        trailing: Text('   timeago'),
+        // trailing: Text('   timeago'),
         // timeFormat.format(
         //   chat.recentTimestamp.toDate(),
         // ),

@@ -157,6 +157,7 @@ class _ContactScreenState extends State<ContactScreen> {
         } else if (isFollower == true && isFollowingUser != true) {
           isRequest = true;
           _requests.add(user);
+
           print('not friends ${user.name} $isFriends');
         } else {
           isRequest = false;
@@ -183,7 +184,7 @@ class _ContactScreenState extends State<ContactScreen> {
           style: TextStyle(
               color: Colors.white, fontWeight: FontWeight.w600, fontSize: 18)),
       subtitle:
-          Text(user.pin, style: TextStyle(color: Colors.grey, fontSize: 12)),
+          Text('PIN: ${user.pin}', style: TextStyle(color: Colors.grey, fontSize: 12)),
       trailing: widget.searchFrom == SearchFrom.createStoryScreen
           ? FlatButton(
               child: Text(
@@ -433,7 +434,7 @@ class _ContactScreenState extends State<ContactScreen> {
                                               int index) {
                                             AppUser follower = _friends[index];
 
-                                            return GestureDetector(
+                                            return InkWell(
                                                 onTap: () => Navigator.push(
                                                     context,
                                                     MaterialPageRoute(

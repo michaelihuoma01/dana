@@ -103,7 +103,7 @@ class TextFormFieldWidget extends StatelessWidget {
               floatingLabelBehavior: FloatingLabelBehavior.always,
               prefixIcon: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 0),
-                child: Icon(prefixIconData, color: lightColor, size: 35),
+                child: Icon(prefixIconData, color: lightColor, size: 30),
               ),
               suffixText: suffixText ?? '',
             ),

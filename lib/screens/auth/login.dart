@@ -128,6 +128,8 @@ class _LoginScreenState extends State<LoginScreen> {
                       title: S.of(context).login,
                       onPressed: () {
                         loginPressed();
+                        // Locale myLocale = Localizations.localeOf(context);
+                        // print(myLocale.languageCode);
                         // Navigator.push(
                         //     context,
                         //     MaterialPageRoute(
@@ -170,7 +172,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           Navigator.push(
                               context,
                               MaterialPageRoute(
-                                  builder: (context) => SetupAccount()));
+                                  builder: (context) => RegisterScreen()));
                         },
                         child: Text('  ${S.of(context).signUp}',
                             style: TextStyle(

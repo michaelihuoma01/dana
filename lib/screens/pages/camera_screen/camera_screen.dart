@@ -207,7 +207,7 @@ class _CameraScreenState extends State<CameraScreen>
                                                   : Colors.transparent,
                                               spreadRadius: 3)
                                         ]),
-                                    padding: EdgeInsets.all(4.0),
+                                    padding: EdgeInsets.all(3.0),
                                     // child: Image.asset(
                                     //     'assets/images/shutter.png',
                                     //     width: 68,
@@ -348,6 +348,7 @@ class _CameraScreenState extends State<CameraScreen>
 
   void getGalleryImage() async {
     var pickedFile = await A.ImagesPicker.pick(
+      language: A.Language.English,
       pickType: A.PickType.all,
       count: 1,
       cropOpt: CropOption(
@@ -430,10 +431,8 @@ class _CameraScreenState extends State<CameraScreen>
             context,
             MaterialPageRoute(
                 builder: (_) => EditPhotoScreen(
-                      imageFile: File(imagePath),
-                    backToHomeScreen: widget.backToHomeScreen
-
-                    )
+                    imageFile: File(imagePath),
+                    backToHomeScreen: widget.backToHomeScreen)
                 //  CreatePostScreen(
                 //   imageFile: croppedImage,
                 // ),
@@ -470,9 +469,8 @@ class _CameraScreenState extends State<CameraScreen>
           context,
           MaterialPageRoute(
               builder: (_) => CreatePostScreen(
-                    imageFile: imgFile,
-                    backToHomeScreen: widget.backToHomeScreen
-                  )),
+                  imageFile: imgFile,
+                  backToHomeScreen: widget.backToHomeScreen)),
         );
         print('===========ITS a video');
       } else {
@@ -480,10 +478,8 @@ class _CameraScreenState extends State<CameraScreen>
           context,
           MaterialPageRoute(
               builder: (_) => EditPhotoScreen(
-                    imageFile: croppedImage,
-                    backToHomeScreen: widget.backToHomeScreen
-
-                  )
+                  imageFile: croppedImage,
+                  backToHomeScreen: widget.backToHomeScreen)
               //  CreatePostScreen(
               //   imageFile: croppedImage,
               // ),
@@ -581,7 +577,8 @@ class _CameraScreenState extends State<CameraScreen>
 
       if (fileType.first.contains('image')) {
         // imageFile = await ImagePicker().pickImage(source: ImageSource.gallery,);
-      var  imageFile = await A.ImagesPicker.pick(
+        var imageFile = await A.ImagesPicker.pick(
+          language: A.Language.English,
           pickType: A.PickType.image,
           count: 1,
           cropOpt: CropOption(
@@ -589,11 +586,6 @@ class _CameraScreenState extends State<CameraScreen>
             cropType: CropType.rect, // currently for android
           ),
         );
-
-
-    
-
-        
 
         // var croppedImage = await ImageCropper.cropImage(
         //   androidUiSettings: AndroidUiSettings(

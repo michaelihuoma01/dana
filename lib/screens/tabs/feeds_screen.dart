@@ -78,17 +78,13 @@ class _FeedsScreenState extends State<FeedsScreen> {
         // .orderBy('recentTimestamp', descending: true)
         .snapshots()
         .listen((snapshot) {
-
-         
-        print('===============//////////////${ snapshot.docChanges.length}');
+      print('===============//////////////${snapshot.docChanges.length}');
       snapshot.docChanges.forEach((element) {
         setState(() {
           unreadNotifications = true;
         });
 
         {}
-
-      
       });
     });
   }
@@ -100,7 +96,8 @@ class _FeedsScreenState extends State<FeedsScreen> {
     List<AppUser> followingUsers =
         await DatabaseService.getUserFollowingUsers(widget.currentUser?.id);
 
-    if (!mounted) return;
+    print(widget.currentUser.id);
+
     // AppUser currentUser =
     //     Provider.of<UserData>(context, listen: false).currentUser;
 
@@ -228,7 +225,7 @@ class _FeedsScreenState extends State<FeedsScreen> {
                     setState(() {
                       unreadNotifications = false;
                     });
-                    
+
                     Navigator.push(
                         context,
                         MaterialPageRoute(
@@ -240,12 +237,12 @@ class _FeedsScreenState extends State<FeedsScreen> {
                     child: Stack(
                       children: [
                         Icon(Icons.notifications, color: lightColor, size: 30),
-                        if (unreadNotifications == true)
-                          Positioned(
-                              left: 16,
-                              top: 4,
-                              child: Icon(Icons.circle,
-                                  color: Colors.red, size: 10))
+                        // if (unreadNotifications == true)
+                        //   Positioned(
+                        //       left: 16,
+                        //       top: 4,
+                        //       child: Icon(Icons.circle,
+                        //           color: Colors.red, size: 10))
                       ],
                     ),
                   ),

@@ -53,6 +53,7 @@ class _HomeScreenState extends State<HomeScreen>
   CameraConsumer _cameraConsumer = CameraConsumer.post;
   final ScrollController homeController = ScrollController();
   bool isRead = true;
+  bool isSeen = true;
 
   AppUser user;
   TabController tabController;
@@ -62,6 +63,19 @@ class _HomeScreenState extends State<HomeScreen>
       isSelected3 = false,
       isSelected4 = false,
       isSelected5 = false;
+  List<AppUser> _friends = [];
+  List<AppUser> _requests = [];
+  List<AppUser> _friendRequests = [];
+
+  bool _isLoading = false;
+  List<bool> _userFollowersState = [];
+  List<bool> _userFollowingState = [];
+  int _followingCount = 0;
+  int _followersCount = 0;
+  bool isFollower = false;
+  bool isFollowingUser = false;
+  bool isFriends = false;
+  bool isRequest = false;
 
   @override
   void initState() {
@@ -71,6 +85,7 @@ class _HomeScreenState extends State<HomeScreen>
     _getCurrentUser();
     _getCameras();
     checkUnreadMessages();
+    _setupFriends();
     // _initPageView();
     _listenToNotifications();
     AuthService.updateToken();
@@ -100,6 +115,52 @@ class _HomeScreenState extends State<HomeScreen>
 
       DatabaseService.updateStatusOffline(widget.currentUserId);
     }
+  }
+
+  _setupFriends() async {
+    print('skipping current user');
+
+    QuerySnapshot usersSnapshot = await usersRef.get();
+
+    for (var userDoc in usersSnapshot.docs) {
+      AppUser user = AppUser.fromDoc(userDoc);
+
+      isFollower = await DatabaseService.isUserFollower(
+        currentUserId: widget.currentUserId,
+        userId: user.id,
+      );
+
+      isFollowingUser = await DatabaseService.isFollowingUser(
+        currentUserId: widget.currentUserId,
+        userId: user.id,
+      );
+
+      if (widget.currentUserId == user.id) {
+        print('skipping current user');
+      } else {
+        if (isFollower == true && isFollowingUser == true) {
+          isFriends = true;
+          _friends.add(user);
+
+          print('friends ${user.name} $isFriends');
+        } else if (isFollower == true && isFollowingUser != true) {
+          isRequest = true;
+          _requests.add(user);
+          setState(() {
+            isSeen = false;
+          });
+
+          print('not friends ${user.name} $isFriends');
+        } else {
+          isRequest = false;
+          isFriends = false;
+        }
+      }
+    }
+    print(_friends.length);
+    setState(() {
+      _isLoading = false;
+    });
   }
 
   checkUnreadMessages() async {
@@ -238,6 +299,9 @@ class _HomeScreenState extends State<HomeScreen>
           isSelected3 = false;
           isSelected4 = false;
           isSelected5 = false;
+          homeController.animateTo(0.0,
+              duration: const Duration(milliseconds: 300),
+              curve: Curves.easeOut);
           break;
         case 1:
           isSelected1 = false;
@@ -293,15 +357,15 @@ class _HomeScreenState extends State<HomeScreen>
                 items: <BottomNavigationBarItem>[
                   BottomNavigationBarItem(
                       icon: GestureDetector(
-                        onTap: () {
-                          if (isSelected1 == true) {
-                            homeController.animateTo(0.0,
-                                duration: const Duration(milliseconds: 300),
-                                curve: Curves.easeOut);
-                          } else {
-                            // onItemClicked();
-                          }
-                        },
+                        // onTap: () {
+                        //   if (isSelected1 == true && selectedIndex == 0) {
+                        //     homeController.animateTo(0.0,
+                        //         duration: const Duration(milliseconds: 300),
+                        //         curve: Curves.easeOut);
+                        //   } else {
+                        //     // onItemClicked(selectedIndex);
+                        //   }
+                        // },
                         child: SvgPicture.asset('assets/images/feeds.svg',
                             color: isSelected1 ? lightColor : Colors.grey),
                       ),
@@ -339,8 +403,17 @@ class _HomeScreenState extends State<HomeScreen>
                                   ? lightColor
                                   : Colors.transparent))),
                   BottomNavigationBarItem(
-                      icon: SvgPicture.asset('assets/images/groups.svg',
-                          color: isSelected4 ? lightColor : Colors.grey),
+                      icon: Stack(
+                        children: [
+                          SvgPicture.asset('assets/images/groups.svg',
+                              color: isSelected4 ? lightColor : Colors.grey),
+                          if (isSeen == false)
+                            Positioned(
+                                left: 11,
+                                child: Icon(Icons.circle,
+                                    color: Colors.red, size: 12))
+                        ],
+                      ),
                       title: Text(isSelected4 ? 'Friends' : '',
                           style: TextStyle(
                               fontSize: 10,
