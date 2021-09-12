@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:dana/models/models.dart';
 import 'package:dana/screens/pages/stories_screen/stories_screen.dart';
 import 'package:dana/utilities/constants.dart';
+import 'package:dana/utils/constants.dart';
 import 'package:flutter/material.dart';
 
 class StoryCircle extends StatefulWidget {
@@ -57,7 +58,7 @@ class _StoryCircleState extends State<StoryCircle> {
     if (_seenStories == widget.userStories.length) {
       circleColor = Colors.grey;
     } else {
-      circleColor = Colors.blue;
+      circleColor = lightColor;
     }
     return Container(
       width: widget.size + 10,

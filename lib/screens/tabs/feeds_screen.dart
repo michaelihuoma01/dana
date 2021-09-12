@@ -272,7 +272,7 @@ class _FeedsScreenState extends State<FeedsScreen> {
                                 ),
                               )
                             : StoriesWidget(_followingUsersWithStories,
-                                widget.goToCameraScreen),
+                              _goToCameraScreen),
                         // SizedBox(height: 30),
                         // BrandDivider(),
                         // SizedBox(height: 30),

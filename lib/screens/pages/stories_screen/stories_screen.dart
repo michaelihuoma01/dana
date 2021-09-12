@@ -7,6 +7,7 @@ import 'package:dana/screens/pages/stories_screen/widgets/story_info.dart';
 import 'package:dana/services/api/stories_service.dart';
 import 'package:dana/utils/constants.dart';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -31,6 +32,7 @@ class _StoryScreenState extends State<StoryScreen>
   DragStartDetails startVerticalDragDetails;
   DragUpdateDetails updateVerticalDragDetails;
   int _seenStories;
+  int views;
 
   @override
   void initState() {
@@ -108,19 +110,20 @@ class _StoryScreenState extends State<StoryScreen>
           }
         },
         onTapDown: (detailes) => _onTapDown(detailes),
-        child: Stack(
-          children: <Widget>[
-            PageView.builder(
-              controller: _pageController,
-              physics: NeverScrollableScrollPhysics(),
-              itemCount: widget.stories.length,
-              itemBuilder: (context, index) {
-                final Story story = widget.stories[index];
+        child: PageView.builder(
+          controller: _pageController,
+          physics: NeverScrollableScrollPhysics(),
+          itemCount: widget.stories.length,
+          itemBuilder: (context, index) {
+            final Story story = widget.stories[index];
 
-                StoriesService.setNewStoryView(currentUserId, story);
-                print("==================${story.imageUrl}");
+            StoriesService.setNewStoryView(currentUserId, story);
 
-                return CachedNetworkImage(
+            print(views);
+
+            return Stack(
+              children: [
+                CachedNetworkImage(
                   imageUrl: story.imageUrl,
                   fit: BoxFit.cover,
                   fadeInDuration: Duration(milliseconds: 500),
@@ -130,44 +133,57 @@ class _StoryScreenState extends State<StoryScreen>
                           color: lightColor, value: downloadProgress.progress),
                     );
                   },
-                );
-              },
-            ),
-            Positioned(
-              top: 40.0,
-              left: 10.0,
-              right: 10.0,
-              child: Column(
-                children: [
-                  Row(
-                    children: widget.stories
-                        .asMap()
-                        .map((i, e) {
-                          return MapEntry(
-                              i,
-                              AnimatedBar(
-                                animationController: _animController,
-                                position: i,
-                                currentIndex: _currentIndex,
-                              ));
-                        })
-                        .values
-                        .toList(),
+                ),
+                Positioned(
+                  bottom: 40.0,
+                  left: 10.0,
+                  right: 10.0,
+                  child: Row(
+                    children: [
+                      Icon(FontAwesomeIcons.eye, size: 16, color: Colors.white),
+                      SizedBox(width: 5),
+                      Text(story.views.length.toString(),
+                          style: TextStyle(color: Colors.white, fontSize: 20))
+                    ],
                   ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 1.5, vertical: 10.0),
-                    child: StoryInfo(
-                      onSwipeUp: () => _onSwipeUp(),
-                      height: size.height - 100,
-                      user: widget.user,
-                      story: widget.stories[_currentIndex],
-                    ),
-                  )
-                ],
-              ),
-            )
-          ],
+                ),
+                Positioned(
+                  top: 40.0,
+                  left: 10.0,
+                  right: 10.0,
+                  child: Column(
+                    children: [
+                      Row(
+                        children: widget.stories
+                            .asMap()
+                            .map((i, e) {
+                              return MapEntry(
+                                  i,
+                                  AnimatedBar(
+                                    animationController: _animController,
+                                    position: i,
+                                    currentIndex: _currentIndex,
+                                  ));
+                            })
+                            .values
+                            .toList(),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 1.5, vertical: 10.0),
+                        child: StoryInfo(
+                          onSwipeUp: () => _onSwipeUp(),
+                          height: size.height - 100,
+                          user: widget.user,
+                          story: widget.stories[_currentIndex],
+                        ),
+                      ),
+                    ],
+                  ),
+                )
+              ],
+            );
+          },
         ),
       ),
     );

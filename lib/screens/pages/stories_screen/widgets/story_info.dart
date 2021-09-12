@@ -55,7 +55,7 @@ class StoryInfo extends StatelessWidget {
               Row(
                 children: [
                   CircleAvatar(
-                    radius: 30.0,
+                    radius:20.0,
                     backgroundColor: Colors.grey[200],
                     backgroundImage: user.profileImageUrl.isEmpty
                         ? AssetImage(placeHolderImageRef)
@@ -109,10 +109,10 @@ class StoryInfo extends StatelessWidget {
                   ),
                 ],
               ),
-              IconButton(
-                icon: const Icon(Icons.more_vert, color: Colors.white),
-                onPressed: null,
-              )
+              // IconButton(
+              //   icon: const Icon(Icons.more_vert, color: Colors.white),
+              //   onPressed: null,
+              // )
             ],
           ),
         ],

@@ -86,15 +86,12 @@ class AddPostAppbar extends StatelessWidget {
               Padding(
                   padding: const EdgeInsets.only(right: 20, bottom: 7, top: 7),
                   child: TextButton(
-                    
                     style: ButtonStyle(
-                      
-                      minimumSize:  MaterialStateProperty.all(Size.zero),
+                        minimumSize: MaterialStateProperty.all(Size.zero),
                         shape: MaterialStateProperty.all(RoundedRectangleBorder(
                             borderRadius: new BorderRadius.circular(10))),
                         backgroundColor: MaterialStateProperty.all(bgColor)),
                     onPressed: onTap,
-                    
                     child: Container(
                       child: Text(
                         'Post',

@@ -1,5 +1,9 @@
+import 'package:camera/camera.dart';
 import 'package:dana/models/models.dart';
+import 'package:dana/screens/home.dart';
 import 'package:dana/services/services.dart';
+import 'package:dana/utilities/constants.dart';
+import 'package:dana/utilities/show_error_dialog.dart';
 import 'package:dana/widgets/blank_story_circle.dart';
 import 'package:dana/widgets/story_circle.dart';
 import 'package:flutter/material.dart';
@@ -21,12 +25,39 @@ class _StoriesWidgetState extends State<StoriesWidget> {
   List<Story> _stories = [];
   AppUser _currentUser;
   bool _isCurrentUserHasStories = false;
+  List<CameraDescription> _cameras;
+  CameraConsumer _cameraConsumer = CameraConsumer.story;
 
   @override
   void initState() {
     super.initState();
     _getStories();
+    _getCameras();
+  }
 
+  void _backToHomeScreenFromCameraScreen() {
+    // _selectPage(1);
+    // _pageController.animateToPage(1,
+    //     duration: Duration(milliseconds: 200), curve: Curves.easeIn);
+    Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) => HomeScreen(
+                currentUserId: Provider.of<UserData>(context, listen: false)
+                    .currentUser
+                    .id)));
+  }
+
+  Future<Null> _getCameras() async {
+    try {
+      _cameras = await availableCameras().then((value) {
+        print('object $value');
+        return value;
+      });
+    } on CameraException catch (_) {
+      ShowErrorDialog.showAlertDialog(
+          errorMessage: 'Cant get cameras!', context: context);
+    }
   }
 
   Future<void> _getStories() async {
@@ -71,6 +102,11 @@ class _StoriesWidgetState extends State<StoriesWidget> {
       _followingUsers = followingUsersWithStories;
       _stories = stories;
     });
+
+    _cameras = await availableCameras().then((value) {
+      print('object $value');
+      return value;
+    });
   }
 
   @override
@@ -106,6 +142,9 @@ class _StoriesWidgetState extends State<StoriesWidget> {
     return BlankStoryCircle(
       goToCameraScreen: widget.goToCameraScreen,
       user: _currentUser,
+      cameras: _cameras,
+      cameraConsumer: _cameraConsumer,
+      backToHomeScreenFromCameraScreen: _backToHomeScreenFromCameraScreen,
     );
   }
 

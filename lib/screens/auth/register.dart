@@ -213,11 +213,69 @@ class _RegisterScreenState extends State<RegisterScreen> {
             bottomNavigationBar: Container(
               color: Colors.transparent,
               child: Padding(
-                padding:
-                    const EdgeInsets.symmetric(vertical: 20, horizontal: 25),
+                padding: const EdgeInsets.only(bottom: 30, left: 20, right: 20),
                 child: ButtonWidget(
                   title: 'Continue',
                   onPressed: () {
+                    if ((_name?.length ?? 0) < 3) {
+                      Utility.showMessage(
+                        context,
+                        bgColor: Colors.red,
+                        pulsate: false,
+                        type: MessageTypes.error,
+                        message: 'Name is too short',
+                      );
+                      return;
+                    }
+
+                    // if (!(_con.user.email?.contains('@') ?? false)) {
+                    //   Utility.showMessage(_con.scaffoldKey.currentContext!,
+                    //       message: 'Please enter a valid email address');
+                    //   return;
+                    // }
+                    // if ((_con.user.password?.length ?? 0) < 8) {
+                    //   Utility.showMessage(_con.scaffoldKey.currentContext!,
+                    //       message: 'Password is too short');
+                    //   return;
+                    // }
+                    // if (passwordController.text != _con.user.password) {
+                    //   Utility.showMessage(_con.scaffoldKey.currentContext!,
+                    //       message: 'Passwords do not match');
+                    //   return;
+                    // }
+                    if (_bio == '') {
+                      Utility.showMessage(context,
+                          bgColor: Colors.red,
+                          type: MessageTypes.error,
+                          pulsate: false,
+                          message: 'Please fill all fields');
+                      return;
+                    }
+                    if (_gender == '') {
+                      Utility.showMessage(context,
+                          bgColor: Colors.red,
+                          type: MessageTypes.error,
+                          pulsate: false,
+                          message: 'Please fill all fields');
+                      return;
+                    }
+                    if (_dob == '') {
+                      Utility.showMessage(context,
+                          bgColor: Colors.red,
+                          type: MessageTypes.error,
+                          pulsate: false,
+                          message: 'Please fill all fields');
+                      return;
+                    }
+                    if (_profileImage == null) {
+                      Utility.showMessage(context,
+                          bgColor: Colors.red,
+                          pulsate: false,
+                          type: MessageTypes.error,
+                          message: 'Please choose a profile picture');
+                      return;
+                    }
+
                     updateProfile();
 
                     // Navigator.push(context,
@@ -307,22 +365,20 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     SizedBox(height: 25),
                     Container(
                       decoration: BoxDecoration(
-                      color: Colors.white,
-
+                        color: Colors.white,
                         borderRadius: BorderRadius.circular(10),
                       ),
                       child: Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 15),
                         child: DropdownButton(
                           hint: Text(
-                           (_gender == '') ?  'Gender' : _gender,
+                            (_gender == '') ? 'Gender' : _gender,
                             style: TextStyle(color: Colors.grey, fontSize: 16),
                           ),
                           isExpanded: true,
                           iconSize: 30.0,
                           iconEnabledColor: lightColor,
                           iconDisabledColor: lightColor,
-                       
                           items: ['Male', 'Female', 'Other'].map(
                             (val) {
                               return DropdownMenuItem<String>(
@@ -346,8 +402,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       onTap: () {
                         DatePicker.showDatePicker(context,
                             showTitleActions: true,
-                            minTime: DateTime(1920, 3, 5),
-                            maxTime: DateTime(2021, 6, 7), onChanged: (date) {
+                            minTime: DateTime(1920, 1, 1),
+                            maxTime: DateTime(2030, 12, 31), onChanged: (date) {
                           print('change $date');
                         }, onConfirm: (date) {
                           var d12 = DateFormat('MM/dd/yyyy').format(date);

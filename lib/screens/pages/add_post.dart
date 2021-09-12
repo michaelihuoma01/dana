@@ -30,7 +30,7 @@ class AddPost extends StatefulWidget {
 
 class _AddPostState extends State<AddPost> {
   AppUser _currentUser;
-  List<CameraDescription> _cameras;
+  List<CameraDescription> _cameras; 
   CameraConsumer _cameraConsumer = CameraConsumer.post;
 
   TextEditingController _captionController = TextEditingController();

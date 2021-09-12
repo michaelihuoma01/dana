@@ -1,5 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:camera/camera.dart';
 import 'package:dana/models/models.dart';
+import 'package:dana/screens/pages/camera_screen/camera_screen.dart';
 import 'package:dana/utilities/constants.dart';
 import 'package:dana/utils/constants.dart';
 import 'package:flutter/material.dart';
@@ -9,14 +11,20 @@ class BlankStoryCircle extends StatelessWidget {
   final AppUser user;
   final Function goToCameraScreen;
   final double size;
+  final List<CameraDescription> cameras;
+
   final bool showUserName;
 
-  BlankStoryCircle({
-    @required this.user,
-    @required this.goToCameraScreen,
-    this.size = 55,
-    this.showUserName = true,
-  });
+  var backToHomeScreenFromCameraScreen, cameraConsumer;
+
+  BlankStoryCircle(
+      {@required this.user,
+      @required this.goToCameraScreen,
+      this.size = 55,
+      this.cameras,
+      this.backToHomeScreenFromCameraScreen,
+      this.cameraConsumer,
+      this.showUserName = true});
   @override
   Widget build(BuildContext context) {
     final currentUser = Provider.of<UserData>(context).currentUser;
@@ -41,7 +49,17 @@ class BlankStoryCircle extends StatelessWidget {
                       )
                     : null,
                 child: GestureDetector(
-                  onTap: isCurrentUser ? goToCameraScreen : () {},
+                  onTap: () {
+                    if (isCurrentUser) {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => CameraScreen(
+                                  cameras,
+                                  backToHomeScreenFromCameraScreen,
+                                  cameraConsumer)));
+                    }
+                  },
                   child: ClipOval(
                     child: Image(
                       image: user.profileImageUrl.isEmpty
