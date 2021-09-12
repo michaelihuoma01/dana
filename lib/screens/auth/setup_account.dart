@@ -42,8 +42,8 @@ class _SetupAccountState extends State<SetupAccount> {
     try {
       await AuthService.signUpUser(
           context, _inputEmail.trim(), _inputPassword.trim());
-    }  catch (err) {
- Utility.showMessage(context,
+    } catch (err) {
+      Utility.showMessage(context,
           bgColor: Colors.red,
           message: err.message,
           pulsate: false,
