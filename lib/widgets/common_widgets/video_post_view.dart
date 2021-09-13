@@ -184,24 +184,24 @@ class _VideoPostViewState extends State<VideoPostView> {
           return SimpleDialog(
             // title: Text('Add Photo'),
             children: <Widget>[
-              SimpleDialogOption(
-                child: Text('Share Post'),
-                onPressed: () {
-                  _saveAndShareFile();
-                  Navigator.pop(context);
-                },
-              ),
-              _post.authorId == widget.currentUserId &&
-                      widget.postStatus != PostStatus.archivedPost
-                  ? SimpleDialogOption(
-                      child: Text('Archive Post'),
-                      onPressed: () {
-                        DatabaseService.archivePost(
-                            widget.post, widget.postStatus);
-                        _goToHomeScreen(context);
-                      },
-                    )
-                  : SizedBox.shrink(),
+              // SimpleDialogOption(
+              //   child: Text('Share Post'),
+              //   onPressed: () {
+              //     _saveAndShareFile();
+              //     Navigator.pop(context);
+              //   },
+              // ),
+              // _post.authorId == widget.currentUserId &&
+              //         widget.postStatus != PostStatus.archivedPost
+              //     ? SimpleDialogOption(
+              //         child: Text('Archive Post'),
+              //         onPressed: () {
+              //           DatabaseService.archivePost(
+              //               widget.post, widget.postStatus);
+              //           _goToHomeScreen(context);
+              //         },
+              //       )
+              //     : SizedBox.shrink(),
               _post.authorId == widget.currentUserId &&
                       widget.postStatus != PostStatus.deletedPost
                   ? SimpleDialogOption(
@@ -212,33 +212,33 @@ class _VideoPostViewState extends State<VideoPostView> {
                       },
                     )
                   : SizedBox.shrink(),
-              _post.authorId == widget.currentUserId &&
-                      widget.postStatus != PostStatus.feedPost
-                  ? SimpleDialogOption(
-                      child: Text('Show on profile'),
-                      onPressed: () {
-                        DatabaseService.recreatePost(_post, widget.postStatus);
-                        _goToHomeScreen(context);
-                      },
-                    )
-                  : SizedBox.shrink(),
+              // _post.authorId == widget.currentUserId &&
+              //         widget.postStatus != PostStatus.feedPost
+              //     ? SimpleDialogOption(
+              //         child: Text('Show on profile'),
+              //         onPressed: () {
+              //           DatabaseService.recreatePost(_post, widget.postStatus);
+              //           _goToHomeScreen(context);
+              //         },
+              //       )
+              //     : SizedBox.shrink(),
 
-              _post.authorId == widget.currentUserId
-                  ? SimpleDialogOption(
-                      child: Text('Edit Post'),
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) => CreatePostScreen(
-                              post: _post,
-                              postStatus: widget.postStatus,
-                            ),
-                          ),
-                        );
-                      },
-                    )
-                  : SizedBox.shrink(),
+              // _post.authorId == widget.currentUserId
+              //     ? SimpleDialogOption(
+              //         child: Text('Edit Post'),
+              //         onPressed: () {
+              //           Navigator.push(
+              //             context,
+              //             MaterialPageRoute(
+              //               builder: (_) => CreatePostScreen(
+              //                 post: _post,
+              //                 postStatus: widget.postStatus,
+              //               ),
+              //             ),
+              //           );
+              //         },
+              //       )
+              //     : SizedBox.shrink(),
               _post.authorId == widget.currentUserId &&
                       widget.postStatus == PostStatus.feedPost
                   ? SimpleDialogOption(
@@ -377,7 +377,7 @@ class _VideoPostViewState extends State<VideoPostView> {
                               GestureDetector(
                                 onTap: () => _goToUserProfile(context, _post),
                                 child: Container(
-                                  height: 25,
+                                  height: 30,
                                   child: CircleAvatar(
                                     backgroundColor: Colors.grey,
                                     backgroundImage:
@@ -400,7 +400,7 @@ class _VideoPostViewState extends State<VideoPostView> {
                                       ? Text(_post.location,
                                           style: TextStyle(
                                               color: Colors.white,
-                                              fontSize: 10))
+                                              fontSize: 12))
                                       : null,
                                 ],
                               ),
@@ -409,7 +409,20 @@ class _VideoPostViewState extends State<VideoPostView> {
                         ),
                       ),
                     ),
-                  )
+                  ),
+                  if (widget.author.id == widget.currentUserId)
+                    Positioned(
+                      top: 0,
+                      right: 0,
+                      child: Padding(
+                          padding: const EdgeInsets.all(20),
+                          child: GestureDetector(
+                            child: Icon(Icons.more_vert, color: Colors.white),
+                            onTap: () {
+                              _showMenuDialog();
+                            },
+                          )),
+                    )
                 ],
               ),
             ),

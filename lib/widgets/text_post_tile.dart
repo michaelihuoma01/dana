@@ -169,24 +169,24 @@ class _TextPostState extends State<TextPost> {
           return SimpleDialog(
             // title: Text('Add Photo'),
             children: <Widget>[
-              SimpleDialogOption(
-                child: Text('Share Post'),
-                onPressed: () {
-                  _saveAndShareFile();
-                  Navigator.pop(context);
-                },
-              ),
-              _post.authorId == widget.currentUserId &&
-                      widget.postStatus != PostStatus.archivedPost
-                  ? SimpleDialogOption(
-                      child: Text('Archive Post'),
-                      onPressed: () {
-                        DatabaseService.archivePost(
-                            widget.post, widget.postStatus);
-                        _goToHomeScreen(context);
-                      },
-                    )
-                  : SizedBox.shrink(),
+              // SimpleDialogOption(
+              //   child: Text('Share Post'),
+              //   onPressed: () {
+              //     _saveAndShareFile();
+              //     Navigator.pop(context);
+              //   },
+              // ),
+              // _post.authorId == widget.currentUserId &&
+              //         widget.postStatus != PostStatus.archivedPost
+              //     ? SimpleDialogOption(
+              //         child: Text('Archive Post'),
+              //         onPressed: () {
+              //           DatabaseService.archivePost(
+              //               widget.post, widget.postStatus);
+              //           _goToHomeScreen(context);
+              //         },
+              //       )
+              //     : SizedBox.shrink(),
               _post.authorId == widget.currentUserId &&
                       widget.postStatus != PostStatus.deletedPost
                   ? SimpleDialogOption(
@@ -197,33 +197,33 @@ class _TextPostState extends State<TextPost> {
                       },
                     )
                   : SizedBox.shrink(),
-              _post.authorId == widget.currentUserId &&
-                      widget.postStatus != PostStatus.feedPost
-                  ? SimpleDialogOption(
-                      child: Text('Show on profile'),
-                      onPressed: () {
-                        DatabaseService.recreatePost(_post, widget.postStatus);
-                        _goToHomeScreen(context);
-                      },
-                    )
-                  : SizedBox.shrink(),
+              // _post.authorId == widget.currentUserId &&
+              //         widget.postStatus != PostStatus.feedPost
+              //     ? SimpleDialogOption(
+              //         child: Text('Show on profile'),
+              //         onPressed: () {
+              //           DatabaseService.recreatePost(_post, widget.postStatus);
+              //           _goToHomeScreen(context);
+              //         },
+              //       )
+              //     : SizedBox.shrink(),
 
-              _post.authorId == widget.currentUserId
-                  ? SimpleDialogOption(
-                      child: Text('Edit Post'),
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) => CreatePostScreen(
-                              post: _post,
-                              postStatus: widget.postStatus,
-                            ),
-                          ),
-                        );
-                      },
-                    )
-                  : SizedBox.shrink(),
+              // _post.authorId == widget.currentUserId
+              //     ? SimpleDialogOption(
+              //         child: Text('Edit Post'),
+              //         onPressed: () {
+              //           Navigator.push(
+              //             context,
+              //             MaterialPageRoute(
+              //               builder: (_) => CreatePostScreen(
+              //                 post: _post,
+              //                 postStatus: widget.postStatus,
+              //               ),
+              //             ),
+              //           );
+              //         },
+              //       )
+              // : SizedBox.shrink(),
               _post.authorId == widget.currentUserId &&
                       widget.postStatus == PostStatus.feedPost
                   ? SimpleDialogOption(
@@ -266,83 +266,105 @@ class _TextPostState extends State<TextPost> {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+      padding: const EdgeInsets.symmetric(horizontal: 20),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           GestureDetector(
             onTap: () => _goToUserProfile(context, widget.post),
-            child: Row(children: [
-              Container(
-                height: 35,
-                child: CircleAvatar(
-                  backgroundColor: Colors.grey,
-                  backgroundImage: widget.author.profileImageUrl.isEmpty
-                      ? AssetImage(placeHolderImageRef)
-                      : CachedNetworkImageProvider(
-                          widget.author.profileImageUrl,
-                        ),
-                ),
-              ),
-              SizedBox(width: 10),
-              Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                Text(widget.author.name,
-                    style: TextStyle(color: Colors.white, fontSize: 16)),
-                Text(timeago.format(_post.timestamp.toDate()),
-                    style: TextStyle(color: Colors.grey, fontSize: 12)),
-              ]),
-            ]),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Row(children: [
+                  Container(
+                    height: 30,
+                    child: CircleAvatar(
+                      backgroundColor: Colors.grey,
+                      backgroundImage: widget.author.profileImageUrl.isEmpty
+                          ? AssetImage(placeHolderImageRef)
+                          : CachedNetworkImageProvider(
+                              widget.author.profileImageUrl,
+                            ),
+                    ),
+                  ),
+                  SizedBox(width: 5),
+                  Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(widget.author.name,
+                            style:
+                                TextStyle(color: Colors.white, fontSize: 16)),
+                        Text(timeago.format(_post.timestamp.toDate()),
+                            style: TextStyle(color: Colors.grey, fontSize: 12)),
+                      ]),
+                ]),
+                if (widget.author.id == widget.currentUserId)
+                  Padding(
+                      padding: const EdgeInsets.all(0),
+                      child: GestureDetector(
+                        child: Icon(Icons.more_vert, color: Colors.white),
+                        onTap: () {
+                          _showMenuDialog();
+                        },
+                      )),
+              ],
+            ),
           ),
           SizedBox(height: 8),
-          Text(_post.caption,
-              style: TextStyle(color: Colors.white, fontSize: 16)),
+          Padding(
+            padding: const EdgeInsets.only(left: 5),
+            child: Text(_post.caption,
+                style: TextStyle(color: Colors.white, fontSize: 16)),
+          ),
           SizedBox(height: 8),
-          Row(
-            children: [
-              GestureDetector(
-                child: _isLiked
-                    ? Icon(
-                        Icons.favorite,
-                        size: 28,
-                        color: lightColor,
-                      )
-                    : Icon(Icons.favorite_outline,
-                        color: Colors.white, size: 30),
-                onTap: widget.postStatus == PostStatus.feedPost
-                    ? _likePost
-                    : () {},
-              ),
-              SizedBox(width: 8),
-              GestureDetector(
-                child: Transform(
-                  alignment: Alignment.center,
-                  transform: Matrix4.rotationY(math.pi),
-                  child: Icon(Icons.chat_bubble_outline, color: Colors.white),
+          Padding(
+            padding: const EdgeInsets.only(left: 5),
+            child: Row(
+              children: [
+                GestureDetector(
+                  child: _isLiked
+                      ? Icon(
+                          Icons.favorite,
+                          size: 28,
+                          color: lightColor,
+                        )
+                      : Icon(Icons.favorite_outline,
+                          color: Colors.white, size: 30),
+                  onTap: widget.postStatus == PostStatus.feedPost
+                      ? _likePost
+                      : () {},
                 ),
-                onTap: () => Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (_) => CommentsScreen(
-                          postStatus: widget.postStatus,
-                          post: _post,
-                          likeCount: _likeCount,
-                          author: widget.author,
-                          currentUserID: widget.currentUserId)),
+                SizedBox(width: 8),
+                GestureDetector(
+                  child: Transform(
+                    alignment: Alignment.center,
+                    transform: Matrix4.rotationY(math.pi),
+                    child: Icon(Icons.chat_bubble_outline, color: Colors.white),
+                  ),
+                  onTap: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (_) => CommentsScreen(
+                            postStatus: widget.postStatus,
+                            post: _post,
+                            likeCount: _likeCount,
+                            author: widget.author,
+                            currentUserID: widget.currentUserId)),
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
           SizedBox(height: 8),
           if (_likeCount != 0)
             Padding(
-              padding: const EdgeInsets.only(left: 0),
+              padding: const EdgeInsets.only(left: 7),
               child: Text(
                 '${NumberFormat.compact().format(_likeCount)} ${_likeCount == 1 ? 'like' : 'likes'}',
                 style: TextStyle(fontSize: 13, color: Colors.white),
               ),
             ),
           SizedBox(height: 3),
-
           if (_commentCount != 0)
             GestureDetector(
               onTap: () => Navigator.push(
@@ -355,10 +377,10 @@ class _TextPostState extends State<TextPost> {
                           author: widget.author,
                           currentUserID: widget.currentUserId))),
               child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 1.0),
+                  padding: const EdgeInsets.symmetric(horizontal: 5),
                   child: Text(
                       'View ${NumberFormat.compact().format(_commentCount)} ${_commentCount == 1 ? 'comment' : 'comments'}',
-                      style: TextStyle(fontSize: 13, color: Colors.grey))),
+                      style: TextStyle(fontSize: 12, color: Colors.grey))),
             ),
           SizedBox(height: 8),
         ],

@@ -175,24 +175,24 @@ class _PostViewState extends State<PostView> {
           return SimpleDialog(
             // title: Text('Add Photo'),
             children: <Widget>[
-              SimpleDialogOption(
-                child: Text('Share Post'),
-                onPressed: () {
-                  _saveAndShareFile();
-                  Navigator.pop(context);
-                },
-              ),
-              _post.authorId == widget.currentUserId &&
-                      widget.postStatus != PostStatus.archivedPost
-                  ? SimpleDialogOption(
-                      child: Text('Archive Post'),
-                      onPressed: () {
-                        DatabaseService.archivePost(
-                            widget.post, widget.postStatus);
-                        _goToHomeScreen(context);
-                      },
-                    )
-                  : SizedBox.shrink(),
+              // SimpleDialogOption(
+              //   child: Text('Share Post'),
+              //   onPressed: () {
+              //     _saveAndShareFile();
+              //     Navigator.pop(context);
+              //   },
+              // ),
+              // _post.authorId == widget.currentUserId &&
+              //         widget.postStatus != PostStatus.archivedPost
+              //     ? SimpleDialogOption(
+              //         child: Text('Archive Post'),
+              //         onPressed: () {
+              //           DatabaseService.archivePost(
+              //               widget.post, widget.postStatus);
+              //           _goToHomeScreen(context);
+              //         },
+              //       )
+              //     : SizedBox.shrink(),
               _post.authorId == widget.currentUserId &&
                       widget.postStatus != PostStatus.deletedPost
                   ? SimpleDialogOption(
@@ -203,33 +203,33 @@ class _PostViewState extends State<PostView> {
                       },
                     )
                   : SizedBox.shrink(),
-              _post.authorId == widget.currentUserId &&
-                      widget.postStatus != PostStatus.feedPost
-                  ? SimpleDialogOption(
-                      child: Text('Show on profile'),
-                      onPressed: () {
-                        DatabaseService.recreatePost(_post, widget.postStatus);
-                        _goToHomeScreen(context);
-                      },
-                    )
-                  : SizedBox.shrink(),
+              // _post.authorId == widget.currentUserId &&
+              //         widget.postStatus != PostStatus.feedPost
+              //     ? SimpleDialogOption(
+              //         child: Text('Show on profile'),
+              //         onPressed: () {
+              //           DatabaseService.recreatePost(_post, widget.postStatus);
+              //           _goToHomeScreen(context);
+              //         },
+              //       )
+              //     : SizedBox.shrink(),
 
-              _post.authorId == widget.currentUserId
-                  ? SimpleDialogOption(
-                      child: Text('Edit Post'),
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) => CreatePostScreen(
-                              post: _post,
-                              postStatus: widget.postStatus,
-                            ),
-                          ),
-                        );
-                      },
-                    )
-                  : SizedBox.shrink(),
+              // _post.authorId == widget.currentUserId
+              //     ? SimpleDialogOption(
+              //         child: Text('Edit Post'),
+              //         onPressed: () {
+              //           Navigator.push(
+              //             context,
+              //             MaterialPageRoute(
+              //               builder: (_) => CreatePostScreen(
+              //                 post: _post,
+              //                 postStatus: widget.postStatus,
+              //               ),
+              //             ),
+              //           );
+              //         },
+              //       )
+              //     : SizedBox.shrink(),
               _post.authorId == widget.currentUserId &&
                       widget.postStatus == PostStatus.feedPost
                   ? SimpleDialogOption(
@@ -298,62 +298,76 @@ class _PostViewState extends State<PostView> {
                 ),
                 _heartAnim ? HeartAnime(100.0) : SizedBox.shrink(),
                 Positioned(
-                  bottom: 0,
-                  right: 0,
-                  left: 0,
-                  child: Padding(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 16, vertical: 0),
-                    child: Container(
-                      decoration: BoxDecoration(
-                        gradient: new LinearGradient(
-                          end: const Alignment(0.0, -1),
-                          begin: const Alignment(0.0, 0.6),
-                          colors: <Color>[
-                            Colors.black.withOpacity(0.3),
-                            Colors.black.withOpacity(0.0)
-                          ],
-                        ),
-                      ),
-                      child: Padding(
-                        padding: const EdgeInsets.only(left: 10, bottom: 5),
-                        child: Row(
-                          children: [
-                            GestureDetector(
-                              onTap: () => _goToUserProfile(context, _post),
-                              child: Container(
-                                height: 25,
-                                child: CircleAvatar(
-                                  backgroundColor: Colors.grey,
-                                  backgroundImage:
-                                      widget.author.profileImageUrl.isEmpty
-                                          ? AssetImage(placeHolderImageRef)
-                                          : CachedNetworkImageProvider(
-                                              widget.author.profileImageUrl,
-                                            ),
-                                ),
+                    bottom: 0,
+                    right: 0,
+                    left: 0,
+                    child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 16, vertical: 0),
+                        child: Container(
+                            decoration: BoxDecoration(
+                              gradient: new LinearGradient(
+                                end: const Alignment(0.0, -1),
+                                begin: const Alignment(0.0, 0.6),
+                                colors: <Color>[
+                                  Colors.black.withOpacity(0.3),
+                                  Colors.black.withOpacity(0.0)
+                                ],
                               ),
                             ),
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(widget.author.name,
-                                    style: TextStyle(
-                                        color: Colors.white,
-                                        fontWeight: FontWeight.w700)),
-                                _post.location.isNotEmpty
-                                    ? Text(_post.location,
-                                        style: TextStyle(
-                                            color: Colors.white, fontSize: 10))
-                                    : null,
-                              ],
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-                )
+                            child: Padding(
+                                padding:
+                                    const EdgeInsets.only(left: 10, bottom: 5),
+                                child: Row(
+                                  children: [
+                                    GestureDetector(
+                                      onTap: () =>
+                                          _goToUserProfile(context, _post),
+                                      child: Container(
+                                        height: 30,
+                                        child: CircleAvatar(
+                                          backgroundColor: Colors.grey,
+                                          backgroundImage: widget.author
+                                                  .profileImageUrl.isEmpty
+                                              ? AssetImage(placeHolderImageRef)
+                                              : CachedNetworkImageProvider(
+                                                  widget.author.profileImageUrl,
+                                                ),
+                                        ),
+                                      ),
+                                    ),
+                                    SizedBox(width: 3),
+                                    Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(widget.author.name,
+                                            style: TextStyle(
+                                                color: Colors.white,
+                                                fontWeight: FontWeight.w700)),
+                                        _post.location.isNotEmpty
+                                            ? Text(_post.location,
+                                                style: TextStyle(
+                                                    color: Colors.white,
+                                                    fontSize: 12))
+                                            : null,
+                                      ],
+                                    ),
+                                  ],
+                                ))))),
+                if (widget.author.id == widget.currentUserId)
+                  Positioned(
+                    top: 0,
+                    right: 0,
+                    child: Padding(
+                        padding: const EdgeInsets.all(20),
+                        child: GestureDetector(
+                          child: Icon(Icons.more_vert, color: Colors.white),
+                          onTap: () {
+                            _showMenuDialog();
+                          },
+                        )),
+                  )
               ],
             ),
           ),

@@ -271,8 +271,8 @@ class _FeedsScreenState extends State<FeedsScreen> {
                                       color: Colors.white, size: 40),
                                 ),
                               )
-                            : StoriesWidget(_followingUsersWithStories,
-                              _goToCameraScreen),
+                            : StoriesWidget(
+                                _followingUsersWithStories, _goToCameraScreen),
                         // SizedBox(height: 30),
                         // BrandDivider(),
                         // SizedBox(height: 30),
@@ -290,7 +290,8 @@ class _FeedsScreenState extends State<FeedsScreen> {
                                 height: MediaQuery.of(context).size.height,
                                 child: Center(
                                   child: Text(
-                                      'No posts found, Start following users'),
+                                      'No posts found, Start following users or add a post',
+                                      style: TextStyle(color: Colors.white)),
                                 ),
                               );
                             }

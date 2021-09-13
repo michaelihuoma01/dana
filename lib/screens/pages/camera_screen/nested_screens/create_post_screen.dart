@@ -63,16 +63,18 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
       });
     }
 
-    String mimeStr = lookupMimeType(widget.imageFile.path);
-    var fileType = mimeStr.split('/');
-    print('file type $fileType');
+    if (widget.imageFile != null) {
+      String mimeStr = lookupMimeType(widget.imageFile?.path);
+      var fileType = mimeStr.split('/');
+      print('file type $fileType');
 
-    if (fileType.first.contains('image')) {
-      isVideo = false;
-      print('post is a video $isVideo');
-    } else {
-      isVideo = true;
-      print('post is a video $isVideo');
+      if (fileType.first.contains('image')) {
+        isVideo = false;
+        print('post is a video $isVideo');
+      } else {
+        isVideo = true;
+        print('post is a video $isVideo');
+      }
     }
   }
 
