@@ -19,9 +19,10 @@ class LiquidSwipePagesService {
           colorFilter: ColorFilter.matrix(filter.matrixValues),
           child:Container(
                         decoration: BoxDecoration(
+                          color: Colors.white,
                       image: DecorationImage(
-                        fit: BoxFit.fill,
-                        alignment: FractionalOffset.topCenter,
+                        // fit: BoxFit.none,
+                        // alignment: FractionalOffset.topCenter,
                         image:    FileImage( imageFile),
                       ),
                     )), 

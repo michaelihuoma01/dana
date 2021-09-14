@@ -291,6 +291,7 @@ class _PostViewState extends State<PostView> {
                           topLeft: Radius.circular(10),
                           topRight: Radius.circular(10)),
                       child: CachedNetworkImage(
+                        
                           fadeInDuration: Duration(milliseconds: 500),
                           imageUrl: _post.imageUrl.toString()),
                     ),
@@ -346,10 +347,9 @@ class _PostViewState extends State<PostView> {
                                                 color: Colors.white,
                                                 fontWeight: FontWeight.w700)),
                                         Text(_post?.location,
-                                                style: TextStyle(
-                                                    color: Colors.white,
-                                                    fontSize: 12))
-                                            
+                                            style: TextStyle(
+                                                color: Colors.white,
+                                                fontSize: 12))
                                       ],
                                     ),
                                   ],

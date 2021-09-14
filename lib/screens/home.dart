@@ -141,6 +141,9 @@ class _HomeScreenState extends State<HomeScreen>
         if (isFollower == true && isFollowingUser == true) {
           isFriends = true;
           _friends.add(user);
+             setState(() {
+            isSeen = true;
+          });
 
           print('friends ${user.name} $isFriends');
         } else if (isFollower == true && isFollowingUser != true) {
@@ -151,9 +154,12 @@ class _HomeScreenState extends State<HomeScreen>
           });
 
           print('not friends ${user.name} $isFriends');
-        } else {
+        } else if (isFollower != true && isFollowingUser == true) {
           isRequest = false;
           isFriends = false;
+          setState(() {
+            isSeen = false;
+          });
         }
       }
     }

@@ -52,7 +52,7 @@ class _MessagesScreenState extends State<MessagesScreen> {
   }
 
   Stream<List<Chat>> getChats() async* {
-    try {
+    // try {
       List<Chat> dataToReturn = List();
 
       Stream<QuerySnapshot> stream = FirebaseFirestore.instance
@@ -106,9 +106,9 @@ class _MessagesScreenState extends State<MessagesScreen> {
         }
         yield dataToReturn;
       }
-    } catch (err) {
-      print('////$err');
-    }
+    // } catch (err) {
+    //   print('////$err');
+    // }
   }
 
   deleteChats(String receiverID) {

@@ -267,14 +267,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           message: 'Please fill all fields');
                       return;
                     }
-                    if (_profileImage == null) {
-                      Utility.showMessage(context,
-                          bgColor: Colors.red,
-                          pulsate: false,
-                          type: MessageTypes.error,
-                          message: 'Please choose a profile picture');
-                      return;
-                    }
+                    // if (_profileImage == null) {
+                    //   Utility.showMessage(context,
+                    //       bgColor: Colors.red,
+                    //       pulsate: false,
+                    //       type: MessageTypes.error,
+                    //       message: 'Please choose a profile picture');
+                    //   return;
+                    // }
 
                     updateProfile();
 
