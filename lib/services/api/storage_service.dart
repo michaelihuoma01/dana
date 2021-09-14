@@ -32,7 +32,7 @@ class StroageService {
     File compressedImageFile = await FlutterImageCompress.compressAndGetFile(
       image.absolute.path,
       '$path/img_$photoId.jpg',
-      quality: 10,
+      quality: 70,
     );
     return compressedImageFile;
   }

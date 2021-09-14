@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="25.206" height="20.392" viewBox="0 0 25.206 20.392">
+    <defs>
+        <style>
+            .cls-1{fill:none;stroke:#fff;stroke-linecap:round;stroke-linejoin:round;stroke-width:2px}
+        </style>
+    </defs>
+    <g id="Icon_feather-refresh-ccw" transform="translate(-.086 -3.46)">
+        <path id="Path_920" d="M1.5 6v6.1h6.1" class="cls-1" transform="translate(0 -.482)"/>
+        <path id="Path_921" d="M31.6 27.1V21h-6.1" class="cls-1" transform="translate(-7.725 -5.31)"/>
+        <path id="Path_922" d="M21.326 10.6A9.155 9.155 0 0 0 6.22 7.187L1.5 11.622m22.379 4.068l-4.72 4.435a9.155 9.155 0 0 1-15.106-3.417" class="cls-1"/>
+    </g>
+</svg>

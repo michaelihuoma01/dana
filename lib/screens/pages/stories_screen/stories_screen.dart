@@ -1,19 +1,27 @@
+import 'dart:math';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:dana/models/story_model.dart';
 import 'package:dana/models/user_data.dart';
 import 'package:dana/models/user_model.dart';
 import 'package:dana/screens/pages/stories_screen/widgets/animated_bar.dart';
 import 'package:dana/screens/pages/stories_screen/widgets/story_info.dart';
+import 'package:dana/services/api/database_service.dart';
 import 'package:dana/services/api/stories_service.dart';
+import 'package:dana/utilities/constants.dart';
+import 'package:dana/utilities/custom_navigation.dart';
 import 'package:dana/utils/constants.dart';
+import 'package:dana/widgets/BrandDivider.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:timeago/timeago.dart' as timeago;
 
 class StoryScreen extends StatefulWidget {
   final List<Story> stories;
   final AppUser user;
+
   final int seenStories;
   const StoryScreen(
       {@required this.stories,
@@ -32,6 +40,8 @@ class _StoryScreenState extends State<StoryScreen>
   DragStartDetails startVerticalDragDetails;
   DragUpdateDetails updateVerticalDragDetails;
   int _seenStories;
+  List<AppUser> viewersList = [];
+  List viewersTime = [];
   int views;
 
   @override
@@ -81,6 +91,8 @@ class _StoryScreenState extends State<StoryScreen>
     Size size = MediaQuery.of(context).size;
 
     String currentUserId = Provider.of<UserData>(context).currentUser.id;
+    bool isCurrentUser = currentUserId == widget.user.id ? true : false;
+
     return Scaffold(
       backgroundColor: Colors.black,
       body: GestureDetector(
@@ -119,8 +131,6 @@ class _StoryScreenState extends State<StoryScreen>
 
             StoriesService.setNewStoryView(currentUserId, story);
 
-            print(views);
-
             return Stack(
               children: [
                 CachedNetworkImage(
@@ -134,19 +144,134 @@ class _StoryScreenState extends State<StoryScreen>
                     );
                   },
                 ),
-                Positioned(
-                  bottom: 40.0,
-                  left: 10.0,
-                  right: 10.0,
-                  child: Row(
-                    children: [
-                      Icon(FontAwesomeIcons.eye, size: 16, color: Colors.white),
-                      SizedBox(width: 5),
-                      Text(story.views.length.toString(),
-                          style: TextStyle(color: Colors.white, fontSize: 20))
-                    ],
+                if (isCurrentUser)
+                  Positioned(
+                    bottom: 0,
+                    left: 0,
+                    right: 0,
+                    child: GestureDetector(
+                      onTap: () {
+                        showModalBottomSheet(
+                            context: context,
+                            builder: (context) {
+                              return Container(
+                                color: darkColor,
+                                height: 500,
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Padding(
+                                      padding: const EdgeInsets.only(
+                                          top: 20, left: 15, bottom: 5),
+                                      child: Text('Viewers',
+                                          style: TextStyle(
+                                              fontWeight: FontWeight.w700,
+                                              color: Colors.white)),
+                                    ),
+                                    BrandDivider(),
+                                    Expanded(
+                                      child: Container(
+                                        child: ListView.builder(
+                                            itemCount: story.views.length - 1,
+                                            itemBuilder: (BuildContext context,
+                                                int index) {
+                                              AppUser viewers =
+                                                  viewersList[index];
+                                              var timeSeen = viewersTime[index];
+
+                                              return (currentUserId !=
+                                                      viewers.id)
+                                                  ? Padding(
+                                                      padding:
+                                                          const EdgeInsets.all(
+                                                              0),
+                                                      child: ListTile(
+                                                        onTap: () {
+                                                          CustomNavigation
+                                                              .navigateToUserProfile(
+                                                            context: context,
+                                                            appUser: viewers,
+                                                            userId: viewers.id,
+                                                            currentUserId:
+                                                                currentUserId,
+                                                            isCameFromBottomNavigation:
+                                                                false,
+                                                          );
+                                                        },
+                                                        leading: Container(
+                                                          height: 40,
+                                                          width: 40,
+                                                          child: CircleAvatar(
+                                                            radius: 25.0,
+                                                            backgroundColor:
+                                                                Colors.grey,
+                                                            backgroundImage: viewers
+                                                                    .profileImageUrl
+                                                                    .isEmpty
+                                                                ? AssetImage(
+                                                                    placeHolderImageRef)
+                                                                : CachedNetworkImageProvider(
+                                                                    viewers
+                                                                        .profileImageUrl),
+                                                          ),
+                                                        ),
+                                                        title: Text(
+                                                            viewers.name,
+                                                            style: TextStyle(
+                                                                fontSize: 15,
+                                                                color: Colors
+                                                                    .white)),
+                                                        subtitle: Text(
+                                                            'PIN: ${viewers.pin}',
+                                                            maxLines: 3,
+                                                            style: TextStyle(
+                                                                color:
+                                                                    Colors.grey,
+                                                                fontSize: 13)),
+                                                        trailing: Text(
+                                                            timeago.format(
+                                                                timeSeen
+                                                                    .toDate()),
+                                                            style: TextStyle(
+                                                                fontSize: 12,
+                                                                color: Colors
+                                                                    .white)),
+                                                      ),
+                                                    )
+                                                  : Center(
+                                                      child: Text(
+                                                          'No views yet',
+                                                          style: TextStyle(
+                                                              fontSize: 15,
+                                                              color: Colors
+                                                                  .white)));
+                                            }),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              );
+                            });
+                      },
+                      child: Container(
+                        height: 40,
+                        color: Colors.black,
+                        child: Padding(
+                          padding: const EdgeInsets.only(left: 10),
+                          child: Row(
+                            children: [
+                              Icon(FontAwesomeIcons.eye,
+                                  size: 15, color: Colors.white),
+                              SizedBox(width: 5),
+                              Text('${story.views.length - 1}',
+                                  style: TextStyle(
+                                      color: Colors.white, fontSize: 18))
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
                   ),
-                ),
                 Positioned(
                   top: 40.0,
                   left: 10.0,
@@ -239,5 +364,13 @@ class _StoryScreenState extends State<StoryScreen>
       _pageController.animateToPage(_currentIndex,
           duration: const Duration(milliseconds: 1), curve: Curves.easeInOut);
     }
+
+    story.views.keys.forEach((element) async {
+      viewersList.add(await DatabaseService.getUserWithId(element));
+    });
+
+    story.views.values.forEach((element) async {
+      viewersTime.add(element);
+    });
   }
 }

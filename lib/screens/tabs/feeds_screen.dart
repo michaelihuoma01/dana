@@ -50,6 +50,7 @@ class _FeedsScreenState extends State<FeedsScreen> {
   @override
   void initState() {
     super.initState();
+    _getCurrentUser();
     _setupFeed();
   }
 
@@ -146,6 +147,19 @@ class _FeedsScreenState extends State<FeedsScreen> {
         _followingUsersWithStories = followingUsers;
       });
     }
+  }
+
+  void _getCurrentUser() async {
+    print('i have the current user now  ');
+
+    // String userId = await SharedPreferencesUtil.getUserId();
+
+    if (widget.currentUser.name == null) {
+      AuthService.logout(context);
+    }
+    // print('i have the current user now $userId ');
+    // setState(() => _currentUser = currentUser);
+    // AuthService.updateTokenWithUser(currentUser);
   }
 
   @override
@@ -271,8 +285,8 @@ class _FeedsScreenState extends State<FeedsScreen> {
                                       color: Colors.white, size: 40),
                                 ),
                               )
-                            : StoriesWidget(_followingUsersWithStories,
-                              _goToCameraScreen),
+                            : StoriesWidget(
+                                _followingUsersWithStories, _goToCameraScreen),
                         // SizedBox(height: 30),
                         // BrandDivider(),
                         // SizedBox(height: 30),
@@ -290,7 +304,8 @@ class _FeedsScreenState extends State<FeedsScreen> {
                                 height: MediaQuery.of(context).size.height,
                                 child: Center(
                                   child: Text(
-                                      'No posts found, Start following users'),
+                                      'No posts found, Start following users or add a post',
+                                      style: TextStyle(color: Colors.white)),
                                 ),
                               );
                             }

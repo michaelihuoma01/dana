@@ -180,7 +180,7 @@ class _CameraScreenState extends State<CameraScreen>
                           color: Colors.transparent,
                           child: GestureDetector(
                             onTap: () {
-                              _captureImage();
+                              takePicture();
                             },
                             onLongPress: () {
                               print('start recording');
@@ -316,20 +316,20 @@ class _CameraScreenState extends State<CameraScreen>
 
   String timestamp() => new DateTime.now().millisecondsSinceEpoch.toString();
 
-  void _captureImage() {
-    takePicture().then((String filePath) {
-      if (mounted) {
-        setState(() {
-          imagePath = filePath;
-        });
-        if (filePath != null) {
-          showMessage('Picture saved to $filePath');
-          fromCamera = true;
-          setCameraResult();
-        }
-      }
-    });
-  }
+  // void _captureImage() {
+  //   takePicture().then((String filePath) {
+  //     if (mounted) {
+  //       setState(() {
+  //         imagePath = filePath;
+  //       });
+  //       if (filePath != null) {
+  //         showMessage('Picture saved to $filePath');
+  //         fromCamera = true;
+  //         setCameraResult();
+  //       }
+  //     }
+  //   });
+  // }
 
   void _captureVideo() {
     stopRecording().then((String filePath) {
@@ -514,6 +514,18 @@ class _CameraScreenState extends State<CameraScreen>
     try {
       await controller.takePicture().then((value) {
         GallerySaver.saveImage(value.path);
+ 
+      if (mounted) {
+        setState(() {
+          imagePath = value.path;
+        });
+        if (imagePath != null) {
+          showMessage('Picture saved to $filePath');
+          fromCamera = true;
+          setCameraResult();
+        }
+      }
+   
       });
     } on CameraException catch (e) {
       showException(e);
@@ -577,15 +589,15 @@ class _CameraScreenState extends State<CameraScreen>
 
       if (fileType.first.contains('image')) {
         // imageFile = await ImagePicker().pickImage(source: ImageSource.gallery,);
-        var imageFile = await A.ImagesPicker.pick(
-          language: A.Language.English,
-          pickType: A.PickType.image,
-          count: 1,
-          cropOpt: CropOption(
-            aspectRatio: CropAspectRatio.custom,
-            cropType: CropType.rect, // currently for android
-          ),
-        );
+        // var imageFile = await A.ImagesPicker.pick(
+        //   language: A.Language.English,
+        //   pickType: A.PickType.image,
+        //   count: 1,
+        //   cropOpt: CropOption(
+        //     aspectRatio: CropAspectRatio.custom,
+        //     cropType: CropType.rect, // currently for android
+        //   ),
+        // );
 
         // var croppedImage = await ImageCropper.cropImage(
         //   androidUiSettings: AndroidUiSettings(
@@ -629,9 +641,9 @@ class _CameraScreenState extends State<CameraScreen>
         //   selectedTextColor: Colors.black,
         //   colorForWhiteSpace: Colors.white,
         // );
-        return File(imageFile.first.path);
+        return File(imageFile.path);
       } else {
-        imageFile = await ImagePicker().pickVideo(source: ImageSource.gallery);
+        // imageFile = await ImagePicker().pickVideo(source: ImageSource.gallery);
         return imageFile;
       }
     }

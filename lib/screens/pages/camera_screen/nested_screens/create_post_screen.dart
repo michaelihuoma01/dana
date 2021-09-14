@@ -47,7 +47,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
     super.initState();
 
     String currentUserId =
-        Provider.of<UserData>(context, listen: false).currentUserId;
+        Provider.of<UserData>(context, listen: false).currentUser.id;
 
     setState(() {
       _currentUserId = currentUserId;
@@ -63,16 +63,18 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
       });
     }
 
-    String mimeStr = lookupMimeType(widget.imageFile.path);
-    var fileType = mimeStr.split('/');
-    print('file type $fileType');
+    if (widget.imageFile != null) {
+      String mimeStr = lookupMimeType(widget.imageFile?.path);
+      var fileType = mimeStr.split('/');
+      print('file type $fileType');
 
-    if (fileType.first.contains('image')) {
-      isVideo = false;
-      print('post is a video $isVideo');
-    } else {
-      isVideo = true;
-      print('post is a video $isVideo');
+      if (fileType.first.contains('image')) {
+        isVideo = false;
+        print('post is a video $isVideo');
+      } else {
+        isVideo = true;
+        print('post is a video $isVideo');
+      }
     }
   }
 
@@ -189,13 +191,11 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
               actions: <Widget>[
                 !_isLoading
                     ? FlatButton(
-                        onPressed: _caption.trim().length > 3 ? _submit : null,
+                        onPressed:  _submit  ,
                         child: Text(
                           widget.imageFile == null ? 'Save' : 'Share',
                           style: TextStyle(
-                              color: _caption.trim().length > 3
-                                  ? lightColor
-                                  : Colors.grey[600],
+                              color: lightColor ,
                               fontWeight: FontWeight.bold,
                               fontSize: 20.0),
                         ))

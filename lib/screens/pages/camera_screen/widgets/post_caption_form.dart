@@ -82,11 +82,6 @@ class _PostCaptionFormState extends State<PostCaptionForm> {
             padding: const EdgeInsets.only(top: 10),
             child: TextFormField(
               onChanged: (value) => widget.onChanged(value),
-              validator: (input) => input.trim().length > 150
-                  ? 'Please enter a caption less than 150 characters'
-                  : input.trim().length < 3
-                      ? 'Please enter a caption more than 3 characters'
-                      : null,
               maxLength: 150,
               controller: widget.controller,
               textCapitalization: TextCapitalization.sentences,

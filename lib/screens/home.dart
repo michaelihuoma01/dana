@@ -244,7 +244,9 @@ class _HomeScreenState extends State<HomeScreen>
   }
 
   void _getCurrentUser() async {
-    String userId = await SharedPreferencesUtil.getUserId();
+    print('i have the current user now  ');
+
+    // String userId = await SharedPreferencesUtil.getUserId();
 
     AppUser currentUser =
         await DatabaseService.getUserWithId(widget.currentUserId);
@@ -254,7 +256,7 @@ class _HomeScreenState extends State<HomeScreen>
       Navigator.push(
           context, MaterialPageRoute(builder: (context) => LoginScreen()));
     }
-    print('i have the current user now $userId ');
+    // print('i have the current user now $userId ');
     setState(() => _currentUser = currentUser);
     // AuthService.updateTokenWithUser(currentUser);
   }

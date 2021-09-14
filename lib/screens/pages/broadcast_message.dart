@@ -35,6 +35,7 @@ class _BroadcastMessageState extends State<BroadcastMessage> {
   List<bool> _userFollowingState = [];
   int _followingCount = 0;
   bool _isLoading = false;
+  bool _selectAll = false;
 
   final TextEditingController textEditingController = TextEditingController();
 
@@ -262,8 +263,7 @@ class _BroadcastMessageState extends State<BroadcastMessage> {
               child: AppBar(
                 title: Text('Broadcast Message',
                     style: TextStyle(
-                        color: Colors.white,
-                        fontFamily: 'Poppins-Regular' )),
+                        color: Colors.white, fontFamily: 'Poppins-Regular')),
                 backgroundColor: darkColor,
                 centerTitle: true,
                 elevation: 5,
@@ -273,7 +273,7 @@ class _BroadcastMessageState extends State<BroadcastMessage> {
               )),
           floatingActionButton: new FloatingActionButton(
             backgroundColor: lightColor,
-            child: const Icon(Icons.send_rounded, size: 19   ),
+            child: const Icon(Icons.send_rounded, size: 19),
             mini: true,
             onPressed: () {
               if (textEditingController.value != null) {
@@ -294,114 +294,103 @@ class _BroadcastMessageState extends State<BroadcastMessage> {
                   child: TextField(
                     maxLines: 5,
                     controller: textEditingController,
-                     decoration: InputDecoration(
-                       hintText: 'Enter Message',
-                       hintStyle: TextStyle(color: Colors.grey),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(5),
-                        borderSide: BorderSide(color: lightColor, width: 1),
-                      ),
-                      enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(5),
-                        borderSide: BorderSide(color: lightColor, width: 1),
-                      ),
-                      focusedBorder: OutlineInputBorder(
+                    decoration: InputDecoration(
+                        hintText: 'Enter Message',
+                        hintStyle: TextStyle(color: Colors.grey),
+                        border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(5),
-                          borderSide:
-                              BorderSide(color: lightColor, width: 1))),
+                          borderSide: BorderSide(color: lightColor, width: 1),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(5),
+                          borderSide: BorderSide(color: lightColor, width: 1),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(5),
+                            borderSide:
+                                BorderSide(color: lightColor, width: 1))),
                     style: TextStyle(color: Colors.white),
                     cursorColor: lightColor,
                   ),
                 ),
-                SizedBox(height: 10),
-                Text('Choose Friends',
-                    style: TextStyle(
-                        color: Colors.white,
-                        fontFamily: 'Poppins-Regular',
-                        fontWeight: FontWeight.bold)),
-                SizedBox(height: 10),
-                Container(
-                  height: 500,
-                  child: ListView.builder(
-                    itemCount: _userFollowing.length,
-                    itemBuilder: (BuildContext context, int index) {
-                      AppUser follower = _userFollowing[index];
-                      AppUser filteritem = _selectedUsers.firstWhere(
-                          (item) => item.id == follower.id,
-                          orElse: () => null);
-                      return GestureDetector(
-                          // onTap: () => Navigator.push(
-                          //     context,
-                          //     MaterialPageRoute(
-                          //       builder: (_) => UserProfile(
-                          //         // goToCameraScreen: () =>
-                          //         //     CustomNavigation.navigateToHomeScreen(
-                          //         //         context,
-                          //         //         Provider.of<UserData>(context, listen: false)
-                          //         //             .currentUserId,
-                          //         //         initialPage: 0),
-                          //         // isCameFromBottomNavigation: false,
-                          //         userId: follower.id,
-                          //         currentUserId:
-                          //             Provider.of<UserData>(
-                          //                     context,
-                          //                     listen: false)
-                          //                 .currentUserId,
-                          //       ),
-                          //     )),
-                          child: Theme(
-                        data: ThemeData(unselectedWidgetColor: lightColor),
-                        child: CheckboxListTile(
-                          value: filteritem != null,
-                          checkColor: darkColor,
-                          activeColor: lightColor,
-                          selectedTileColor: lightColor,
-                          title: Row(children: [
-                            Container(
-                              height: 40,
-                              width: 40,
-                              child: CircleAvatar(
-                                radius: 25.0,
-                                backgroundColor: Colors.grey,
-                                backgroundImage:
-                                    follower.profileImageUrl.isEmpty
-                                        ? AssetImage(placeHolderImageRef)
-                                        : CachedNetworkImageProvider(
-                                            follower.profileImageUrl),
-                              ),
-                            ),
-                            SizedBox(width: 15),
-                            Flexible(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(follower.name,
-                                      style: TextStyle(
-                                          color: Colors.white, fontSize: 18)),
-                                  Text('${follower.pin}',
-                                      maxLines: 3,
-                                      style: TextStyle(color: Colors.grey)),
-                                ],
-                              ),
-                            )
-                          ]),
-                          onChanged: (value) {
-                            setState(() {
-                              if (value == true) {
-                                _selectedUsers.add(follower);
-                              } else {
-                                _selectedUsers.removeWhere(
-                                    (item) => item.id == follower.id);
-                              }
-                            });
-                          },
-                        ),
-                      )
-
-                          //
-
-                          );
-                    },
+                SizedBox(height: 15),
+                GestureDetector(
+                  onTap: () {
+                    _userFollowing.forEach((element) {
+                      setState(() {
+                        _selectedUsers.add(element);
+                        _selectAll = true;
+                      });
+                    });
+                  },
+                  child: Align(
+                    alignment: Alignment.centerRight,
+                    child:
+                        Text('Select All', style: TextStyle(color: lightColor)),
+                  ),
+                ),
+                Expanded(
+                  child: Container(
+                    child: ListView.builder(
+                      itemCount: _userFollowing.length,
+                      itemBuilder: (BuildContext context, int index) {
+                        AppUser follower = _userFollowing[index];
+                        AppUser filteritem = _selectedUsers.firstWhere(
+                            (item) => item.id == follower.id,
+                            orElse: () => null);
+                        return Theme(
+                            data: ThemeData(unselectedWidgetColor: lightColor),
+                            child: CheckboxListTile(
+                              value: (_selectAll == true) ? true : filteritem != null,
+                              checkColor: darkColor,
+                              activeColor: lightColor,
+                              selectedTileColor: lightColor,
+                              title: Row(children: [
+                                Container(
+                                  height: 40,
+                                  width: 40,
+                                  child: CircleAvatar(
+                                    radius: 25.0,
+                                    backgroundColor: Colors.grey,
+                                    backgroundImage:
+                                        follower.profileImageUrl.isEmpty
+                                            ? AssetImage(placeHolderImageRef)
+                                            : CachedNetworkImageProvider(
+                                                follower.profileImageUrl),
+                                  ),
+                                ),
+                                SizedBox(width: 15),
+                                Flexible(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(follower.name,
+                                          style:
+                                              TextStyle(color: Colors.white)),
+                                      SizedBox(height: 3),
+                                      Text('PIN: ${follower.pin}',
+                                          maxLines: 3,
+                                          style: TextStyle(
+                                              color: Colors.grey,
+                                              fontSize: 14)),
+                                    ],
+                                  ),
+                                )
+                              ]),
+                              onChanged: (value) {
+                                setState(() {
+                                  if (value == true) {
+                                    _selectedUsers.add(follower);
+                                  } else {
+                                    _selectedUsers.removeWhere(
+                                        (item) => item.id == follower.id);
+                                  }
+                                });
+                              },
+                            ));
+                      },
+                    ),
                   ),
                 ),
               ],
