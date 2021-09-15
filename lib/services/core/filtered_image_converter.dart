@@ -10,15 +10,15 @@ import 'dart:typed_data';
 import 'dart:ui' as ui;
 
 class FilteredImageConverter {
-  static Future<File> convert({GlobalKey globalKey}) async {
+  static Future<File> convert({required GlobalKey globalKey}) async {
     RenderRepaintBoundary repaintBoundary =
-        globalKey.currentContext.findRenderObject();
+        globalKey.currentContext!.findRenderObject() as RenderRepaintBoundary;
     ui.Image boxImage = await repaintBoundary.toImage(pixelRatio: 1);
-    ByteData byteData =
-        await boxImage.toByteData(format: ui.ImageByteFormat.png);
+    ByteData? byteData =
+        await (boxImage.toByteData(format: ui.ImageByteFormat.png));
     String tempPath = (await getTemporaryDirectory()).path;
     File file = File('$tempPath/${Timestamp.now().toString()}.png');
-    await file.writeAsBytes(byteData.buffer
+    await file.writeAsBytes(byteData!.buffer
         .asUint8List(byteData.offsetInBytes, byteData.lengthInBytes));
 
     return file;

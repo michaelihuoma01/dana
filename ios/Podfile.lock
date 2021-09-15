@@ -352,7 +352,7 @@ PODS:
   - BoringSSL-GRPC/Interface (0.0.7)
   - camera (0.0.1):
     - Flutter
-  - cloud_firestore (2.5.1):
+  - cloud_firestore (2.5.2):
     - Firebase/Firestore (= 8.6.0)
     - firebase_core
     - Flutter
@@ -415,18 +415,18 @@ PODS:
   - Firebase/Storage (8.6.0):
     - Firebase/CoreOnly
     - FirebaseStorage (~> 8.6.0)
-  - firebase_analytics (8.3.1):
+  - firebase_analytics (8.3.2):
     - Firebase/Analytics (= 8.6.0)
     - firebase_core
     - Flutter
-  - firebase_auth (3.1.0):
+  - firebase_auth (3.1.1):
     - Firebase/Auth (= 8.6.0)
     - firebase_core
     - Flutter
   - firebase_core (1.6.0):
     - Firebase/CoreOnly (= 8.6.0)
     - Flutter
-  - firebase_database (7.2.1):
+  - firebase_database (7.2.2):
     - Firebase/Database (= 8.6.0)
     - firebase_core
     - Flutter
@@ -434,7 +434,7 @@ PODS:
     - Firebase/DynamicLinks (= 8.6.0)
     - firebase_core
     - Flutter
-  - firebase_messaging (10.0.6):
+  - firebase_messaging (10.0.7):
     - Firebase/Messaging (= 8.6.0)
     - firebase_core
     - Flutter
@@ -521,8 +521,6 @@ PODS:
     - FMDB/standard (= 2.7.5)
   - FMDB/standard (2.7.5)
   - gallery_saver (0.0.1):
-    - Flutter
-  - geocoder (0.0.1):
     - Flutter
   - GoogleAppMeasurement (8.6.0):
     - GoogleAppMeasurement/AdIdSupport (= 8.6.0)
@@ -666,7 +664,6 @@ DEPENDENCIES:
   - flutter_email_sender (from `.symlinks/plugins/flutter_email_sender/ios`)
   - flutter_image_compress (from `.symlinks/plugins/flutter_image_compress/ios`)
   - gallery_saver (from `.symlinks/plugins/gallery_saver/ios`)
-  - geocoder (from `.symlinks/plugins/geocoder/ios`)
   - image_downloader (from `.symlinks/plugins/image_downloader/ios`)
   - image_gallery_saver (from `.symlinks/plugins/image_gallery_saver/ios`)
   - image_picker (from `.symlinks/plugins/image_picker/ios`)
@@ -752,8 +749,6 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/flutter_image_compress/ios"
   gallery_saver:
     :path: ".symlinks/plugins/gallery_saver/ios"
-  geocoder:
-    :path: ".symlinks/plugins/geocoder/ios"
   image_downloader:
     :path: ".symlinks/plugins/image_downloader/ios"
   image_gallery_saver:
@@ -794,17 +789,17 @@ SPEC CHECKSUMS:
   audioplayers: 455322b54050b30ea4b1af7cd9e9d105f74efa8c
   BoringSSL-GRPC: 8edf627ee524575e2f8d19d56f068b448eea3879
   camera: 3164201dc344383e62282964016528c4f5a9ad50
-  cloud_firestore: 3280837bd2fdec18489ef93699527df4af4f177d
+  cloud_firestore: 8a2843c34901ea2bc6aafcaa1c452f5b4f1ade37
   DKImagePickerController: b5eb7f7a388e4643264105d648d01f727110fc3d
   DKPhotoGallery: fdfad5125a9fdda9cc57df834d49df790dbb4179
   file_picker: 3e6c3790de664ccf9b882732d9db5eaf6b8d4eb1
   Firebase: 21ac9f28b09a8bdfc005f34c984fca84e7e8786d
-  firebase_analytics: de68415415782a5ad1d922d5c51789afbb2bb82d
-  firebase_auth: 2dfa8e886191c24ddcf4da34463d47b72e6d19dc
+  firebase_analytics: 039357074df292fb8a58e119206762d10483a8ec
+  firebase_auth: a5da789c2876fda3ad7407bd2828e502dfeebc42
   firebase_core: c21ac09a8d23afd3594b56ed786bad12e5266bba
-  firebase_database: f25f93149ac88611b22f09f42d48820cadc4b6b2
+  firebase_database: 34059efd45170b983afe5b870a6716cacc3f50c4
   firebase_dynamic_links: ef0989cdc7e7d2aaed5814a81f7ca0ec7a6028ee
-  firebase_messaging: 0da89f644566bce5822fa3a5d47c764c44f1cf1d
+  firebase_messaging: 0fddeca6fcfee0bed23c66210391d782af8f8d0e
   firebase_storage: 75fc62b16cfbb268ea4e90729be5729e3dc38b1e
   FirebaseAnalytics: 8f32ae54ad42754f503354782575c4ddfc1425c3
   FirebaseAuth: 223adeeb2262b417532e89bf06a960e3a0a1e9e4
@@ -821,7 +816,6 @@ SPEC CHECKSUMS:
   flutter_image_compress: fd2b476345226e1a10ea352fa306af95704642c1
   FMDB: 2ce00b547f966261cd18927a3ddb07cb6f3db82a
   gallery_saver: 9fc173c9f4fcc48af53b2a9ebea1b643255be542
-  geocoder: 3cfab70531a0b367e917bafe82df4c30f6d4c45a
   GoogleAppMeasurement: 2c0c6e2a7ab3fe730ade6379f732bdefb46f50b0
   GoogleDataTransport: 85fd18ff3019bb85d3f2c551d04c481dedf71fc9
   GoogleUtilities: 3df19e3c24f7bbc291d8b5809aa6b0d41e642437

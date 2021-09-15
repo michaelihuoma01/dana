@@ -15,10 +15,10 @@ import 'package:rflutter_alert/rflutter_alert.dart';
 
 class CreateGroup extends StatefulWidget {
   final SearchFrom searchFrom;
-  final File imageFile;
-  AppUser currentUser;
+  final File? imageFile;
+  AppUser? currentUser;
 
-  CreateGroup({@required this.searchFrom, this.currentUser, this.imageFile});
+  CreateGroup({required this.searchFrom, this.currentUser, this.imageFile});
 
   @override
   _CreateGroupState createState() => _CreateGroupState();
@@ -26,10 +26,10 @@ class CreateGroup extends StatefulWidget {
 
 class _CreateGroupState extends State<CreateGroup> {
   TextEditingController _searchController = TextEditingController();
-  Future<QuerySnapshot> _users;
+  Future<QuerySnapshot>? _users;
   String _searchText = '';
   List<AppUser> _userFollowing = [];
-  List<AppUser> _selectedUsers = List();
+  List<AppUser?> _selectedUsers = [];
 
   List<bool> _userFollowingState = [];
   int _followingCount = 0;
@@ -42,22 +42,22 @@ class _CreateGroupState extends State<CreateGroup> {
     _selectedUsers.add(widget.currentUser);
 
     Timestamp timestamp = Timestamp.now();
-    Map<String, dynamic> readStatus = {};
+    Map<String?, dynamic> readStatus = {};
 
-    readStatus[widget.currentUser.id] = false;
+    readStatus[widget.currentUser!.id] = false;
 
-    for (AppUser user in _selectedUsers) {
-      readStatus[user.id] = false;
+    for (AppUser? user in _selectedUsers) {
+      readStatus[user!.id] = false;
     }
 
     String groupName = textEditingController.text;
 
     DocumentReference res = await chatsRef.add({
       'groupName': groupName,
-      'admin': widget.currentUser.id,
+      'admin': widget.currentUser!.id,
       // 'photoUrl': groupPhoto,
 
-      'memberIds': _selectedUsers.map((item) => item.id).toList(),
+      'memberIds': _selectedUsers.map((item) => item!.id).toList(),
       'recentMessage': 'Chat Created',
       'recentSender': '',
       'recentTimestamp': timestamp,
@@ -67,11 +67,11 @@ class _CreateGroupState extends State<CreateGroup> {
     return Chat(
       id: res.id,
       recentMessage: 'Chat Created',
-      admin: widget.currentUser.id,
+      admin: widget.currentUser!.id,
       groupName: groupName,
       recentSender: '',
       recentTimestamp: timestamp,
-      memberIds: _selectedUsers.map((item) => item.id).toList(),
+      memberIds: _selectedUsers.map((item) => item!.id).toList(),
       readStatus: readStatus,
     );
   }
@@ -107,14 +107,14 @@ class _CreateGroupState extends State<CreateGroup> {
     });
 
     int userFollowingCount =
-        await DatabaseService.numFollowing(widget.currentUser.id);
+        await DatabaseService.numFollowing(widget.currentUser!.id);
     if (!mounted) return;
     setState(() {
       _followingCount = userFollowingCount;
     });
 
     List<String> userFollowingIds =
-        await DatabaseService.getUserFollowingIds(widget.currentUser.id);
+        await DatabaseService.getUserFollowingIds(widget.currentUser!.id);
 
     List<AppUser> userFollowing = [];
     List<bool> userFollowingState = [];
@@ -141,15 +141,15 @@ class _CreateGroupState extends State<CreateGroup> {
       leading: CircleAvatar(
         backgroundColor: Colors.grey,
         radius: 20.0,
-        backgroundImage: user.profileImageUrl.isEmpty
+        backgroundImage: (user.profileImageUrl!.isEmpty
             ? AssetImage(placeHolderImageRef)
-            : CachedNetworkImageProvider(user.profileImageUrl),
+            : CachedNetworkImageProvider(user.profileImageUrl!)) as ImageProvider<Object>?,
       ),
-      title: Text(user.name,
+      title: Text(user.name!,
           style: TextStyle(
               color: Colors.white, fontWeight: FontWeight.w600, fontSize: 18)),
       subtitle:
-          Text(user.pin, style: TextStyle(color: Colors.grey, fontSize: 12)),
+          Text(user.pin!, style: TextStyle(color: Colors.grey, fontSize: 12)),
       trailing: widget.searchFrom == SearchFrom.createStoryScreen
           ? FlatButton(
               child: Text(
@@ -204,9 +204,9 @@ class _CreateGroupState extends State<CreateGroup> {
 
   @override
   Widget build(BuildContext context) {
-    String _currentUserId = Provider.of<UserData>(context).currentUser.id;
+    String? _currentUserId = Provider.of<UserData>(context).currentUser!.id;
     void _clearSearch() {
-      WidgetsBinding.instance
+      WidgetsBinding.instance!
           .addPostFrameCallback((_) => _searchController.clear());
       setState(() {
         _users = null;
@@ -293,8 +293,8 @@ class _CreateGroupState extends State<CreateGroup> {
                       itemCount: _userFollowing.length,
                       itemBuilder: (BuildContext context, int index) {
                         AppUser follower = _userFollowing[index];
-                        AppUser filteritem = _selectedUsers.firstWhere(
-                            (item) => item.id == follower.id,
+                        AppUser? filteritem = _selectedUsers.firstWhere(
+                            (item) => item!.id == follower.id,
                             orElse: () => null);
                         return GestureDetector(
                             // onTap: () => Navigator.push(
@@ -331,10 +331,10 @@ class _CreateGroupState extends State<CreateGroup> {
                                   radius: 25.0,
                                   backgroundColor: Colors.grey,
                                   backgroundImage:
-                                      follower.profileImageUrl.isEmpty
+                                      (follower.profileImageUrl!.isEmpty
                                           ? AssetImage(placeHolderImageRef)
                                           : CachedNetworkImageProvider(
-                                              follower.profileImageUrl),
+                                              follower.profileImageUrl!)) as ImageProvider<Object>?,
                                 ),
                               ),
                               SizedBox(width: 15),
@@ -342,7 +342,7 @@ class _CreateGroupState extends State<CreateGroup> {
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    Text(follower.name,
+                                    Text(follower.name!,
                                         style: TextStyle(
                                             color: Colors.white, fontSize: 18)),
                                     Text('${follower.pin}',
@@ -358,7 +358,7 @@ class _CreateGroupState extends State<CreateGroup> {
                                   _selectedUsers.add(follower);
                                 } else {
                                   _selectedUsers.removeWhere(
-                                      (item) => item.id == follower.id);
+                                      (item) => item!.id == follower.id);
                                 }
                               });
                             },

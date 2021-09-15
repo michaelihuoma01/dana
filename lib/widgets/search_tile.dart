@@ -5,8 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 
 class SearchTile extends StatelessWidget {
-  bool unread, online;
-  String url, name, pin;
+  bool? unread, online;
+  String? url, name, pin;
 
   SearchTile({this.online, this.unread, this.name, this.url, this.pin});
 
@@ -22,7 +22,7 @@ class SearchTile extends StatelessWidget {
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(100),
                 child: CachedNetworkImage(
-                  imageUrl: url,
+                  imageUrl: url!,
                   fit: BoxFit.cover,
                   placeholder: (context, url) => Container(
                       height: 200, child: SpinKitCircle(color: Colors.white)),
@@ -35,7 +35,7 @@ class SearchTile extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(name,
+                  Text(name!,
                       style: TextStyle(color: Colors.white, fontSize: 20)),
                   Text('PIN: $pin',
                       maxLines: 3, style: TextStyle(color: Colors.grey)),

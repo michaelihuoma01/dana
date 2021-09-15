@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
 class SlideMenu extends StatefulWidget {
-  final Widget child;
-  final List<Widget> menuItems;
+  final Widget? child;
+  final List<Widget>? menuItems;
 
   SlideMenu({this.child, this.menuItems});
 
@@ -12,7 +12,7 @@ class SlideMenu extends StatefulWidget {
 
 class _SlideMenuState extends State<SlideMenu>
     with SingleTickerProviderStateMixin {
-  AnimationController _controller;
+  late AnimationController _controller;
 
   @override
   initState() {
@@ -37,15 +37,15 @@ class _SlideMenuState extends State<SlideMenu>
       onHorizontalDragUpdate: (data) {
         // we can access context.size here
         setState(() {
-          _controller.value -= data.primaryDelta / context.size.width;
+          _controller.value -= data.primaryDelta! / context.size!.width;
         });
       },
       onHorizontalDragEnd: (data) {
-        if (data.primaryVelocity > 2500)
+        if (data.primaryVelocity! > 2500)
           _controller
               .animateTo(.0); //close menu on fast swipe in the right direction
         else if (_controller.value >= .5 ||
-            data.primaryVelocity <
+            data.primaryVelocity! <
                 -2500) // fully open if dragged a lot to left or on fast swipe to left
           _controller.animateTo(1.0);
         else // close if none of above
@@ -70,7 +70,7 @@ class _SlideMenuState extends State<SlideMenu>
                           child: new Container(
                             color: Colors.black26,
                             child: new Row(
-                              children: widget.menuItems.map((child) {
+                              children: widget.menuItems!.map((child) {
                                 return new Expanded(
                                   child: child,
                                 );

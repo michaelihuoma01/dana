@@ -5,10 +5,10 @@ import 'package:dana/widgets/BrandDivider.dart';
 import 'package:flutter/material.dart';
 
 class MessageTile extends StatelessWidget {
-  bool unread, online;
-  String url, name, message, time;
-  Widget recentMessage;
-  Function onTap;
+  bool? unread, online;
+  String? url, name, message, time;
+  Widget? recentMessage;
+  Function? onTap;
 
   MessageTile(
       {this.online,
@@ -39,9 +39,9 @@ class MessageTile extends StatelessWidget {
                       child: CircleAvatar(
                         backgroundColor: Colors.white,
                         radius: 28.0,
-                        backgroundImage: url.isEmpty
+                        backgroundImage: (url!.isEmpty
                             ? AssetImage(placeHolderImageRef)
-                            : CachedNetworkImageProvider(url),
+                            : CachedNetworkImageProvider(url!)) as ImageProvider<Object>?,
                       ),
                     ),
                   ),
@@ -60,7 +60,7 @@ class MessageTile extends StatelessWidget {
                                       padding: const EdgeInsets.all(1),
                                       child: InkWell(
                                           onTap: 
-                                            onTap
+                                            onTap as void Function()?
                                           ,
                                           child: Icon(Icons.circle,
                                               color: Colors.greenAccent,
@@ -72,13 +72,13 @@ class MessageTile extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(name,
+                  Text(name!,
                       style: TextStyle(color: Colors.white, fontSize: 18)),
                   // Text(
                   //     'Hey Itadri! Do you want to come to the cinema tonight? 😊',
                   //     maxLines: 3,
                   //     style: TextStyle(color: Colors.grey)),
-                  recentMessage
+                  recentMessage!
                 ],
               ),
             ),

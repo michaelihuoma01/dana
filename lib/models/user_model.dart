@@ -1,29 +1,29 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class AppUser {
-  final String id;
-  final String name;
-  final String pin;
-  final String profileImageUrl;
-  final String email;
-  final String bio;
-  final String token;
-  final String dob;
-  final String gender;
-  final bool isPublic;
-  final bool isBanned;
+  final String? id;
+  final String? name;
+  final String? pin;
+  final String? profileImageUrl;
+  final String? email;
+  final String? bio;
+  final String? token;
+  final String? dob;
+  final String? gender;
+  final bool? isPublic;
+  final bool? isBanned;
   // final List<String> favoritePosts;
   // final List<String> blockedUsers;
   // final List<String> hideStoryFromUsers;
   // final List<String> closeFriends;
   // final bool allowStoryMessageReplies;
-  final Timestamp lastSeenOffline;
-  final Timestamp lastSeenOnline;
-  final String status;
+  final Timestamp? lastSeenOffline;
+  final Timestamp? lastSeenOnline;
+  final String? status;
 
-  final String role;
-  final bool isVerified;
-  final Timestamp timeCreated;
+  final String? role;
+  final bool? isVerified;
+  final Timestamp? timeCreated;
 
   AppUser(
       {this.id,
@@ -46,7 +46,7 @@ class AppUser {
 
   factory AppUser.fromDoc(DocumentSnapshot doc) {
     return AppUser(
-      id: doc.id ?? '',
+      id: doc.id  ,
       name: doc['name'] ?? '',
       profileImageUrl: doc['profileImageUrl'] ?? '',
       email: doc['email'],

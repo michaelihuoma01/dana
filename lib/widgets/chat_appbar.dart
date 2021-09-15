@@ -7,8 +7,8 @@ import 'package:flutter_svg/svg.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class ChatAppBar extends StatelessWidget {
-  final String title, subtitle;
-  Widget icons;
+  final String? title, subtitle;
+  Widget? icons;
 
   ChatAppBar({this.title, this.subtitle, this.icons});
 
@@ -16,7 +16,7 @@ class ChatAppBar extends StatelessWidget {
   Widget build(BuildContext context) {
     return AppBar(
       toolbarHeight: 100,
-      actions: [icons],
+      actions: [icons!],
       iconTheme: IconThemeData(color: Colors.white),
       title: GestureDetector(
         onTap: () {
@@ -40,12 +40,12 @@ class ChatAppBar extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(title,
+                    Text(title!,
                         style: TextStyle(
                             fontSize: 18,
                             fontFamily: 'Poppins-Bold',
                             color: Colors.white)),
-                    Text(subtitle,
+                    Text(subtitle!,
                         style: TextStyle(
                             fontSize: 15,
                             fontFamily: 'Poppins-Regular',

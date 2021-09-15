@@ -2,13 +2,13 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dana/models/user_model.dart';
 
 class Chat {
-  final String id, admin;
-  final String groupName;
-  final String recentMessage;
-  final String recentSender;
-  final Timestamp recentTimestamp;
-  final List<dynamic> memberIds;
-  final List<AppUser> memberInfo;
+  final String? id, admin;
+  final String? groupName;
+  final String? recentMessage;
+  final String? recentSender;
+  final Timestamp? recentTimestamp;
+  final List<dynamic>? memberIds;
+  final List<AppUser?>? memberInfo;
   final dynamic readStatus;
 
   Chat(

@@ -10,7 +10,7 @@ import 'package:dana/utilities/themes.dart';
 import 'package:dana/utils/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:gallery_saver/gallery_saver.dart';
+import 'package:gallery_saver/gallery_saver.dart'; 
 // import 'package:image_cropping/constant/enums.dart';
 // import 'package:image_cropping/image_cropping.dart';
 // import 'package:image_cropper/image_cropper.dart';
@@ -25,9 +25,9 @@ import 'dart:async';
 import 'dart:io';
 
 class CameraScreen extends StatefulWidget {
-  final List<CameraDescription> cameras;
-  final CameraConsumer cameraConsumer;
-  final Function backToHomeScreen;
+  final List<CameraDescription>? cameras;
+  final CameraConsumer? cameraConsumer;
+  final Function? backToHomeScreen;
   CameraScreen(this.cameras, this.backToHomeScreen, this.cameraConsumer);
 
   @override
@@ -36,20 +36,21 @@ class CameraScreen extends StatefulWidget {
 
 class _CameraScreenState extends State<CameraScreen>
     with WidgetsBindingObserver {
-  String imagePath;
+  String? imagePath;
   bool _toggleCamera = false;
-  CameraController controller;
+  CameraController? controller;
   final _picker = ImagePicker();
-  CameraConsumer _cameraConsumer = CameraConsumer.post;
+  CameraConsumer? _cameraConsumer = CameraConsumer.post;
   bool fromCamera = false;
   bool isRecording = false;
-  File imgFile;
+  File? imgFile; 
 
+  
   @override
   void initState() {
-    WidgetsBinding.instance.addObserver(this);
+    WidgetsBinding.instance!.addObserver(this);
     try {
-      onCameraSelected(widget.cameras[0]);
+      onCameraSelected(widget.cameras![0]);
     } catch (e) {
       print(e.toString());
     }
@@ -61,14 +62,14 @@ class _CameraScreenState extends State<CameraScreen>
 
   @override
   void dispose() {
-    WidgetsBinding.instance.removeObserver(this);
+    WidgetsBinding.instance!.removeObserver(this);
     controller?.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    if (widget.cameras.isEmpty) {
+    if (widget.cameras!.isEmpty) {
       print('NOne found');
       return Container(
         alignment: Alignment.center,
@@ -83,7 +84,7 @@ class _CameraScreenState extends State<CameraScreen>
       );
     }
 
-    if (!controller.value.isInitialized) {
+    if (!controller!.value.isInitialized) {
       return Container();
     }
     final size = MediaQuery.of(context).size;
@@ -95,7 +96,7 @@ class _CameraScreenState extends State<CameraScreen>
           Center(
             child: Transform.scale(
               scale: 1.3,
-              child: new CameraPreview(controller),
+              child: new CameraPreview(controller!),
             ),
           ),
           Align(
@@ -233,12 +234,12 @@ class _CameraScreenState extends State<CameraScreen>
                                 BorderRadius.all(Radius.circular(50.0)),
                             onTap: () {
                               if (!_toggleCamera) {
-                                onCameraSelected(widget.cameras[1]);
+                                onCameraSelected(widget.cameras![1]);
                                 setState(() {
                                   _toggleCamera = true;
                                 });
                               } else {
-                                onCameraSelected(widget.cameras[0]);
+                                onCameraSelected(widget.cameras![0]);
                                 setState(() {
                                   _toggleCamera = false;
                                 });
@@ -287,7 +288,7 @@ class _CameraScreenState extends State<CameraScreen>
     );
   }
 
-  void changeConsumer(CameraConsumer cameraConsumer) {
+  void changeConsumer(CameraConsumer? cameraConsumer) {
     if (_cameraConsumer != cameraConsumer) {
       setState(() => _cameraConsumer = cameraConsumer);
     }
@@ -298,15 +299,15 @@ class _CameraScreenState extends State<CameraScreen>
     controller = CameraController(cameraDescription, ResolutionPreset.ultraHigh,
         enableAudio: true, imageFormatGroup: ImageFormatGroup.bgra8888);
 
-    controller.addListener(() {
+    controller!.addListener(() {
       if (mounted) setState(() {});
-      if (controller.value.hasError) {
-        showMessage('Camera Error: ${controller.value.errorDescription}');
+      if (controller!.value.hasError) {
+        showMessage('Camera Error: ${controller!.value.errorDescription}');
       }
     });
 
     try {
-      await controller.initialize();
+      await controller!.initialize();
     } on CameraException catch (e) {
       showException(e);
     }
@@ -332,7 +333,7 @@ class _CameraScreenState extends State<CameraScreen>
   // }
 
   void _captureVideo() {
-    stopRecording().then((String filePath) {
+    stopRecording().then((String? filePath) {
       if (mounted) {
         setState(() {
           imagePath = filePath;
@@ -367,7 +368,7 @@ class _CameraScreenState extends State<CameraScreen>
       fromCamera = false;
 
       if (_cameraConsumer == CameraConsumer.post) {
-        String mimeStr = lookupMimeType(imagePath);
+        String mimeStr = lookupMimeType(imagePath!)!;
         var fileType = mimeStr.split('/');
         print('file type $fileType');
 
@@ -431,7 +432,7 @@ class _CameraScreenState extends State<CameraScreen>
             context,
             MaterialPageRoute(
                 builder: (_) => EditPhotoScreen(
-                    imageFile: File(imagePath),
+                    imageFile: File(imagePath!),
                     backToHomeScreen: widget.backToHomeScreen)
                 //  CreatePostScreen(
                 //   imageFile: croppedImage,
@@ -443,7 +444,7 @@ class _CameraScreenState extends State<CameraScreen>
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (_) => CreateStoryScreen(File(imagePath)),
+            builder: (_) => CreateStoryScreen(File(imagePath!)),
           ),
         );
       }
@@ -454,13 +455,13 @@ class _CameraScreenState extends State<CameraScreen>
 
   void setCameraResult() async {
     if (_cameraConsumer == CameraConsumer.post) {
-      var croppedImage = await _cropImage(File(imagePath));
+      var croppedImage = await _cropImage(File(imagePath!));
 
       if (croppedImage == null) {
         return;
       }
 
-      String mimeStr = lookupMimeType(imagePath);
+      String mimeStr = lookupMimeType(imagePath!)!;
       var fileType = mimeStr.split('/');
       print('file type $fileType');
 
@@ -490,14 +491,14 @@ class _CameraScreenState extends State<CameraScreen>
       Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (_) => CreateStoryScreen(File(imagePath)),
+          builder: (_) => CreateStoryScreen(File(imagePath!)),
         ),
       );
     }
   }
 
-  Future<String> takePicture() async {
-    if (!controller.value.isInitialized) {
+  Future<String?> takePicture() async {
+    if (!controller!.value.isInitialized) {
       showMessage('Error: select a camera first.');
       return null;
     }
@@ -507,25 +508,24 @@ class _CameraScreenState extends State<CameraScreen>
     await new Directory(dirPath).create(recursive: true);
     final String filePath = '$dirPath/${timestamp()}.jpg';
 
-    if (controller.value.isTakingPicture) {
+    if (controller!.value.isTakingPicture) {
       return null;
     }
 
     try {
-      await controller.takePicture().then((value) {
+      await controller!.takePicture().then((value) {
         GallerySaver.saveImage(value.path);
- 
-      if (mounted) {
-        setState(() {
-          imagePath = value.path;
-        });
-        if (imagePath != null) {
-          showMessage('Picture saved to $filePath');
-          fromCamera = true;
-          setCameraResult();
+
+        if (mounted) {
+          setState(() {
+            imagePath = value.path;
+          });
+          if (imagePath != null) {
+            showMessage('Picture saved to $filePath');
+            fromCamera = true;
+            setCameraResult();
+          }
         }
-      }
-   
       });
     } on CameraException catch (e) {
       showException(e);
@@ -535,13 +535,13 @@ class _CameraScreenState extends State<CameraScreen>
   }
 
   startRecording() async {
-    if (!controller.value.isInitialized) {
+    if (!controller!.value.isInitialized) {
       showMessage('Error: select a camera first.');
       return null;
     }
 
     try {
-      controller.startVideoRecording();
+      controller!.startVideoRecording();
       setState(() {
         isRecording = true;
       });
@@ -551,8 +551,8 @@ class _CameraScreenState extends State<CameraScreen>
     }
   }
 
-  Future<String> stopRecording() async {
-    if (!controller.value.isInitialized) {
+  Future<String?> stopRecording() async {
+    if (!controller!.value.isInitialized) {
       showMessage('Error: select a camera first.');
       return null;
     }
@@ -562,12 +562,12 @@ class _CameraScreenState extends State<CameraScreen>
     await new Directory(dirPath).create(recursive: true);
     final String filePath = '$dirPath/${timestamp()}.mp4';
 
-    if (controller.value.isTakingPicture) {
+    if (controller!.value.isTakingPicture) {
       return null;
     }
 
     try {
-      controller.stopVideoRecording().then((value) {
+      controller!.stopVideoRecording().then((value) {
         setState(() {
           isRecording = false;
         });
@@ -583,7 +583,7 @@ class _CameraScreenState extends State<CameraScreen>
 
   _cropImage(var imageFile) async {
     if (fromCamera == true) {
-      String mimeStr = lookupMimeType(imageFile.path);
+      String mimeStr = lookupMimeType(imageFile.path)!;
       var fileType = mimeStr.split('/');
       print('file type $fileType');
 
@@ -614,33 +614,13 @@ class _CameraScreenState extends State<CameraScreen>
 // final ByteData bytes = await rootBundle.load(imageFile.path);
 //           final Uint8List list = bytes.buffer.asUint8List();
 
-        // var croppedImage;
-        // ImageCropping.cropImage(
-        //   context,
-        //   list,
-        //   () {
-        //     CircularProgressIndicator(color: lightColor);
-        //   },
-        //   () {
-        //     // hideLoader();
-        //     print('done============');
-        //   },
-        //   (data) {
-        //     setState(
-        //       () {
-        //         // imageFile.path = data;
-        //         croppedImage = data;
-        //       },
-        //     );
-        //   },
-        //   selectedImageRatio: ImageRatio.RATIO_1_1,
-        //   visibleOtherAspectRatios: true,
-        //   squareBorderWidth: 2,
-        //   squareCircleColor: Colors.black,
-        //   defaultTextColor: lightColor,
-        //   selectedTextColor: Colors.black,
-        //   colorForWhiteSpace: Colors.white,
+        
+        // Crop(
+        //   key: cropKey,
+        //   image:  ,
+        //   aspectRatio: 4.0 / 3.0,
         // );
+
         return File(imageFile.path);
       } else {
         // imageFile = await ImagePicker().pickVideo(source: ImageSource.gallery);
@@ -658,6 +638,6 @@ class _CameraScreenState extends State<CameraScreen>
     print(message);
   }
 
-  void logError(String code, String message) =>
+  void logError(String code, String? message) =>
       print('Error: $code\nMessage: $message');
 }

@@ -3,7 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart' as http;
 
 class UrlValidatorService {
-  static Future<String> isUrlValid(
+  static Future<String?> isUrlValid(
     BuildContext context,
     String _website,
   ) async {

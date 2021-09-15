@@ -28,9 +28,9 @@ class AuthService {
         email: email,
         password: password,
       );
-      User signedInUser = authResult.user;
+      User? signedInUser = authResult.user;
       if (signedInUser != null) {
-        String token = await _messaging.getToken();
+        String? token = await _messaging.getToken();
         _firestore.collection('/users').doc(signedInUser.uid).set({
           'name': '',
           'email': email,
@@ -84,7 +84,7 @@ class AuthService {
     } catch (err) {
       Utility.showMessage(context,
           bgColor: Colors.red,
-          message: err.message,
+          message: err.toString(),
           pulsate: false,
           type: MessageTypes.error);
       throw (err);
@@ -97,7 +97,7 @@ class AuthService {
       await _auth
           .signInWithEmailAndPassword(email: email, password: password)
           .then((value) async {
-        User signedInUser = _auth.currentUser;
+        User signedInUser = _auth.currentUser!;
 
         Provider.of<UserData>(context, listen: false).currentUserId =
             signedInUser.uid;
@@ -115,19 +115,19 @@ class AuthService {
 
         SharedPreferencesUtil.setUserId(signedInUser.uid);
       });
-      SharedPreferencesUtil.setUserId(_auth.currentUser.uid);
+      SharedPreferencesUtil.setUserId(_auth.currentUser!.uid);
     } catch (err) {
       throw (err);
     }
   }
 
   static Future<void> removeToken() async {
-    final currentUser = _auth.currentUser.uid;
+    final currentUser = _auth.currentUser!.uid;
     await usersRef.doc(currentUser).set({'token': ''}, SetOptions(merge: true));
   }
 
   static Future<void> updateToken() async {
-    final currentUser = _auth.currentUser;
+    final currentUser = _auth.currentUser!;
     final token = await _messaging.getToken();
     final userDoc = await usersRef.doc(currentUser.uid).get();
     if (userDoc.exists) {

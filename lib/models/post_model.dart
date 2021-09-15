@@ -2,15 +2,15 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dana/utils/utility.dart';
 
 class Post {
-  final String id;
-  final String imageUrl, videoUrl;
-  final String caption;
-  final int likeCount;
-  final int commentCount;
-  final String authorId;
-  final String location;
-  final Timestamp timestamp;
-  final bool commentsAllowed;
+  final String? id;
+  final String? imageUrl, videoUrl;
+  final String? caption;
+  final int? likeCount;
+  final int? commentCount;
+  final String? authorId;
+  final String? location;
+  final Timestamp? timestamp;
+  final bool? commentsAllowed;
 
   Post(
       {this.id,

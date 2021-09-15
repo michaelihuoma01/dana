@@ -27,8 +27,8 @@ class StoriesService {
     return Story();
   }
 
-  static Future<List<Story>> getStoriesByUserId(
-      String userId, bool checkDate) async {
+  static Future<List<Story>?> getStoriesByUserId(
+      String? userId, bool checkDate) async {
     final Timestamp timeNow = Timestamp.now();
 
     QuerySnapshot snapshot;
@@ -57,9 +57,9 @@ class StoriesService {
     return null;
   }
 
-  static void setNewStoryView(String currentUserId, Story story) async {
+  static void setNewStoryView(String? currentUserId, Story story) async {
     final Timestamp timestamp = Timestamp.now();
-    Map<dynamic, dynamic> storyViews = story.views;
+    Map<dynamic, dynamic> storyViews = story.views!;
     storyViews[currentUserId] = timestamp;
 
     DocumentSnapshot storySnapshot = await storiesRef
@@ -70,7 +70,7 @@ class StoriesService {
 
     Story storyFromDoc = Story.fromDoc(storySnapshot);
 
-    if (!storyFromDoc.views.containsKey(currentUserId)) {
+    if (!storyFromDoc.views!.containsKey(currentUserId)) {
       await storiesRef
           .doc(story.authorId)
           .collection('stories')

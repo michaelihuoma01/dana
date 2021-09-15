@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class ImageDialog extends StatefulWidget {
-  Function onVideo, onPhotos, onDocument;
+  Function? onVideo, onPhotos, onDocument;
 
   ImageDialog({this.onDocument, this.onVideo, this.onPhotos});
   @override

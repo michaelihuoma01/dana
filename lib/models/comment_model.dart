@@ -1,10 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class Comment {
-  final String id;
-  final String content;
-  final String authorId;
-  final Timestamp timestamp;
+  final String? id;
+  final String? content;
+  final String? authorId;
+  final Timestamp? timestamp;
 
   Comment({
     this.id,

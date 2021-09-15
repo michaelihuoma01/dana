@@ -2,13 +2,13 @@ import 'package:dana/utils/constants.dart';
 import 'package:flutter/material.dart';
 
 class ChatBubble extends StatelessWidget {
-  String message;
-  bool isSender;
+  String? message;
+  bool? isSender;
 
   ChatBubble({this.message, this.isSender});
   @override
   Widget build(BuildContext context) {
-    return isSender
+    return isSender!
         ? Align(
             alignment: Alignment.centerRight,
             child: ConstrainedBox(
@@ -27,7 +27,7 @@ class ChatBubble extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       mainAxisSize: MainAxisSize.max,
                       children: [
-                        Text(message, style: TextStyle(fontSize: 16)),
+                        Text(message!, style: TextStyle(fontSize: 16)),
                         SizedBox(height: 5),
                         Text('09:25 am',
                             style: TextStyle(color: Colors.grey, fontSize: 12)),
@@ -52,7 +52,7 @@ class ChatBubble extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisSize: MainAxisSize.max,
                   children: [
-                    Text(message,
+                    Text(message!,
                         style: TextStyle(color: Colors.white, fontSize: 16)),
                     SizedBox(height: 5),
                     Text('09:25 am',

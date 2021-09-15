@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
 
 class FullScreenVideo extends StatefulWidget {
-  final String videoUrl;
+  final String? videoUrl;
 
   FullScreenVideo(this.videoUrl);
 
@@ -14,16 +14,16 @@ class FullScreenVideo extends StatefulWidget {
 }
 
 class _FullScreenVideoState extends State<FullScreenVideo> {
-  VideoPlayerController _controller;
+  late VideoPlayerController _controller;
 
-  ChewieController chewieController;
+  late ChewieController chewieController;
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
 
-    _controller = VideoPlayerController.network(widget.videoUrl)
+    _controller = VideoPlayerController.network(widget.videoUrl!)
       ..initialize().then((_) {
         // Ensure the first frame is shown after the video is initialized, even before the play button has been pressed.
         setState(() {});
@@ -67,7 +67,7 @@ class _FullScreenVideoState extends State<FullScreenVideo> {
               color: darkColor,
               child: Center(
                 child: Hero(
-                  tag: widget.videoUrl,
+                  tag: widget.videoUrl!,
                   child: _controller.value.isInitialized
                       ? Chewie(controller: chewieController)
                       : CircularProgressIndicator(color: lightColor),

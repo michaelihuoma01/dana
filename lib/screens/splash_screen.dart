@@ -9,7 +9,7 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 class SplashScreen extends StatefulWidget {
   static const String id = 'SplashScreen';
 
-  final String currentUserId;
+  final String? currentUserId;
   SplashScreen({
     this.currentUserId,
   });
@@ -26,7 +26,7 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   Future<void> checkIfUserExists() async {
-    String userId = await SharedPreferencesUtil.getUserId();
+    String? userId = await SharedPreferencesUtil.getUserId();
     Navigator.pop(context);
     if (userId != null) {
       Navigator.pushAndRemoveUntil(

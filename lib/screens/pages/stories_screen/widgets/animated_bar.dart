@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 
 class AnimatedBar extends StatelessWidget {
-  final AnimationController animationController;
+  final AnimationController? animationController;
   final int position;
-  final int currentIndex;
+  final int? currentIndex;
 
   const AnimatedBar(
-      {Key key,
-      @required this.animationController,
-      @required this.position,
-      @required this.currentIndex})
+      {Key? key,
+      required this.animationController,
+      required this.position,
+      required this.currentIndex})
       : super(key: key);
 
   @override
@@ -23,16 +23,16 @@ class AnimatedBar extends StatelessWidget {
               children: <Widget>[
                 _buildContainer(
                   double.infinity,
-                  position < currentIndex
+                  position < currentIndex!
                       ? Colors.white
                       : Colors.white.withOpacity(0.5),
                 ),
                 position == currentIndex
                     ? AnimatedBuilder(
-                        animation: animationController,
+                        animation: animationController!,
                         builder: (context, child) {
                           return _buildContainer(
-                            constraints.maxWidth * animationController.value,
+                            constraints.maxWidth * animationController!.value,
                             Colors.white,
                           );
                         })

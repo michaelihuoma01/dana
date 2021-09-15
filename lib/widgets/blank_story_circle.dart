@@ -8,18 +8,18 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class BlankStoryCircle extends StatelessWidget {
-  final AppUser user;
+  final AppUser? user;
   final Function goToCameraScreen;
   final double size;
-  final List<CameraDescription> cameras;
+  final List<CameraDescription>? cameras;
 
   final bool showUserName;
 
   var backToHomeScreenFromCameraScreen, cameraConsumer;
 
   BlankStoryCircle(
-      {@required this.user,
-      @required this.goToCameraScreen,
+      {required this.user,
+      required this.goToCameraScreen,
       this.size = 55,
       this.cameras,
       this.backToHomeScreenFromCameraScreen,
@@ -27,8 +27,8 @@ class BlankStoryCircle extends StatelessWidget {
       this.showUserName = true});
   @override
   Widget build(BuildContext context) {
-    final currentUser = Provider.of<UserData>(context).currentUser;
-    bool isCurrentUser = currentUser.id == user.id ? true : false;
+    final currentUser = Provider.of<UserData>(context).currentUser!;
+    bool isCurrentUser = currentUser.id == user!.id ? true : false;
     return Container(
       width: size + 20,
       margin: const EdgeInsets.only(top: 5.0, left: 5.0, right: 5.0),
@@ -62,9 +62,9 @@ class BlankStoryCircle extends StatelessWidget {
                   },
                   child: ClipOval(
                     child: Image(
-                      image: user.profileImageUrl.isEmpty
+                      image: (user!.profileImageUrl!.isEmpty
                           ? AssetImage(placeHolderImageRef)
-                          : CachedNetworkImageProvider(user.profileImageUrl),
+                          : CachedNetworkImageProvider(user!.profileImageUrl!)) as ImageProvider<Object>,
                       height: 60.0,
                       width: 60.0,
                       fit: BoxFit.cover,
@@ -96,7 +96,7 @@ class BlankStoryCircle extends StatelessWidget {
           if (showUserName)
             Expanded(
               child: Text(
-                user.name,
+                user!.name!,
                 textAlign: TextAlign.center,
                 overflow: TextOverflow.clip,
                 style: TextStyle(color: Colors.white),

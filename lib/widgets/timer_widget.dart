@@ -3,11 +3,11 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 
 class TimerView extends StatefulWidget {
-  final Function updateTimerStatus;
-  bool start = false;
+  final Function? updateTimerStatus;
+  bool? start = false;
 
   TimerView({
-    Key key,
+    Key? key,
     this.start,
     this.updateTimerStatus,
   }) : super(key: key);
@@ -17,7 +17,7 @@ class TimerView extends StatefulWidget {
 }
 
 class TimerViewState extends State<TimerView> {
-  Timer _timer;
+  Timer? _timer;
   int _counter = 0 * 60;
 
   @override
@@ -28,7 +28,7 @@ class TimerViewState extends State<TimerView> {
 
   void startTimer() {
     if (_timer != null) {
-      _timer.cancel();
+      _timer!.cancel();
     }
     if (widget.start == true) {
       _timer = Timer.periodic(Duration(seconds: 1), (timer) {
@@ -48,7 +48,7 @@ class TimerViewState extends State<TimerView> {
   void dispose() {
     super.dispose();
     if (_timer != null) {
-      _timer.cancel();
+      _timer!.cancel();
     }
   }
 

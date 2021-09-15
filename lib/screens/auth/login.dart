@@ -49,7 +49,7 @@ class _LoginScreenState extends State<LoginScreen> {
     } catch (err) {
       Utility.showMessage(context,
           bgColor: Colors.red,
-          message: err.message,
+          message: err.toString(),
           pulsate: false,
           type: MessageTypes.error);
       setState(() {
@@ -98,13 +98,13 @@ class _LoginScreenState extends State<LoginScreen> {
                         Image.asset('assets/images/logo.png', height: 130),
                         SizedBox(height: 30),
                         TextFormFieldWidget(
-                            hintText: S.of(context).formFieldEmail,
+                            hintText: S.of(context)!.formFieldEmail,
                             onChanged: (value) => _inputEmail = value,
                             fillColor: Colors.white,
                             type: TextInputType.emailAddress),
                         SizedBox(height: 15),
                         TextFormFieldWidget(
-                            hintText: S.of(context).formFieldPassword,
+                            hintText: S.of(context)!.formFieldPassword,
                             onChanged: (value) => _inputPassword = value,
                             obscureText: true,
                             fillColor: Colors.white),
@@ -119,7 +119,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                         builder: (context) =>
                                             ForgotPasswordScreen(isPassword: false)));
                               },
-                              child: Text(S.of(context).forgotPassword,
+                              child: Text(S.of(context)!.forgotPassword,
                                   style: TextStyle(
                                       color: Colors.white,
                                       // fontFamily: 'Poppins-Italic',
@@ -129,7 +129,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         Container(
                           margin: EdgeInsets.only(bottom: 20),
                           child: ButtonWidget(
-                            title: S.of(context).login,
+                            title: S.of(context)!.login,
                             onPressed: () {
                               loginPressed();
                               // Locale myLocale = Localizations.localeOf(context);
@@ -169,7 +169,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Text('${S.of(context).noAccount} ',
+                            Text('${S.of(context)!.noAccount} ',
                                 style: TextStyle(color: Colors.white, fontSize: 16)),
                             GestureDetector(
                               onTap: () {
@@ -178,7 +178,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                     MaterialPageRoute(
                                         builder: (context) => SetupAccount()));
                               },
-                              child: Text('  ${S.of(context).signUp}',
+                              child: Text('  ${S.of(context)!.signUp}',
                                   style: TextStyle(
                                       color: lightColor,
                                       fontSize: 16,
@@ -189,7 +189,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Text(S.of(context).formFieldChangeLanguage,
+                            Text(S.of(context)!.formFieldChangeLanguage,
                                 style: TextStyle(color: Colors.white, fontSize: 16)),
                             Padding(
                               padding: const EdgeInsets.all(0),
@@ -199,8 +199,8 @@ class _LoginScreenState extends State<LoginScreen> {
                                   Icons.language,
                                   color: lightColor, 
                                 ),
-                                onChanged: (Language language) {
-                                  _changeLanguage(language);
+                                onChanged: (Language? language) {
+                                  _changeLanguage(language!);
                                 },
                                 items: Language.languageList()
                                     .map<DropdownMenuItem<Language>>(

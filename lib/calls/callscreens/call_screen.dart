@@ -22,10 +22,10 @@ import 'package:agora_rtc_engine/rtc_remote_view.dart' as rtc_remote_view;
 
 class CallScreen extends StatefulWidget {
   final Call call;
-  final String currentUserId;
-  final bool isAudio;
+  final String? currentUserId;
+  final bool? isAudio;
 
-  CallScreen({@required this.call, this.isAudio, this.currentUserId});
+  CallScreen({required this.call, this.isAudio, this.currentUserId});
 
   @override
   _CallScreenState createState() => _CallScreenState();
@@ -35,7 +35,7 @@ class _CallScreenState extends State<CallScreen> {
   final CallMethods callMethods = CallMethods();
 
   // UserProvider userProvider;
-  StreamSubscription callStreamSubscription;
+  late StreamSubscription callStreamSubscription;
   final GlobalKey<TimerViewState> _timerKey = GlobalKey();
 
   static final _users = <int>[];
@@ -43,8 +43,8 @@ class _CallScreenState extends State<CallScreen> {
   bool muted = false;
   bool onSpeaker = false;
   bool start = false;
-  RtcEngine _engine;
-  int _remoteUid;
+  late RtcEngine _engine;
+  int? _remoteUid;
 
   @override
   void initState() {
@@ -70,11 +70,11 @@ class _CallScreenState extends State<CallScreen> {
     await _engine.enableWebSdkInteroperability(true);
     await _engine.setParameters(
         '''{\"che.video.lowBitRateStreamParameter\":{\"width\":320,\"height\":180,\"frameRate\":15,\"bitRate\":140}}''');
-    await _engine.joinChannel(null, widget.call.channelId, null, 0);
+    await _engine.joinChannel(null, widget.call.channelId!, null, 0);
   }
 
   addPostFrameCallback() {
-    SchedulerBinding.instance.addPostFrameCallback((_) {
+    SchedulerBinding.instance!.addPostFrameCallback((_) {
       // userProvider = Provider.of<UserProvider>(context, listen: false);
 
       callStreamSubscription = callMethods
@@ -146,7 +146,7 @@ class _CallScreenState extends State<CallScreen> {
       setState(() {
         final info = 'onUserOffline: a: ${a.toString()}, b: ${b.toString()}';
         _infoStrings.add(info);
-        _timerKey?.currentState?.cancelTimer();
+        _timerKey.currentState?.cancelTimer();
       });
     }, localUserRegistered: (var s, i) {
       setState(() {
@@ -201,7 +201,7 @@ class _CallScreenState extends State<CallScreen> {
     final List<Widget> list = [
       rtc_local_view.SurfaceView(),
       rtc_remote_view.SurfaceView(
-        uid: _remoteUid,
+        uid: _remoteUid!,
       ),
     ];
 
@@ -225,45 +225,45 @@ class _CallScreenState extends State<CallScreen> {
   }
 
   /// Video layout wrapper
-  Widget _viewRows() {
-    Center(
-      child: rtc_remote_view.SurfaceView(uid: _remoteUid),
-    );
-    // final views = _getRenderViews();
-    // switch (views.length) {
-    //   case 1:
-    //     return Container(
-    //         child: Column(
-    //       children: <Widget>[_videoView(views[0])],
-    //     ));
-    //   case 2:
-    //     return Container(
-    //         child: Column(
-    //       children: <Widget>[
-    //         _expandedVideoRow([views[0]]),
-    //         _expandedVideoRow([views[1]])
-    //       ],
-    //     ));
-    //   case 3:
-    //     return Container(
-    //         child: Column(
-    //       children: <Widget>[
-    //         _expandedVideoRow(views.sublist(0, 2)),
-    //         _expandedVideoRow(views.sublist(2, 3))
-    //       ],
-    //     ));
-    //   case 4:
-    //     return Container(
-    //         child: Column(
-    //       children: <Widget>[
-    //         _expandedVideoRow(views.sublist(0, 2)),
-    //         _expandedVideoRow(views.sublist(2, 4))
-    //       ],
-    //     ));
-    //   default:
-    // }
-    // return Container();
-  }
+  // Widget _viewRows() {
+  // Center(
+  //   child: rtc_remote_view.SurfaceView(uid: _remoteUid!),
+  // );
+  // final views = _getRenderViews();
+  // switch (views.length) {
+  //   case 1:
+  //     return Container(
+  //         child: Column(
+  //       children: <Widget>[_videoView(views[0])],
+  //     ));
+  //   case 2:
+  //     return Container(
+  //         child: Column(
+  //       children: <Widget>[
+  //         _expandedVideoRow([views[0]]),
+  //         _expandedVideoRow([views[1]])
+  //       ],
+  //     ));
+  //   case 3:
+  //     return Container(
+  //         child: Column(
+  //       children: <Widget>[
+  //         _expandedVideoRow(views.sublist(0, 2)),
+  //         _expandedVideoRow(views.sublist(2, 3))
+  //       ],
+  //     ));
+  //   case 4:
+  //     return Container(
+  //         child: Column(
+  //       children: <Widget>[
+  //         _expandedVideoRow(views.sublist(0, 2)),
+  //         _expandedVideoRow(views.sublist(2, 4))
+  //       ],
+  //     ));
+  //   default:
+  // }
+  // return Container();
+  // }
 
   /// Info panel to show logs
   Widget _panel() {
@@ -279,7 +279,7 @@ class _CallScreenState extends State<CallScreen> {
             itemCount: _infoStrings.length,
             itemBuilder: (BuildContext context, int index) {
               if (_infoStrings.isEmpty) {
-                return null;
+                return SizedBox.shrink();
               }
               return Padding(
                 padding: const EdgeInsets.symmetric(
@@ -383,7 +383,6 @@ class _CallScreenState extends State<CallScreen> {
               onTap: () async {
                 await _engine.leaveChannel();
                 callMethods.endCall(call: widget.call);
-                
               },
               child: Container(
                   decoration: BoxDecoration(
@@ -449,7 +448,8 @@ class _CallScreenState extends State<CallScreen> {
                   children: [
                     (_remoteUid != null)
                         ? Center(
-                            child: rtc_remote_view.SurfaceView(uid: _remoteUid))
+                            child:
+                                rtc_remote_view.SurfaceView(uid: _remoteUid!))
                         : Center(
                             child: Text('Calling...',
                                 style: TextStyle(color: Colors.white))),
@@ -539,8 +539,8 @@ class _CallScreenState extends State<CallScreen> {
                                 Text(
                                     (widget.call.receiverId ==
                                             widget.currentUserId)
-                                        ? widget.call.callerName
-                                        : widget.call.receiverName,
+                                        ? widget.call.callerName!
+                                        : widget.call.receiverName!,
                                     style: TextStyle(
                                         fontFamily: 'Poppins-Regular',
                                         fontSize: 16,

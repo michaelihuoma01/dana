@@ -3,14 +3,14 @@ import 'package:ionicons/ionicons.dart';
 
 class SwipeUp extends StatefulWidget {
   final Function onSwipeUp;
-  SwipeUp({@required this.onSwipeUp, Key key}) : super(key: key);
+  SwipeUp({required this.onSwipeUp, Key? key}) : super(key: key);
   @override
   _SwipeUpState createState() => _SwipeUpState();
 }
 
 class _SwipeUpState extends State<SwipeUp> with TickerProviderStateMixin {
-  AnimationController _controller;
-  Animation<double> _animation;
+  late AnimationController _controller;
+  late Animation<double> _animation;
 
   @override
   void initState() {
@@ -35,7 +35,7 @@ class _SwipeUpState extends State<SwipeUp> with TickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: widget.onSwipeUp,
+      onTap: widget.onSwipeUp as void Function()?,
       child: Column(
         children: <Widget>[
           ScaleTransition(

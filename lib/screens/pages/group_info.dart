@@ -14,11 +14,11 @@ import 'package:provider/provider.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
 
 class GroupInfo extends StatefulWidget {
-  final File imageFile;
-  AppUser currentUser;
-  List<AppUser> groupUsers;
-  List<dynamic> groupUserIds;
-  String admin;
+  final File? imageFile;
+  AppUser? currentUser;
+  List<AppUser?>? groupUsers;
+  List<dynamic>? groupUserIds;
+  String? admin;
 
   GroupInfo(
       {this.groupUsers,
@@ -33,10 +33,10 @@ class GroupInfo extends StatefulWidget {
 
 class _GroupInfoState extends State<GroupInfo> {
   TextEditingController _searchController = TextEditingController();
-  Future<QuerySnapshot> _users;
+  Future<QuerySnapshot>? _users;
   String _searchText = '';
   List<AppUser> _userFollowing = [];
-  List<AppUser> _selectedUsers = List();
+  List<AppUser?> _selectedUsers = [];
 
   List<bool> _userFollowingState = [];
   int _followingCount = 0;
@@ -49,22 +49,22 @@ class _GroupInfoState extends State<GroupInfo> {
     _selectedUsers.add(widget.currentUser);
 
     Timestamp timestamp = Timestamp.now();
-    Map<String, dynamic> readStatus = {};
+    Map<String?, dynamic> readStatus = {};
 
-    readStatus[widget.currentUser.id] = false;
+    readStatus[widget.currentUser!.id] = false;
 
-    for (AppUser user in _selectedUsers) {
-      readStatus[user.id] = false;
+    for (AppUser? user in _selectedUsers) {
+      readStatus[user!.id] = false;
     }
 
     String groupName = textEditingController.text;
 
     DocumentReference res = await chatsRef.add({
       'groupName': groupName,
-      'admin': widget.currentUser.id,
+      'admin': widget.currentUser!.id,
       // 'photoUrl': groupPhoto,
 
-      'memberIds': _selectedUsers.map((item) => item.id).toList(),
+      'memberIds': _selectedUsers.map((item) => item!.id).toList(),
       'recentMessage': 'Chat Created',
       'recentSender': '',
       'recentTimestamp': timestamp,
@@ -75,11 +75,11 @@ class _GroupInfoState extends State<GroupInfo> {
     return Chat(
       id: res.id,
       recentMessage: 'Chat Created',
-      admin: widget.currentUser.id,
+      admin: widget.currentUser!.id,
       groupName: groupName,
       recentSender: '',
       recentTimestamp: timestamp,
-      memberIds: _selectedUsers.map((item) => item.id).toList(),
+      memberIds: _selectedUsers.map((item) => item!.id).toList(),
       readStatus: readStatus,
     );
   }
@@ -118,20 +118,20 @@ class _GroupInfoState extends State<GroupInfo> {
     });
 
     int userFollowingCount =
-        await DatabaseService.numFollowing(widget.currentUser.id);
+        await DatabaseService.numFollowing(widget.currentUser!.id);
     if (!mounted) return;
     setState(() {
       _followingCount = userFollowingCount;
     });
 
     List<String> userFollowingIds =
-        await DatabaseService.getUserFollowingIds(widget.currentUser.id);
+        await DatabaseService.getUserFollowingIds(widget.currentUser!.id);
 
     List<AppUser> userFollowing = [];
 
     List<bool> userFollowingState = [];
 
-    for (String userId in widget.groupUserIds) {
+    for (String? userId in widget.groupUserIds as Iterable<String?>) {
       AppUser user = await DatabaseService.getUserWithId(userId);
       userFollowingState.add(true);
       userFollowing.add(user);
@@ -151,9 +151,9 @@ class _GroupInfoState extends State<GroupInfo> {
 
   @override
   Widget build(BuildContext context) {
-    String _currentUserId = Provider.of<UserData>(context).currentUser.id;
+    String? _currentUserId = Provider.of<UserData>(context).currentUser!.id;
     void _clearSearch() {
-      WidgetsBinding.instance
+      WidgetsBinding.instance!
           .addPostFrameCallback((_) => _searchController.clear());
       setState(() {
         _users = null;
@@ -233,7 +233,7 @@ class _GroupInfoState extends State<GroupInfo> {
                   child: ListView.builder(
                     itemCount: _userFollowing.length,
                     itemBuilder: (BuildContext context, int index) {
-                      AppUser follower = widget.groupUsers[index];
+                      AppUser follower = widget.groupUsers![index]!;
                       // AppUser filteritem = _selectedUsers.firstWhere(
                       //     (item) => item.id == follower.id,
                       //     orElse: () => null);
@@ -267,10 +267,10 @@ class _GroupInfoState extends State<GroupInfo> {
                                   radius: 25.0,
                                   backgroundColor: Colors.grey,
                                   backgroundImage:
-                                      follower.profileImageUrl.isEmpty
+                                      (follower.profileImageUrl!.isEmpty
                                           ? AssetImage(placeHolderImageRef)
                                           : CachedNetworkImageProvider(
-                                              follower.profileImageUrl),
+                                              follower.profileImageUrl!)) as ImageProvider<Object>?,
                                 ),
                               ),
                               SizedBox(width: 15),

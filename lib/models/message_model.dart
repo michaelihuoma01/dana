@@ -1,17 +1,17 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class Message {
-  final String id;
-  final String senderId;
-  final String text;
-  final String imageUrl;
-  final String giphyUrl;
-  final String audioUrl;
-  final String videoUrl;
-  final String fileUrl;
-  final String fileName;
-  final Timestamp timestamp;
-  final bool isLiked;
+  final String? id;
+  final String? senderId;
+  final String? text;
+  final String? imageUrl;
+  final String? giphyUrl;
+  final String? audioUrl;
+  final String? videoUrl;
+  final String? fileUrl;
+  final String? fileName;
+  final Timestamp? timestamp;
+  final bool? isLiked;
 
   Message(
       {this.id,

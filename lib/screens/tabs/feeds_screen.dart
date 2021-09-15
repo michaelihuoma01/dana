@@ -24,9 +24,9 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
 
 class FeedsScreen extends StatefulWidget {
-  AppUser currentUser;
-  final Function goToCameraScreen;
-  ScrollController homeController;
+  AppUser? currentUser;
+  final Function? goToCameraScreen;
+  ScrollController? homeController;
 
   FeedsScreen({this.currentUser, this.goToCameraScreen, this.homeController});
 
@@ -57,7 +57,7 @@ class _FeedsScreenState extends State<FeedsScreen> {
   _setupFeed() async {
     _setupStories();
 
-    String userId = await SharedPreferencesUtil.getUserId();
+    String? userId = await SharedPreferencesUtil.getUserId();
 
     print(userId);
     setState(() => _isLoadingFeed = true);
@@ -73,7 +73,7 @@ class _FeedsScreenState extends State<FeedsScreen> {
     });
 
     stream = activitiesRef
-        .doc(widget.currentUser.id)
+        .doc(widget.currentUser!.id)
         .collection('userActivities')
         // .where('memberIds', arrayContains: widget.currentUser.id)
         // .orderBy('recentTimestamp', descending: true)
@@ -97,12 +97,12 @@ class _FeedsScreenState extends State<FeedsScreen> {
     List<AppUser> followingUsers =
         await DatabaseService.getUserFollowingUsers(widget.currentUser?.id);
 
-    print(widget.currentUser.id);
+    print(widget.currentUser!.id);
 
     // AppUser currentUser =
     //     Provider.of<UserData>(context, listen: false).currentUser;
 
-    List<Story> currentUserStories =
+    List<Story>? currentUserStories =
         await StoriesService.getStoriesByUserId(widget.currentUser?.id, true);
 
     // Add current user to the first story circle
@@ -154,7 +154,7 @@ class _FeedsScreenState extends State<FeedsScreen> {
 
     // String userId = await SharedPreferencesUtil.getUserId();
 
-    if (widget.currentUser.name == null) {
+    if (widget.currentUser!.name == null) {
       AuthService.logout(context);
     }
     // print('i have the current user now $userId ');
@@ -190,7 +190,7 @@ class _FeedsScreenState extends State<FeedsScreen> {
                       radius: 25.0,
                       backgroundColor: Colors.grey,
                       backgroundImage: CachedNetworkImageProvider(
-                          widget.currentUser?.profileImageUrl),
+                          widget.currentUser!.profileImageUrl!),
                     ),
                   ),
                   SizedBox(width: 10),
@@ -230,7 +230,7 @@ class _FeedsScreenState extends State<FeedsScreen> {
                           context,
                           MaterialPageRoute(
                               builder: (context) => AddPost(
-                                  currentUserId: widget.currentUser.id)));
+                                  currentUserId: widget.currentUser!.id)));
                     },
                     child: Icon(Icons.post_add, color: lightColor, size: 30)),
                 SizedBox(width: 10),
@@ -321,11 +321,11 @@ class _FeedsScreenState extends State<FeedsScreen> {
                                   return SizedBox.shrink();
                                 }
 
-                                AppUser author = snapshot.data;
+                                AppUser? author = snapshot.data;
                                 return (post.imageUrl != null)
                                     ? PostView(
                                         postStatus: PostStatus.feedPost,
-                                        currentUserId: widget.currentUser.id,
+                                        currentUserId: widget.currentUser!.id,
                                         author: author,
                                         post: post,
                                       )
@@ -333,14 +333,14 @@ class _FeedsScreenState extends State<FeedsScreen> {
                                         ? VideoPostView(
                                             postStatus: PostStatus.feedPost,
                                             currentUserId:
-                                                widget.currentUser.id,
+                                                widget.currentUser!.id,
                                             author: author,
                                             post: post,
                                           )
                                         : TextPost(
                                             postStatus: PostStatus.feedPost,
                                             currentUserId:
-                                                widget.currentUser.id,
+                                                widget.currentUser!.id,
                                             author: author,
                                             post: post,
                                           );

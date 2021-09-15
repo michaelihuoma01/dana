@@ -2,15 +2,15 @@ import 'package:flutter/material.dart';
 
 class CustomTextForm extends StatelessWidget {
   final TextEditingController controller;
-  final Size screenSize;
+  final Size? screenSize;
   final String hintText;
   final int maxLength;
 
   CustomTextForm({
-    @required this.controller,
-    @required this.screenSize,
-    @required this.hintText,
-    @required this.maxLength,
+    required this.controller,
+    required this.screenSize,
+    required this.hintText,
+    required this.maxLength,
   });
   @override
   Widget build(BuildContext context) {
@@ -19,9 +19,9 @@ class CustomTextForm extends StatelessWidget {
         Row(
           children: <Widget>[
             Container(
-              width: screenSize.width - 20,
+              width: screenSize!.width - 20,
               child: TextFormField(
-                validator: (input) => input.trim().length > maxLength
+                validator: (input) => input!.trim().length > maxLength
                     ? 'Please enter a $hintText less than $maxLength characters'
                     : null,
                 maxLength: maxLength,

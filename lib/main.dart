@@ -48,7 +48,7 @@ void main() async {
 class MyApp extends StatefulWidget {
   // This widget is the root of your application.
   static void setLocale(BuildContext context, Locale newLocale) {
-    _MyAppState state = context.findAncestorStateOfType<_MyAppState>();
+    _MyAppState state = context.findAncestorStateOfType<_MyAppState>()!;
     state.setLocale(newLocale);
   }
 
@@ -69,7 +69,7 @@ class _MyAppState extends State<MyApp> {
   }
 
   Widget _getScreenId() {
-    return StreamBuilder<User>(
+    return StreamBuilder<User?>(
       stream: FirebaseAuth.instance.authStateChanges(),
       builder: (BuildContext context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting ||
@@ -78,9 +78,9 @@ class _MyAppState extends State<MyApp> {
         }
         if (snapshot.hasData && _isTimerDone) {
           Provider.of<UserData>(context, listen: false).currentUserId =
-              snapshot.data.uid;
+              snapshot.data!.uid;
           return HomeScreen(
-            currentUserId: snapshot.data.uid,
+            currentUserId: snapshot.data!.uid,
           );
         } else {
           return LoginScreen();
@@ -89,7 +89,7 @@ class _MyAppState extends State<MyApp> {
     );
   }
 
-  Locale _locale;
+  Locale? _locale;
   setLocale(Locale locale) {
     setState(() {
       _locale = locale;
@@ -114,7 +114,7 @@ class _MyAppState extends State<MyApp> {
       return Container(
         child: Center(
           child: CircularProgressIndicator(
-              valueColor: AlwaysStoppedAnimation<Color>(Colors.purple[800])),
+              valueColor: AlwaysStoppedAnimation<Color?>(Colors.purple[800])),
         ),
       );
     } else {
@@ -133,7 +133,7 @@ class _MyAppState extends State<MyApp> {
         ],
         localeResolutionCallback: (locale, supportedLocales) {
           for (var supportedLocale in supportedLocales) {
-            if (supportedLocale.languageCode == locale.languageCode &&
+            if (supportedLocale.languageCode == locale!.languageCode &&
                 supportedLocale.countryCode == locale.countryCode) {
               return supportedLocale;
             }

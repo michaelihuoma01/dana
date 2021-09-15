@@ -18,10 +18,10 @@ import 'package:provider/provider.dart';
 import 'package:video_player/video_player.dart';
 
 class CreatePostScreen extends StatefulWidget {
-  final Post post;
-  final PostStatus postStatus;
-  final File imageFile;
-  final Function backToHomeScreen;
+  final Post? post;
+  final PostStatus? postStatus;
+  final File? imageFile;
+  final Function? backToHomeScreen;
 
   CreatePostScreen(
       {this.post, this.postStatus, this.imageFile, this.backToHomeScreen});
@@ -36,35 +36,36 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
 
   final _formKey = GlobalKey<FormState>();
 
-  String _caption = '';
+  String? _caption = '';
   bool _isLoading = false;
   bool isVideo = false;
-  Post _post;
-  String _currentUserId;
+  Post? _post;
+  String? _currentUserId;
 
   @override
   initState() {
     super.initState();
 
-    String currentUserId =
-        Provider.of<UserData>(context, listen: false).currentUser.id;
+    String? currentUserId =
+        Provider.of<UserData>(context, listen: false).currentUser!.id;
 
     setState(() {
       _currentUserId = currentUserId;
     });
     if (widget.post != null) {
       setState(() {
-        _captionController.value = TextEditingValue(text: widget.post.caption);
+        _captionController.value =
+            TextEditingValue(text: widget.post!.caption!);
         _locationController.value =
-            TextEditingValue(text: widget.post.location);
-        _caption = widget.post.caption;
+            TextEditingValue(text: widget.post!.location!);
+        _caption = widget.post!.caption;
 
         _post = widget.post;
       });
     }
 
     if (widget.imageFile != null) {
-      String mimeStr = lookupMimeType(widget.imageFile?.path);
+      String? mimeStr = lookupMimeType(widget.imageFile!.path)!;
       var fileType = mimeStr.split('/');
       print('file type $fileType');
 
@@ -80,8 +81,8 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
 
   @override
   void dispose() {
-    _captionController?.dispose();
-    _locationController?.dispose();
+    _captionController.dispose();
+    _locationController.dispose();
     super.dispose();
   }
 
@@ -89,9 +90,9 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
     FocusScope.of(context).unfocus();
 
     if (!_isLoading &&
-        _formKey.currentState.validate() &&
-        (widget.imageFile != null || _post.imageUrl != null)) {
-      _formKey.currentState.save();
+        _formKey.currentState!.validate() &&
+        (widget.imageFile != null || _post!.imageUrl != null)) {
+      _formKey.currentState!.save();
 
       if (mounted) {
         setState(() {
@@ -102,23 +103,24 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
       if (_post != null) {
         // Edit existing Post
         Post post = Post(
-          id: _post.id,
-          imageUrl: _post.imageUrl,
-          videoUrl: _post.videoUrl,
+          id: _post!.id,
+          imageUrl: _post!.imageUrl,
+          videoUrl: _post!.videoUrl,
           caption: _captionController.text.trim(),
           location: _locationController.text.trim(),
-          likeCount: _post.likeCount,
-          commentCount: _post.commentCount,
-          authorId: _post.authorId,
-          timestamp: _post.timestamp,
-          commentsAllowed: _post.commentsAllowed,
+          likeCount: _post!.likeCount,
+          commentCount: _post!.commentCount,
+          authorId: _post!.authorId,
+          timestamp: _post!.timestamp,
+          commentsAllowed: _post!.commentsAllowed,
         );
 
         DatabaseService.editPost(post, widget.postStatus);
       } else {
         //Create new Post
         if (isVideo == false) {
-          String imageUrl = (await StroageService.uploadPost(widget.imageFile));
+          String imageUrl =
+              (await StroageService.uploadPost(widget.imageFile!));
 
           print(imageUrl);
           Post post = Post(
@@ -136,7 +138,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
         } else {
           print(widget.imageFile);
           String videoUrl =
-              (await StroageService.uploadPostVideo(widget.imageFile));
+              (await StroageService.uploadPostVideo(widget.imageFile!));
 
           print('======================== $videoUrl');
 
@@ -154,7 +156,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
           DatabaseService.createPost(post);
         }
       }
-      widget.backToHomeScreen();
+      widget.backToHomeScreen!();
     }
   }
 
@@ -191,13 +193,13 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
               actions: <Widget>[
                 !_isLoading
                     ? FlatButton(
-                        onPressed:  _submit  ,
+                        onPressed: _submit,
                         child: Text(
                           widget.imageFile == null ? 'Save' : 'Share',
                           style: TextStyle(
-                              color: lightColor ,
+                              color: lightColor,
                               fontWeight: FontWeight.bold,
-                              fontSize: 20.0),
+                              fontSize: 18),
                         ))
                     : Padding(
                         padding: const EdgeInsets.only(right: 10.0),
@@ -221,7 +223,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
                       screenSize: screenSize,
                       imageUrl: _post?.imageUrl,
                       controller: _captionController,
-                      imageFile: widget?.imageFile,
+                      imageFile: widget.imageFile,
                       isVideo: isVideo,
                       onChanged: (val) {
                         setState(() {

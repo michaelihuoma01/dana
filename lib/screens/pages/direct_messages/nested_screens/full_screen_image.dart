@@ -3,7 +3,7 @@ import 'package:dana/utils/constants.dart';
 import 'package:flutter/material.dart';
 
 class FullScreenImage extends StatelessWidget {
-  final String imageUrl;
+  final String? imageUrl;
   FullScreenImage(this.imageUrl);
   @override
   Widget build(BuildContext context) {
@@ -26,9 +26,9 @@ class FullScreenImage extends StatelessWidget {
                 color: darkColor,
                 child: Center(
                     child: Hero(
-                  tag: imageUrl,
+                  tag: imageUrl!,
                   child: CachedNetworkImage(
-                      imageUrl: imageUrl, fit: BoxFit.contain),
+                      imageUrl: imageUrl!, fit: BoxFit.contain),
                 ))),
           ],
         ));

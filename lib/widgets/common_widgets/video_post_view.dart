@@ -28,37 +28,37 @@ import 'package:path_provider/path_provider.dart';
 import 'package:video_player/video_player.dart';
 
 class VideoPostView extends StatefulWidget {
-  final String currentUserId;
-  final Post post;
-  final AppUser author;
+  final String? currentUserId;
+  final Post? post;
+  final AppUser? author;
   final PostStatus postStatus;
 
   VideoPostView(
-      {this.currentUserId, this.post, this.author, @required this.postStatus});
+      {this.currentUserId, this.post, this.author, required this.postStatus});
 
   @override
   _VideoPostViewState createState() => _VideoPostViewState();
 }
 
 class _VideoPostViewState extends State<VideoPostView> {
-  int _likeCount = 0;
-  int _commentCount = 0;
+  int? _likeCount = 0;
+  int? _commentCount = 0;
   bool _isLiked = false;
   bool _heartAnim = false;
   bool _isPlaying = false;
   bool _isVisible = false;
-  Post _post;
-  VideoPlayerController _controller;
+  Post? _post;
+  late VideoPlayerController _controller;
 
   @override
   void initState() {
     super.initState();
-    _likeCount = widget.post.likeCount;
-    _commentCount = widget.post.commentCount;
+    _likeCount = widget.post!.likeCount;
+    _commentCount = widget.post!.commentCount;
     _post = widget.post;
     _initPostLiked();
 
-    _controller = VideoPlayerController.network(_post.videoUrl)
+    _controller = VideoPlayerController.network(_post!.videoUrl!)
       ..initialize().then((_) {
         // print('succesful folks');
         // Ensure the first frame is shown after the video is initialized, even before the play button has been pressed.
@@ -69,9 +69,9 @@ class _VideoPostViewState extends State<VideoPostView> {
   @override
   didUpdateWidget(VideoPostView oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (oldWidget.post.likeCount != _post.likeCount) {
-      _likeCount = widget.post.likeCount;
-      _commentCount = widget.post.commentCount;
+    if (oldWidget.post!.likeCount != _post!.likeCount) {
+      _likeCount = widget.post!.likeCount;
+      _commentCount = widget.post!.commentCount;
     }
   }
 
@@ -85,7 +85,7 @@ class _VideoPostViewState extends State<VideoPostView> {
 
   _initPostLiked() async {
     bool isLiked = await DatabaseService.didLikePost(
-        currentUserId: widget.currentUserId, post: _post);
+        currentUserId: widget.currentUserId, post: _post!);
     if (mounted) {
       setState(() {
         _isLiked = isLiked;
@@ -97,21 +97,21 @@ class _VideoPostViewState extends State<VideoPostView> {
     if (_isLiked) {
       // Unlike Post
       DatabaseService.unlikePost(
-          currentUserId: widget.currentUserId, post: _post);
+          currentUserId: widget.currentUserId, post: _post!);
       setState(() {
         _isLiked = false;
-        _likeCount--;
+        _likeCount = _likeCount! - 1;
       });
     } else {
       // Like Post
       DatabaseService.likePost(
           currentUserId: widget.currentUserId,
-          post: _post,
-          receiverToken: widget.author.token);
+          post: _post!,
+          receiverToken: widget.author!.token);
       setState(() {
         _heartAnim = true;
         _isLiked = true;
-        _likeCount++;
+        _likeCount = _likeCount! + 1;
       });
       Timer(Duration(milliseconds: 350), () {
         setState(() {
@@ -137,16 +137,16 @@ class _VideoPostViewState extends State<VideoPostView> {
   }
 
   _saveAndShareFile() async {
-    final RenderBox box = context.findRenderObject();
+    final RenderBox box = context.findRenderObject() as RenderBox;
 
-    var response = await get(Uri.parse(widget.post.imageUrl));
-    final documentDirectory = (await getExternalStorageDirectory()).path;
-    File imgFile = new File('$documentDirectory/${widget.post.id}.png');
+    var response = await get(Uri.parse(widget.post!.imageUrl!));
+    final documentDirectory = (await getExternalStorageDirectory())!.path;
+    File imgFile = new File('$documentDirectory/${widget.post!.id}.png');
     imgFile.writeAsBytesSync(response.bodyBytes);
 
     Share.shareFiles([imgFile.path],
-        subject: 'Have a look at ${widget.author.name} post!',
-        text: '${widget.author.name} : ${widget.post.caption}',
+        subject: 'Have a look at ${widget.author!.name} post!',
+        text: '${widget.author!.name} : ${widget.post!.caption}',
         sharePositionOrigin: box.localToGlobal(Offset.zero) & box.size);
   }
 
@@ -202,12 +202,12 @@ class _VideoPostViewState extends State<VideoPostView> {
               //         },
               //       )
               //     : SizedBox.shrink(),
-              _post.authorId == widget.currentUserId &&
+              _post!.authorId == widget.currentUserId &&
                       widget.postStatus != PostStatus.deletedPost
                   ? SimpleDialogOption(
                       child: Text('Delete Post'),
                       onPressed: () {
-                        DatabaseService.deletePost(_post, widget.postStatus);
+                        DatabaseService.deletePost(_post!, widget.postStatus);
                         _goToHomeScreen(context);
                       },
                     )
@@ -239,26 +239,26 @@ class _VideoPostViewState extends State<VideoPostView> {
               //         },
               //       )
               //     : SizedBox.shrink(),
-              _post.authorId == widget.currentUserId &&
+              _post!.authorId == widget.currentUserId &&
                       widget.postStatus == PostStatus.feedPost
                   ? SimpleDialogOption(
-                      child: Text(_post.commentsAllowed
+                      child: Text(_post!.commentsAllowed!
                           ? 'Turn off commenting'
                           : 'Allow comments'),
                       onPressed: () {
                         DatabaseService.allowDisAllowPostComments(
-                            _post, !_post.commentsAllowed);
+                            _post!, !_post!.commentsAllowed!);
                         Navigator.pop(context);
                         setState(() {
                           _post = new Post(
-                              authorId: widget.post.authorId,
-                              caption: widget.post.caption,
-                              commentsAllowed: !_post.commentsAllowed,
-                              id: _post.id,
-                              imageUrl: _post.imageUrl,
-                              likeCount: _post.likeCount,
-                              location: _post.location,
-                              timestamp: _post.timestamp);
+                              authorId: widget.post!.authorId,
+                              caption: widget.post!.caption,
+                              commentsAllowed: !_post!.commentsAllowed!,
+                              id: _post!.id,
+                              imageUrl: _post!.imageUrl,
+                              likeCount: _post!.likeCount,
+                              location: _post!.location,
+                              timestamp: _post!.timestamp);
                         });
                       },
                     )
@@ -314,7 +314,7 @@ class _VideoPostViewState extends State<VideoPostView> {
                           child: ClipRRect(
                             borderRadius: BorderRadius.circular(5),
                             child: Hero(
-                              tag: _post.videoUrl,
+                              tag: _post!.videoUrl!,
                               child: _controller.value.isInitialized
                                   ? AspectRatio(
                                       aspectRatio: 1 / 1,
@@ -375,32 +375,31 @@ class _VideoPostViewState extends State<VideoPostView> {
                           child: Row(
                             children: [
                               GestureDetector(
-                                onTap: () => _goToUserProfile(context, _post),
+                                onTap: () => _goToUserProfile(context, _post!),
                                 child: Container(
                                   height: 30,
                                   child: CircleAvatar(
                                     backgroundColor: Colors.grey,
                                     backgroundImage:
-                                        widget.author.profileImageUrl.isEmpty
+                                        (widget.author!.profileImageUrl!.isEmpty
                                             ? AssetImage(placeHolderImageRef)
                                             : CachedNetworkImageProvider(
-                                                widget.author.profileImageUrl,
-                                              ),
+                                                widget.author!.profileImageUrl!,
+                                              )) as ImageProvider<Object>?,
                                   ),
                                 ),
                               ),
                               Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Text(widget.author.name,
+                                  Text(widget.author!.name!,
                                       style: TextStyle(
                                           color: Colors.white,
                                           fontWeight: FontWeight.w700)),
-                                   Text(_post.location,
-                                          style: TextStyle(
-                                              color: Colors.white,
-                                              fontSize: 12))
-                                       
+                                  if (_post!.location != "")
+                                    Text(_post!.location!,
+                                        style: TextStyle(
+                                            color: Colors.white, fontSize: 12))
                                 ],
                               ),
                             ],
@@ -409,12 +408,12 @@ class _VideoPostViewState extends State<VideoPostView> {
                       ),
                     ),
                   ),
-                  if (widget.author.id == widget.currentUserId)
+                  if (widget.author!.id == widget.currentUserId)
                     Positioned(
-                      top: 0,
+                      bottom: 0,
                       right: 0,
                       child: Padding(
-                          padding: const EdgeInsets.all(20),
+                          padding: const EdgeInsets.only(right: 20, bottom: 10),
                           child: GestureDetector(
                             child: Icon(Icons.more_vert, color: Colors.white),
                             onTap: () {
@@ -497,11 +496,11 @@ class _VideoPostViewState extends State<VideoPostView> {
                             right: 6.0,
                           ),
                           child: GestureDetector(
-                            onTap: () => _goToUserProfile(context, _post),
+                            onTap: () => _goToUserProfile(context, _post!),
                             child: Row(
                               children: [
                                 Text(
-                                  widget.author.name,
+                                  widget.author!.name!,
                                   style: TextStyle(
                                       color: Colors.white,
                                       fontSize: 16.0,
@@ -515,12 +514,14 @@ class _VideoPostViewState extends State<VideoPostView> {
                             ),
                           ),
                         ),
-                        Expanded(
-                            child: Text(
-                          _post.caption,
-                          style: TextStyle(fontSize: 16.0, color: Colors.white),
-                          overflow: TextOverflow.ellipsis,
-                        )),
+                        if (_post!.caption != "")
+                          Expanded(
+                              child: Text(
+                            _post!.caption!,
+                            style:
+                                TextStyle(fontSize: 16.0, color: Colors.white),
+                            overflow: TextOverflow.ellipsis,
+                          )),
                       ],
                     ),
                     SizedBox(height: 5),
@@ -546,7 +547,7 @@ class _VideoPostViewState extends State<VideoPostView> {
                     Padding(
                         padding: const EdgeInsets.symmetric(
                             horizontal: 12.0, vertical: 5.0),
-                        child: Text(timeago.format(_post.timestamp.toDate()),
+                        child: Text(timeago.format(_post!.timestamp!.toDate()),
                             style:
                                 TextStyle(color: Colors.grey, fontSize: 12.0))),
                   ],

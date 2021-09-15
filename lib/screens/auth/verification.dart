@@ -1,4 +1,3 @@
-import 'package:code_field/code_field.dart';
 import 'package:dana/screens/auth/login.dart';
 import 'package:dana/screens/auth/register.dart';
 import 'package:dana/screens/auth/reset_password.dart';
@@ -10,7 +9,7 @@ import 'package:flutter/material.dart';
 class VerificationScreen extends StatefulWidget {
   static const String id = 'VerificationScreen';
 
-  final bool isPassword;
+  final bool? isPassword;
 
   VerificationScreen({this.isPassword});
   @override
@@ -18,8 +17,7 @@ class VerificationScreen extends StatefulWidget {
 }
 
 class _VerificationScreenState extends State<VerificationScreen> {
-  InputCodeControl codeControl = InputCodeControl(inputRegex: '^[0-9]*\$');
-  String _otpController;
+  String? _otpController;
 
   @override
   Widget build(BuildContext context) {
@@ -46,7 +44,7 @@ class _VerificationScreenState extends State<VerificationScreen> {
                   Navigator.push(
                       context,
                       MaterialPageRoute(
-                          builder: (context) => widget.isPassword
+                          builder: (context) => widget.isPassword!
                               ? ResetPasswordScreen()
                               : LoginScreen()));
                 },
@@ -69,15 +67,6 @@ class _VerificationScreenState extends State<VerificationScreen> {
                     style: TextStyle(color: Colors.white, fontSize: 18),
                   ),
                   SizedBox(height: 30),
-                  InputCodeField(
-                      control: codeControl,
-                      count: 6,
-                      inputType: TextInputType.number,
-                      decoration: InputCodeDecoration(
-                          focusColor: lightColor,
-                          color: Colors.white,
-                          textStyle:
-                              TextStyle(color: Colors.white, fontSize: 25))),
                 ],
               ),
             ),

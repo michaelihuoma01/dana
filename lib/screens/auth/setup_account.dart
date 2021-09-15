@@ -14,7 +14,7 @@ import 'package:provider/provider.dart';
 class SetupAccount extends StatefulWidget {
   static const String id = 'SetupAccount';
 
-  final bool isPassword;
+  final bool? isPassword;
 
   SetupAccount({this.isPassword});
 
@@ -45,7 +45,7 @@ class _SetupAccountState extends State<SetupAccount> {
     } catch (err) {
       Utility.showMessage(context,
           bgColor: Colors.red,
-          message: err.message,
+          message: err.toString(),
           pulsate: false,
           type: MessageTypes.error);
       setState(() {

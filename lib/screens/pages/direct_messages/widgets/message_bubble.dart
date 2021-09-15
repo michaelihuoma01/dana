@@ -32,10 +32,10 @@ import 'package:video_player/video_player.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
 class MessageBubble extends StatefulWidget {
-  final Chat chat;
-  final Message message;
-  final AppUser user;
-  final bool isGroup;
+  final Chat? chat;
+  final Message? message;
+  final AppUser? user;
+  final bool? isGroup;
 
   const MessageBubble({this.chat, this.isGroup, this.message, this.user});
 
@@ -44,12 +44,12 @@ class MessageBubble extends StatefulWidget {
 }
 
 class _MessageBubbleState extends State<MessageBubble> {
-  bool _isLiked = false;
+  bool? _isLiked = false;
   bool _heartAnim = false;
   bool showTime = false;
   bool isPlayingMsg = false, isRecording = false, isSending = false;
-  String recordFilePath;
-  VideoPlayerController _controller;
+  String? recordFilePath;
+  late VideoPlayerController _controller;
   Duration duration = new Duration();
   Duration position = new Duration();
   bool isPlaying = false;
@@ -61,15 +61,15 @@ class _MessageBubbleState extends State<MessageBubble> {
   void initState() {
     super.initState();
     setState(() {
-      _isLiked = widget.message.isLiked;
+      _isLiked = widget.message!.isLiked;
     });
     initVideo();
   }
 
   initVideo() async {
     try {
-      if (widget.message.videoUrl != null) {
-        _controller = VideoPlayerController.network(widget.message.videoUrl)
+      if (widget.message!.videoUrl != null) {
+        _controller = VideoPlayerController.network(widget.message!.videoUrl!)
           ..initialize().then((_) {
             // Ensure the first frame is shown after the video is initialized, even before the play button has been pressed.
             setState(() {});
@@ -80,12 +80,12 @@ class _MessageBubbleState extends State<MessageBubble> {
     }
   }
 
-  _likeUnLikeMessage(String currentUserId) {
+  _likeUnLikeMessage(String? currentUserId) {
     ChatService.likeUnlikeMessage(
-        widget.message, widget.chat.id, !_isLiked, widget.user, currentUserId);
-    setState(() => _isLiked = !_isLiked);
+        widget.message!, widget.chat!.id, !_isLiked!, widget.user!, currentUserId);
+    setState(() => _isLiked = !_isLiked!);
 
-    if (_isLiked) {
+    if (_isLiked!) {
       setState(() {
         _heartAnim = true;
       });
@@ -125,7 +125,7 @@ class _MessageBubbleState extends State<MessageBubble> {
   }
 
   play() async {
-    final url = widget.message.audioUrl;
+    final url = widget.message!.audioUrl;
 
     if (url != null) {
       if (isPlayingMsg == false) {
@@ -168,12 +168,12 @@ class _MessageBubbleState extends State<MessageBubble> {
   @override
   Widget build(BuildContext context) {
     final AppUser currentUser =
-        Provider.of<UserData>(context, listen: false).currentUser;
+        Provider.of<UserData>(context, listen: false).currentUser!;
 
-    final bool isMe = widget.message.senderId == currentUser.id;
+    final bool isMe = widget.message!.senderId == currentUser.id;
 
-    int receiverIndex = widget.chat.memberInfo
-        .indexWhere((member) => member.id == widget.message.senderId);
+    int receiverIndex = widget.chat!.memberInfo!
+        .indexWhere((member) => member!.id == widget.message!.senderId);
 
     _buildText() {
       return GestureDetector(
@@ -205,13 +205,13 @@ class _MessageBubbleState extends State<MessageBubble> {
                       children: <Widget>[
                         GestureDetector(
                           onTap: () async {
-                            print(widget.message.id);
+                            print(widget.message!.id);
                             Navigator.pop(context);
 
                             await chatsRef
-                                .doc(widget.chat.id)
+                                .doc(widget.chat!.id)
                                 .collection('messages')
-                                .doc(widget.message.id)
+                                .doc(widget.message!.id)
                                 .delete()
                                 .then((docs) {
                               print('=======succesful');
@@ -227,9 +227,9 @@ class _MessageBubbleState extends State<MessageBubble> {
                         ),
                         GestureDetector(
                           onTap: () async {
-                            print(widget.message.id);
+                            print(widget.message!.id);
                             Clipboard.setData(
-                                ClipboardData(text: widget.message.text));
+                                ClipboardData(text: widget.message!.text));
                             Navigator.pop(context);
                           },
                           child: Padding(
@@ -246,14 +246,14 @@ class _MessageBubbleState extends State<MessageBubble> {
                 );
               });
         },
-        onDoubleTap: widget.message.senderId == currentUser.id
+        onDoubleTap: widget.message!.senderId == currentUser.id
             ? null
             : () => _likeUnLikeMessage(currentUser.id),
         child: Padding(
           padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 12.0),
           child: Container(
             child: Text(
-              widget.message.text,
+              widget.message!.text!,
               style: TextStyle(
                   color: isMe ? Colors.white : Colors.black, fontSize: 14),
             ),
@@ -269,7 +269,7 @@ class _MessageBubbleState extends State<MessageBubble> {
             showTime = true;
           });
         },
-        onDoubleTap: widget.message.senderId == currentUser.id
+        onDoubleTap: widget.message!.senderId == currentUser.id
             ? null
             : () => _likeUnLikeMessage(currentUser.id),
         child: Container(
@@ -313,15 +313,15 @@ class _MessageBubbleState extends State<MessageBubble> {
             showTime = true;
           });
         },
-        onDoubleTap: widget.message.senderId == currentUser.id
+        onDoubleTap: widget.message!.senderId == currentUser.id
             ? null
             : () => _likeUnLikeMessage(currentUser.id),
         child: Padding(
           padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 12.0),
           child: GestureDetector(
             onTap: () {
-              print(widget.message.fileUrl);
-              launch(widget.message.fileUrl);
+              print(widget.message!.fileUrl);
+              launch(widget.message!.fileUrl!);
             },
             child: Row(mainAxisSize: MainAxisSize.min, children: [
               Icon(FontAwesomeIcons.fileAlt,
@@ -360,10 +360,10 @@ class _MessageBubbleState extends State<MessageBubble> {
             showTime = true;
           });
         },
-        onDoubleTap: widget.message.senderId == currentUser.id
+        onDoubleTap: widget.message!.senderId == currentUser.id
             ? null
             : () => _likeUnLikeMessage(currentUser.id),
-        onTap: () => _videoFullScreen(widget.message.videoUrl),
+        onTap: () => _videoFullScreen(widget.message!.videoUrl),
         child: Padding(
             padding: const EdgeInsets.all(10),
             child: Stack(
@@ -372,7 +372,7 @@ class _MessageBubbleState extends State<MessageBubble> {
                 ClipRRect(
                   borderRadius: BorderRadius.circular(15),
                   child: Hero(
-                    tag: widget.message.videoUrl,
+                    tag: widget.message!.videoUrl!,
                     child: _controller.value.isInitialized
                         ? AspectRatio(
                             aspectRatio: 1 / 1,
@@ -412,10 +412,10 @@ class _MessageBubbleState extends State<MessageBubble> {
             showTime = true;
           });
         },
-        onDoubleTap: widget.message.senderId == currentUser.id
+        onDoubleTap: widget.message!.senderId == currentUser.id
             ? null
             : () => _likeUnLikeMessage(currentUser.id),
-        onTap: () => _imageFullScreen(widget.message.imageUrl),
+        onTap: () => _imageFullScreen(widget.message!.imageUrl),
         child: Stack(
           alignment: Alignment.center,
           children: [
@@ -431,7 +431,7 @@ class _MessageBubbleState extends State<MessageBubble> {
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(20.0),
                 child: Hero(
-                  tag: widget.message.imageUrl,
+                  tag: widget.message!.imageUrl!,
                   child: CachedNetworkImage(
                     progressIndicatorBuilder: (context, url, downloadProgress) {
                       return Center(
@@ -441,7 +441,7 @@ class _MessageBubbleState extends State<MessageBubble> {
                       );
                     },
                     fadeInDuration: Duration(milliseconds: 500),
-                    imageUrl: widget.message.imageUrl,
+                    imageUrl: widget.message!.imageUrl!,
                     fit: BoxFit.cover,
                   ),
                 ),
@@ -461,10 +461,10 @@ class _MessageBubbleState extends State<MessageBubble> {
             showTime = true;
           });
         },
-        onDoubleTap: widget.message.senderId == currentUser.id
+        onDoubleTap: widget.message!.senderId == currentUser.id
             ? null
             : () => _likeUnLikeMessage(currentUser.id),
-        onTap: () => _imageFullScreen(widget.message.giphyUrl),
+        onTap: () => _imageFullScreen(widget.message!.giphyUrl),
         child: Stack(
           alignment: Alignment.center,
           children: [
@@ -482,7 +482,7 @@ class _MessageBubbleState extends State<MessageBubble> {
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(20.0),
                 child: Hero(
-                  tag: widget.message.giphyUrl,
+                  tag: widget.message!.giphyUrl!,
                   child: CachedNetworkImage(
                     progressIndicatorBuilder: (context, url, downloadProgress) {
                       return Center(
@@ -492,7 +492,7 @@ class _MessageBubbleState extends State<MessageBubble> {
                       );
                     },
                     fadeInDuration: Duration(milliseconds: 500),
-                    imageUrl: widget.message.giphyUrl,
+                    imageUrl: widget.message!.giphyUrl!,
                     fit: BoxFit.contain,
                   ),
                 ),
@@ -510,12 +510,12 @@ class _MessageBubbleState extends State<MessageBubble> {
             ? const EdgeInsets.only(left: 5)
             : const EdgeInsets.only(right: 5),
         child: GestureDetector(
-          onTap: widget.message.senderId == currentUser.id
+          onTap: widget.message!.senderId == currentUser.id
               ? null
               : () => _likeUnLikeMessage(currentUser.id),
           child: Icon(
-            widget.message.isLiked ? Icons.favorite : Icons.favorite_border,
-            color: widget.message.isLiked ? Colors.red : Colors.grey[400],
+            widget.message!.isLiked! ? Icons.favorite : Icons.favorite_border,
+            color: widget.message!.isLiked! ? Colors.red : Colors.grey[400],
             size: 15,
           ),
         ),
@@ -533,12 +533,12 @@ class _MessageBubbleState extends State<MessageBubble> {
             crossAxisAlignment:
                 isMe ? CrossAxisAlignment.end : CrossAxisAlignment.start,
             children: <Widget>[
-              if (!isMe && widget.isGroup)
+              if (!isMe && widget.isGroup!)
                 Text(
-                  '${widget.chat.memberInfo[receiverIndex].name}',
+                  '${widget.chat!.memberInfo![receiverIndex]!.name}',
                   style: TextStyle(fontSize: 12, color: lightColor),
                 ),
-              if (!isMe && widget.isGroup) const SizedBox(height: 6.0),
+              if (!isMe && widget.isGroup!) const SizedBox(height: 6.0),
               Row(
                 children: [
                   // if (!isMe) _buildLikeIcon(),
@@ -584,7 +584,7 @@ class _MessageBubbleState extends State<MessageBubble> {
                     confirmDismiss: (direction) {
                       print('=======$direction');
                       return;
-                    },
+                    } as Future<bool?> Function(DismissDirection)?,
                     background: Padding(
                       padding: const EdgeInsets.only(right: 2),
                       child: Container(
@@ -596,7 +596,7 @@ class _MessageBubbleState extends State<MessageBubble> {
                                     ? const EdgeInsets.only(right: 0.0)
                                     : const EdgeInsets.only(left: 0.0),
                                 child: Text(
-                                  '${timeago.format(widget.message.timestamp.toDate())}',
+                                  '${timeago.format(widget.message!.timestamp!.toDate())}',
                                   style: TextStyle(
                                       fontSize: 10, color: Colors.grey),
                                 ),
@@ -607,10 +607,10 @@ class _MessageBubbleState extends State<MessageBubble> {
                         maxWidth: MediaQuery.of(context).size.width * 0.80,
                       ),
                       decoration: BoxDecoration(
-                        color: widget.message.text != null ||
+                        color: widget.message!.text != null ||
                                 // widget.message.videoUrl != null ||
                                 // widget.message.audioUrl != null ||
-                                widget.message.fileUrl != null
+                                widget.message!.fileUrl != null
                             ? isMe
                                 ? lightColor
                                 : Colors.white
@@ -631,15 +631,15 @@ class _MessageBubbleState extends State<MessageBubble> {
                         //             : Theme.of(context).cardColor
                         //         : Colors.transparent),
                       ),
-                      child: widget.message.text != null
+                      child: widget.message!.text != null
                           ? _buildText()
-                          : widget.message.imageUrl != null
+                          : widget.message!.imageUrl != null
                               ? _buildImage(context)
-                              : widget.message.audioUrl != null
+                              : widget.message!.audioUrl != null
                                   ? _buildAudio()
-                                  : widget.message.videoUrl != null
+                                  : widget.message!.videoUrl != null
                                       ? _buildVideo(context)
-                                      : widget.message.fileUrl != null
+                                      : widget.message!.fileUrl != null
                                           ? _buildFile()
                                           : _buildGiphy(context),
                     ),
@@ -655,7 +655,7 @@ class _MessageBubbleState extends State<MessageBubble> {
                       ? const EdgeInsets.only(right: 0.0)
                       : const EdgeInsets.only(left: 0.0),
                   child: Text(
-                    '${timeFormat.format(widget.message.timestamp.toDate())}',
+                    '${timeFormat.format(widget.message!.timestamp!.toDate())}',
                     style: TextStyle(fontSize: 10, color: Colors.grey),
                   ),
                 ),

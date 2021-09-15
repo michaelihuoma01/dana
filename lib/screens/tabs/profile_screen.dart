@@ -22,7 +22,7 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:provider/provider.dart';
 
 class ProfileScreen extends StatefulWidget {
-  final AppUser user;
+  final AppUser? user;
 
   ProfileScreen({this.user});
 
@@ -36,8 +36,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
   int _followingCount = 0;
   List<Post> _posts = [];
   int _displayPosts = 0; // 0 - grid, 1 - column
-  AppUser _profileUser;
-  List<Story> _userStories;
+  AppUser? _profileUser;
+  List<Story>? _userStories;
 
   @override
   void initState() {
@@ -48,7 +48,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   _setupPosts() async {
-    List<Post> posts = await DatabaseService.getUserPosts(widget.user.id);
+    List<Post> posts = await DatabaseService.getUserPosts(widget.user!.id);
     if (!mounted) return;
     setState(() {
       _posts = posts;
@@ -56,11 +56,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   _setupProfileUser() async {
-    AppUser profileUser = await DatabaseService.getUserWithId(widget.user.id);
+    AppUser profileUser = await DatabaseService.getUserWithId(widget.user!.id);
     if (!mounted) return;
     setState(() => _profileUser = profileUser);
     if (profileUser.id ==
-        Provider.of<UserData>(context, listen: false).currentUser.id) {
+        Provider.of<UserData>(context, listen: false).currentUser!.id) {
       AuthService.updateTokenWithUser(profileUser);
       Provider.of<UserData>(context, listen: false).currentUser = profileUser;
     }
@@ -105,7 +105,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             Container(
                               child: PostView(
                                 postStatus: PostStatus.feedPost,
-                                currentUserId: widget.user.id,
+                                currentUserId: widget.user!.id,
                                 post: post,
                                 author: _profileUser,
                               ),
@@ -140,7 +140,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         ),
       ),
       FutureBuilder(
-          future: usersRef.doc(widget.user.id).get(),
+          future: usersRef.doc(widget.user!.id).get(),
           builder: (BuildContext context, AsyncSnapshot snapshot) {
             if (!snapshot.hasData) {
               return Center(
@@ -168,7 +168,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         width: double.infinity,
                         child: CachedNetworkImage(
                           fit: BoxFit.fitWidth,
-                          imageUrl: user.profileImageUrl,
+                          imageUrl: user.profileImageUrl!,
                           progressIndicatorBuilder:
                               (context, url, downloadProgress) {
                             return Center(
@@ -197,7 +197,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                   const EdgeInsets.symmetric(horizontal: 10),
                               child: Row(
                                 children: [
-                                  Text(user.name,
+                                  Text(user.name!,
                                       style: TextStyle(
                                           color: Colors.white,
                                           fontSize: 16,
@@ -303,7 +303,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                     Utility.showMessage(context,
                                         message: 'Pin Copied!',
                                         pulsate: false,
-                                        bgColor: Colors.green[600]);
+                                        bgColor: Colors.green[600]!);
                                   },
                                   child: Text('PIN: ${user.pin}',
                                       style: TextStyle(
@@ -333,7 +333,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             Padding(
                               padding:
                                   const EdgeInsets.symmetric(horizontal: 10),
-                              child: Text(user.bio,
+                              child: Text(user.bio!,
                                   style: TextStyle(
                                       color: Colors.white70, fontSize: 14)),
                             ),
@@ -367,25 +367,25 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 return SizedBox.shrink();
                               }
 
-                              AppUser author = snapshot.data;
+                              AppUser? author = snapshot.data;
 
                               return (post.imageUrl == null)
                                   ? TextPost(
                                       postStatus: PostStatus.feedPost,
-                                      currentUserId: widget.user.id,
+                                      currentUserId: widget.user!.id,
                                       author: author,
                                       post: post,
                                     )
                                   : (post.videoUrl != null)
                                       ? VideoPostView(
                                           postStatus: PostStatus.feedPost,
-                                          currentUserId: widget.user.id,
+                                          currentUserId: widget.user!.id,
                                           author: author,
                                           post: post,
                                         )
                                       : PostView(
                                           postStatus: PostStatus.feedPost,
-                                          currentUserId: widget.user.id,
+                                          currentUserId: widget.user!.id,
                                           author: author,
                                           post: post,
                                         );

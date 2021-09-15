@@ -27,10 +27,10 @@ import 'package:provider/provider.dart';
 
 class RegisterScreen extends StatefulWidget {
   static const String id = 'RegisterScreen';
-  final String userId;
+  final String? userId;
 
-  final AppUser user;
-  final Function updateUser;
+  final AppUser? user;
+  final Function? updateUser;
 
   RegisterScreen({this.user, this.userId, this.updateUser});
 
@@ -41,11 +41,11 @@ class RegisterScreen extends StatefulWidget {
 class _RegisterScreenState extends State<RegisterScreen> {
   final _scaffoldKey = GlobalKey<ScaffoldState>();
   bool _isLoading = false;
-  FirebaseDynamicLinks dynamicLinks;
+  FirebaseDynamicLinks? dynamicLinks;
 
   final picker = ImagePicker();
-  String _imagePath;
-  int radInt;
+  String? _imagePath;
+  int? radInt;
   TextEditingController pinController = new TextEditingController();
   TextEditingController dobController = new TextEditingController();
   TextEditingController genderController = new TextEditingController();
@@ -54,11 +54,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   String _name = '';
   String _bio = '';
-  String _gender = '';
+  String? _gender = '';
   String _dob = '';
 
-  File _profileImage;
-  Locale myLocale;
+  File? _profileImage;
+  late Locale myLocale;
 
   @override
   void initState() {
@@ -69,43 +69,43 @@ class _RegisterScreenState extends State<RegisterScreen> {
     // _bio = widget.user.bio;
   }
 
-  void initDynamicLinks() async {
-    FirebaseDynamicLinks.instance.onLink(
-        onSuccess: (PendingDynamicLinkData dynamicLink) async {
-      final Uri deepLink = dynamicLink?.link;
+  // void initDynamicLinks() async {
+  //   FirebaseDynamicLinks.instance.onLink(
+  //       onSuccess: (PendingDynamicLinkData? dynamicLink) async {
+  //     final Uri? deepLink = dynamicLink?.link;
 
-      if (deepLink != null) {
-        Navigator.pushNamed(context, deepLink.path);
-        FirebaseAuth auth = FirebaseAuth.instance;
+  //     if (deepLink != null) {
+  //       Navigator.pushNamed(context, deepLink.path);
+  //       FirebaseAuth auth = FirebaseAuth.instance;
 
-        var actionCode = deepLink.queryParameters['oobCode'];
+  //       var actionCode = deepLink.queryParameters['oobCode']!;
 
-        try {
-          await auth.checkActionCode(actionCode);
-          await auth.applyActionCode(actionCode);
+  //       try {
+  //         await auth.checkActionCode(actionCode);
+  //         await auth.applyActionCode(actionCode);
 
-          // If successful, reload the user:
-          auth.currentUser.reload();
-          print('----------successful');
-        } catch (e) {
-          if (e.code == 'invalid-action-code') {
-            print('The code is invalid.');
-          }
-        }
-      }
-    }, onError: (OnLinkErrorException e) async {
-      print('onLinkError');
-      print(e.message);
-    });
+  //         // If successful, reload the user:
+  //         auth.currentUser!.reload();
+  //         print('----------successful');
+  //       } catch (e) {
+  //         if (e == 'invalid-action-code') {
+  //           print('The code is invalid.');
+  //         }
+  //       }
+  //     }
+  //   }, onError: (OnLinkErrorException e) async {
+  //     print('onLinkError');
+  //     print(e.message);
+  //   });
 
-    final PendingDynamicLinkData data =
-        await FirebaseDynamicLinks.instance.getInitialLink();
-    final Uri deepLink = data?.link;
+  //   final PendingDynamicLinkData? data =
+  //       await FirebaseDynamicLinks.instance.getInitialLink();
+  //   final Uri? deepLink = data?.link;
 
-    if (deepLink != null) {
-      Navigator.pushNamed(context, deepLink.path);
-    }
-  }
+  //   if (deepLink != null) {
+  //     Navigator.pushNamed(context, deepLink.path);
+  //   }
+  // }
 
   generateRandomNumber(int max) {
     var randomGenerator = Random();
@@ -123,14 +123,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
     });
 
     //Database Update
-    String _profileImageUrl = '';
+    String? _profileImageUrl = '';
 
     if (_profileImage == null) {
-      _profileImageUrl = widget.user.profileImageUrl;
+      _profileImageUrl = widget.user!.profileImageUrl;
     } else {
       _profileImageUrl = await StroageService.uploadUserProfileImage(
-        widget.user.profileImageUrl,
-        _profileImage,
+        widget.user!.profileImageUrl!,
+        _profileImage!,
       );
     }
     print(_profileImageUrl);
@@ -141,14 +141,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
         pin: pinController.text,
         profileImageUrl: _profileImageUrl,
         bio: _bio.trim(),
-        gender: _gender.trim(),
+        gender: _gender!.trim(),
         dob: _dob,
-        role: widget.user.role,
-        isVerified: widget.user.isVerified);
+        role: widget.user!.role,
+        isVerified: widget.user!.isVerified);
 
     try {
       DatabaseService.updateUser(user);
-      widget.updateUser(user);
+      widget.updateUser!(user);
 
       Navigator.push(
           context,
@@ -157,7 +157,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
     } catch (err) {
       Utility.showMessage(context,
           bgColor: Colors.red,
-          message: err.message,
+          message: err.toString(),
           pulsate: false,
           type: MessageTypes.error);
       setState(() {
@@ -217,7 +217,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 child: ButtonWidget(
                   title: 'Continue',
                   onPressed: () {
-                    if ((_name?.length ?? 0) < 3) {
+                    if ((_name.length) < 3) {
                       Utility.showMessage(
                         context,
                         bgColor: Colors.red,
@@ -324,7 +324,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                   child: CircleAvatar(
                                     radius: 25.0,
                                     backgroundColor: Colors.grey,
-                                    backgroundImage: FileImage(_profileImage),
+                                    backgroundImage: FileImage(_profileImage!),
                                   ),
                                 ),
                         ),
@@ -372,7 +372,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         padding: const EdgeInsets.symmetric(horizontal: 15),
                         child: DropdownButton(
                           hint: Text(
-                            (_gender == '') ? 'Gender' : _gender,
+                            (_gender == '') ? 'Gender' : _gender!,
                             style: TextStyle(color: Colors.grey, fontSize: 16),
                           ),
                           isExpanded: true,
@@ -387,7 +387,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               );
                             },
                           ).toList(),
-                          onChanged: (val) {
+                          onChanged: (dynamic val) {
                             setState(
                               () {
                                 _gender = val;

@@ -6,7 +6,7 @@ import 'package:dana/widgets/BrandDivider.dart';
 import 'package:flutter/material.dart';
 
 class ContactTile extends StatelessWidget {
-  AppUser appUser;
+  AppUser? appUser;
   ContactTile({this.appUser});
 
   @override
@@ -21,9 +21,9 @@ class ContactTile extends StatelessWidget {
               child: CircleAvatar(
                 radius: 25.0,
                 backgroundColor: Colors.grey,
-                backgroundImage: appUser.profileImageUrl.isEmpty
+                backgroundImage: (appUser!.profileImageUrl!.isEmpty
                     ? AssetImage(placeHolderImageRef)
-                    : CachedNetworkImageProvider(appUser.profileImageUrl),
+                    : CachedNetworkImageProvider(appUser!.profileImageUrl!)) as ImageProvider<Object>?,
               ),
             ),
             SizedBox(width: 15),
@@ -31,12 +31,12 @@ class ContactTile extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(appUser.name,
+                  Text(appUser!.name!,
                       style: TextStyle(color: Colors.white, fontSize: 16)),
                   Text(
-                      (appUser.bio == '')
-                          ? 'PIN: ${appUser.pin}'
-                          : '${appUser.bio}',
+                      (appUser!.bio == '')
+                          ? 'PIN: ${appUser!.pin}'
+                          : '${appUser!.bio}',
                       maxLines: 3,
                       style: TextStyle(color: Colors.grey)),
                 ],

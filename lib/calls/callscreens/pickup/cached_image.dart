@@ -2,11 +2,11 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
 class CachedImage extends StatelessWidget {
-  final String imageUrl;
+  final String? imageUrl;
   final bool isRound;
   final double radius;
-  final double height;
-  final double width;
+  final double? height;
+  final double? width;
 
   final BoxFit fit;
 
@@ -31,7 +31,7 @@ class CachedImage extends StatelessWidget {
         child: ClipRRect(
             borderRadius: BorderRadius.circular(isRound ? 500 : radius),
             child: CachedNetworkImage(
-              imageUrl: imageUrl,
+              imageUrl: imageUrl!,
               fit: fit,
               placeholder: (context, url) =>
                   Center(child: CircularProgressIndicator()),

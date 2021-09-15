@@ -1,19 +1,19 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class Activity {
-  final String id;
-  final String fromUserId;
-  final String postId;
-  final String postImageUrl;
-  final String comment;
-  final bool isFollowEvent;
-  final bool isLikeEvent;
-  final bool isMessageEvent;
-  final bool isCommentEvent;
-  final bool isLikeMessageEvent;
+  final String? id;
+  final String? fromUserId;
+  final String? postId;
+  final String? postImageUrl;
+  final String? comment;
+  final bool? isFollowEvent;
+  final bool? isLikeEvent;
+  final bool? isMessageEvent;
+  final bool? isCommentEvent;
+  final bool? isLikeMessageEvent;
 
-  final String recieverToken;
-  final Timestamp timestamp;
+  final String? recieverToken;
+  final Timestamp? timestamp;
 
   Activity({
     this.id,

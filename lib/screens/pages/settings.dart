@@ -12,7 +12,7 @@ import 'package:flutter/material.dart';
 import 'package:switcher_button/switcher_button.dart';
 
 class SettingsScreen extends StatefulWidget {
-  AppUser currentUser;
+  AppUser? currentUser;
 
   SettingsScreen({this.currentUser});
   @override
@@ -29,7 +29,7 @@ class SettingsScreenState extends State<SettingsScreen> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    print(widget.currentUser.isPublic);
+    print(widget.currentUser!.isPublic);
   }
 
   @override
@@ -100,10 +100,10 @@ class SettingsScreenState extends State<SettingsScreen> {
                       offColor: Colors.grey,
                       size: 40,
                       value:
-                          (widget.currentUser.isPublic == true) ? false : true,
+                          (widget.currentUser!.isPublic == true) ? false : true,
                       onChange: (value) {
-                        usersRef.doc(widget.currentUser.id).update({
-                          'isPublic': (widget.currentUser.isPublic == true)
+                        usersRef.doc(widget.currentUser!.id).update({
+                          'isPublic': (widget.currentUser!.isPublic == true)
                               ? false
                               : true
                         });
@@ -127,8 +127,8 @@ class SettingsScreenState extends State<SettingsScreen> {
                       Icons.language,
                       color: Colors.white,
                     ),
-                    onChanged: (Language language) {
-                      _changeLanguage(language);
+                    onChanged: (Language? language) {
+                      _changeLanguage(language!);
                     },
                     items: Language.languageList()
                         .map<DropdownMenuItem<Language>>(

@@ -26,10 +26,10 @@ import 'package:provider/provider.dart';
 
 class EditProfile extends StatefulWidget {
   static const String id = 'RegisterScreen';
-  final String userId;
+  final String? userId;
 
-  final AppUser user;
-  final Function updateUser;
+  final AppUser? user;
+  final Function? updateUser;
 
   EditProfile({this.user, this.userId, this.updateUser});
 
@@ -42,16 +42,16 @@ class _EditProfileState extends State<EditProfile> {
   bool _isLoading = false;
 
   final picker = ImagePicker();
-  String _imagePath;
-  int radInt;
+  String? _imagePath;
+  int? radInt;
   TextEditingController pinController = new TextEditingController();
 
   FirebaseAuth firebaseUser = FirebaseAuth.instance;
 
   String _name = '';
   String _bio = '';
-  String _pin = '';
-  File _profileImage;
+  String? _pin = '';
+  File? _profileImage;
 
   @override
   void initState() {
@@ -65,39 +65,39 @@ class _EditProfileState extends State<EditProfile> {
     });
 
     //Database Update
-    String _profileImageUrl = '';
+    String? _profileImageUrl = '';
 
     if (_profileImage == null) {
-      _profileImageUrl = widget.user.profileImageUrl;
+      _profileImageUrl = widget.user!.profileImageUrl;
     } else {
       _profileImageUrl = await StroageService.uploadUserProfileImage(
-        widget.user.profileImageUrl,
-        _profileImage,
+        widget.user!.profileImageUrl!,
+        _profileImage!,
       );
     }
     print(_profileImageUrl);
 
     AppUser user = AppUser(
         id: widget.userId,
-        name: (_name == '') ? widget.user.name : _name.trim(),
-        pin: _pin.trim(),
+        name: (_name == '') ? widget.user!.name : _name.trim(),
+        pin: _pin!.trim(),
         profileImageUrl: _profileImageUrl,
-        bio: (_bio == '') ? widget.user.bio : _bio.trim(),
-        role: widget.user.role,
-        isVerified: widget.user.isVerified);
+        bio: (_bio == '') ? widget.user!.bio : _bio.trim(),
+        role: widget.user!.role,
+        isVerified: widget.user!.isVerified);
 
     try {
       DatabaseService.updateUser(user);
-      widget.updateUser(user);
+      widget.updateUser!(user);
 
       Utility.showMessage(context,
           message: 'Profile updated',
           pulsate: false,
-          bgColor: Colors.green[600]);
+          bgColor: Colors.green[600]!);
     } catch (err) {
-      print(err.message);
+      print(err.toString());
       Utility.showMessage(context,
-          message: err.message,
+          message: err.toString(),
           pulsate: false,
           bgColor: Colors.red,
           type: MessageTypes.error);
@@ -197,7 +197,7 @@ class _EditProfileState extends State<EditProfile> {
                                           backgroundColor: Colors.grey,
                                           backgroundImage:
                                               CachedNetworkImageProvider(
-                                                  user.profileImageUrl),
+                                                  user.profileImageUrl!),
                                         ),
                                       )
                                     : Container(
@@ -205,7 +205,7 @@ class _EditProfileState extends State<EditProfile> {
                                           radius: 25.0,
                                           backgroundColor: Colors.grey,
                                           backgroundImage:
-                                              FileImage(_profileImage),
+                                              FileImage(_profileImage!),
                                         ),
                                       ),
                               ),

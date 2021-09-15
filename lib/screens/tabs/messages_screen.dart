@@ -22,12 +22,12 @@ import 'package:provider/provider.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
 class MessagesScreen extends StatefulWidget {
-  AppUser currentUser;
-  bool isReadIcon = false;
+  AppUser? currentUser;
+  bool? isReadIcon = false;
   final SearchFrom searchFrom;
-  final File imageFile;
+  final File? imageFile;
   MessagesScreen(
-      {@required this.searchFrom,
+      {required this.searchFrom,
       this.isReadIcon,
       this.currentUser,
       this.imageFile});
@@ -37,75 +37,75 @@ class MessagesScreen extends StatefulWidget {
 }
 
 class _MessagesScreenState extends State<MessagesScreen> {
-  Stream<List<Chat>> chatsStream;
-  AppUser _currentUser;
+  Stream<List<Chat>>? chatsStream;
+  AppUser? _currentUser;
   // List<AppUser> users;
-  String deleteUserID, userName;
+  String? deleteUserID, userName;
 
   @override
   void initState() {
     super.initState();
     final AppUser currentUser =
-        Provider.of<UserData>(context, listen: false).currentUser;
+        Provider.of<UserData>(context, listen: false).currentUser!;
     setState(() => _currentUser = currentUser);
     AuthService.updateTokenWithUser(currentUser);
   }
 
   Stream<List<Chat>> getChats() async* {
     // try {
-      List<Chat> dataToReturn = List();
+    List<Chat> dataToReturn = [];
 
-      Stream<QuerySnapshot> stream = FirebaseFirestore.instance
-          .collection('chats')
-          .where('memberIds', arrayContains: _currentUser.id)
-          // .orderBy('recentTimestamp', descending: true)
-          .snapshots();
+    Stream<QuerySnapshot> stream = FirebaseFirestore.instance
+        .collection('chats')
+        .where('memberIds', arrayContains: _currentUser!.id)
+        // .orderBy('recentTimestamp', descending: true)
+        .snapshots();
 
-      await for (QuerySnapshot q in stream) {
-        for (var doc in q.docs) {
-          Chat chatFromDoc = Chat.fromDoc(doc);
-          List<dynamic> memberIds = chatFromDoc.memberIds;
-          int receiverIndex;
+    await for (QuerySnapshot q in stream) {
+      for (var doc in q.docs) {
+        Chat chatFromDoc = Chat.fromDoc(doc);
+        List<dynamic> memberIds = chatFromDoc.memberIds!;
+        late int receiverIndex;
 
-          // Getting receiver index
-          memberIds.forEach((userId) {
-            if (userId != _currentUser.id) {
-              receiverIndex = memberIds.indexOf(userId);
-            }
-          });
-
-          List<AppUser> membersInfo = [];
-
-          AppUser receiverUser =
-              await DatabaseService.getUserWithId(memberIds[receiverIndex]);
-
-          if (memberIds.length > 2) {
-            for (String userId in memberIds) {
-              AppUser user = await DatabaseService.getUserWithId(userId);
-              membersInfo.add(user);
-            }
-          } else {
-            membersInfo.add(_currentUser);
-            membersInfo.add(receiverUser);
+        // Getting receiver index
+        memberIds.forEach((userId) {
+          if (userId != _currentUser!.id) {
+            receiverIndex = memberIds.indexOf(userId);
           }
+        });
 
-          Chat chatWithUserInfo = Chat(
-              id: chatFromDoc.id,
-              memberIds: chatFromDoc.memberIds,
-              memberInfo: membersInfo,
-              readStatus: chatFromDoc.readStatus,
-              recentMessage: chatFromDoc.recentMessage,
-              recentSender: chatFromDoc.recentSender,
-              recentTimestamp: chatFromDoc.recentTimestamp,
-              admin: chatFromDoc.admin,
-              groupName: chatFromDoc.groupName);
+        List<AppUser?> membersInfo = [];
 
-          dataToReturn.removeWhere((chat) => chat.id == chatWithUserInfo.id);
+        AppUser receiverUser =
+            await DatabaseService.getUserWithId(memberIds[receiverIndex]);
 
-          dataToReturn.add(chatWithUserInfo);
+        if (memberIds.length > 2) {
+          for (String? userId in memberIds as Iterable<String?>) {
+            AppUser user = await DatabaseService.getUserWithId(userId);
+            membersInfo.add(user);
+          }
+        } else {
+          membersInfo.add(_currentUser);
+          membersInfo.add(receiverUser);
         }
-        yield dataToReturn;
+
+        Chat chatWithUserInfo = Chat(
+            id: chatFromDoc.id,
+            memberIds: chatFromDoc.memberIds,
+            memberInfo: membersInfo,
+            readStatus: chatFromDoc.readStatus,
+            recentMessage: chatFromDoc.recentMessage,
+            recentSender: chatFromDoc.recentSender,
+            recentTimestamp: chatFromDoc.recentTimestamp,
+            admin: chatFromDoc.admin,
+            groupName: chatFromDoc.groupName);
+
+        dataToReturn.removeWhere((chat) => chat.id == chatWithUserInfo.id);
+
+        dataToReturn.add(chatWithUserInfo);
       }
+      yield dataToReturn;
+    }
     // } catch (err) {
     //   print('////$err');
     // }
@@ -115,7 +115,7 @@ class _MessagesScreenState extends State<MessagesScreen> {
     try {
       var stream = FirebaseFirestore.instance
           .collection('chats')
-          .where('recentSender', isEqualTo: _currentUser.id)
+          .where('recentSender', isEqualTo: _currentUser!.id)
           .snapshots()
           .forEach((docs) {
         for (QueryDocumentSnapshot snapshot in docs.docs) {
@@ -137,7 +137,7 @@ class _MessagesScreenState extends State<MessagesScreen> {
     }
   }
 
-  _buildChat(Chat chat, String currentUserId) {
+  _buildChat(Chat chat, String? currentUserId) {
     final bool isRead = chat.readStatus[currentUserId];
     widget.isReadIcon = isRead;
     final TextStyle readStyle = TextStyle(
@@ -147,11 +147,11 @@ class _MessagesScreenState extends State<MessagesScreen> {
 
     // users = chat.memberInfo;
     int receiverIndex =
-        chat.memberInfo.indexWhere((user) => user.id != _currentUser.id);
+        chat.memberInfo!.indexWhere((user) => user!.id != _currentUser!.id);
     int senderIndex =
-        chat.memberInfo.indexWhere((user) => user.id == chat.recentSender);
+        chat.memberInfo!.indexWhere((user) => user!.id == chat.recentSender);
 
-    userName = chat.memberInfo[receiverIndex].name;
+    userName = chat.memberInfo![receiverIndex]!.name;
 
     if (widget.searchFrom == SearchFrom.createStoryScreen) {
       return ListTile(
@@ -161,13 +161,14 @@ class _MessagesScreenState extends State<MessagesScreen> {
             backgroundColor: Colors.white,
             radius: 20,
             backgroundImage:
-                chat.memberInfo[receiverIndex].profileImageUrl.isEmpty
-                    ? AssetImage(placeHolderImageRef)
-                    : CachedNetworkImageProvider(
-                        chat.memberInfo[receiverIndex].profileImageUrl),
+                (chat.memberInfo![receiverIndex]!.profileImageUrl!.isEmpty
+                        ? AssetImage(placeHolderImageRef)
+                        : CachedNetworkImageProvider(
+                            chat.memberInfo![receiverIndex]!.profileImageUrl!))
+                    as ImageProvider<Object>?,
           ),
         ),
-        title: Text(chat.memberInfo[receiverIndex].name,
+        title: Text(chat.memberInfo![receiverIndex]!.name!,
             style: TextStyle(
                 color: Colors.white,
                 fontWeight: FontWeight.w600,
@@ -183,7 +184,7 @@ class _MessagesScreenState extends State<MessagesScreen> {
                 context,
                 MaterialPageRoute(
                     builder: (_) => ChatScreen(
-                        receiverUser: chat.memberInfo[receiverIndex],
+                        receiverUser: chat.memberInfo![receiverIndex],
                         imageFile: widget.imageFile))),
           },
         ),
@@ -193,29 +194,32 @@ class _MessagesScreenState extends State<MessagesScreen> {
     return ListTile(
         leading: Container(
           height: 40,
-          child: (chat.memberIds.length > 2)
+          child: (chat.memberIds!.length > 2)
               ? Icon(Icons.group, color: Colors.white, size: 35)
               : CircleAvatar(
                   backgroundColor: Colors.white,
                   radius: 28.0,
                   backgroundImage:
-                      chat.memberInfo[receiverIndex].profileImageUrl.isEmpty
+                      (chat.memberInfo![receiverIndex]!.profileImageUrl!.isEmpty
                           ? AssetImage(placeHolderImageRef)
-                          : CachedNetworkImageProvider(
-                              chat.memberInfo[receiverIndex].profileImageUrl),
+                          : CachedNetworkImageProvider(chat
+                              .memberInfo![receiverIndex]!
+                              .profileImageUrl!)) as ImageProvider<Object>?,
                 ),
         ),
         title: Text(
-            (chat.memberIds.length > 2)
-                ? chat.groupName
-                : chat.memberInfo[receiverIndex].name,
+            (chat.memberIds!.length > 2)
+                ? chat.groupName!
+                : chat.memberInfo![receiverIndex]!.name!,
             style: TextStyle(
                 color: Colors.white,
                 fontWeight: FontWeight.w600,
                 fontSize: 18)),
-        subtitle: chat.recentSender.isEmpty
+        subtitle: chat.recentSender!.isEmpty
             ? Text(
-                (chat.memberIds.length > 2) ? 'You were added' : 'Chat Created',
+                (chat.memberIds!.length > 2)
+                    ? 'You were added'
+                    : 'Chat Created',
                 overflow: TextOverflow.ellipsis,
                 style: readStyle,
               )
@@ -231,7 +235,7 @@ class _MessagesScreenState extends State<MessagesScreen> {
                     style: readStyle,
                   ),
         trailing: Text(
-          timeago.format(chat.recentTimestamp.toDate()),
+          timeago.format(chat.recentTimestamp!.toDate()),
           // timeFormat.format(
           //   chat.recentTimestamp.toDate(),
           // ),
@@ -242,12 +246,12 @@ class _MessagesScreenState extends State<MessagesScreen> {
               context,
               MaterialPageRoute(
                   builder: (_) => ChatScreen(
-                      receiverUser: chat.memberInfo[receiverIndex],
+                      receiverUser: chat.memberInfo![receiverIndex],
                       userIds: chat.memberIds,
                       groupMembers: chat.memberInfo,
                       admin: chat.admin,
                       chat: chat,
-                      isGroup: (chat.memberIds.length > 2) ? true : false,
+                      isGroup: (chat.memberIds!.length > 2) ? true : false,
                       groupName: chat.groupName)));
         });
   }
@@ -412,7 +416,7 @@ class _MessagesScreenState extends State<MessagesScreen> {
                                       child: Icon(Icons.delete,
                                           color: Colors.white),
                                     ))),
-                            child: _buildChat(chat, _currentUser.id));
+                            child: _buildChat(chat, _currentUser!.id));
                       },
                       itemCount: snapshot.data.length,
                     )),

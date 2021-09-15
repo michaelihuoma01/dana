@@ -23,11 +23,11 @@ class ReportScreen extends StatefulWidget {
 }
 
 class ReportScreenState extends State<ReportScreen> {
-  String emailBody;
+  String? emailBody;
 
   @override
   Widget build(BuildContext context) {
-    AppUser currentUser =
+    AppUser? currentUser =
         Provider.of<UserData>(context, listen: false).currentUser;
     return Scaffold(
       backgroundColor: darkColor,
@@ -67,11 +67,11 @@ class ReportScreenState extends State<ReportScreen> {
               ButtonWidget(
                 title: 'Submit',
                 onPressed: () async {
-                  print(currentUser.email);
+                  print(currentUser!.email);
                   print(emailBody);
 
                   if (currentUser != null) {
-                    if (emailBody.isEmpty) {
+                    if (emailBody!.isEmpty) {
                       Utility.showMessage(context,
                           bgColor: Colors.red,
                           message: 'Field cannot be empty',
@@ -90,7 +90,7 @@ class ReportScreenState extends State<ReportScreen> {
                             message:
                                 'Thank you for contacting us, we\'ll get send you a follow email shortly regarding your issue.',
                             pulsate: false,
-                            bgColor: Colors.green[600]);
+                            bgColor: Colors.green[600]!);
                       });
                     }
                   }

@@ -3,7 +3,7 @@ import 'package:dana/widgets/BrandDivider.dart';
 import 'package:flutter/material.dart';
 
 class CallTile extends StatelessWidget {
-  bool missed, audio;
+  bool? missed, audio;
 
   CallTile({this.missed, this.audio});
 
@@ -36,11 +36,11 @@ class CallTile extends StatelessWidget {
               children: [
                 Text('Yuji Itadri',
                     style: TextStyle(
-                        color: missed ? Colors.red : Colors.white,
+                        color: missed! ? Colors.red : Colors.white,
                         fontSize: 20)),
                 Row(
                   children: [
-                    Icon(audio ? Icons.call : Icons.video_call,
+                    Icon(audio! ? Icons.call : Icons.video_call,
                         color: Colors.grey),
                     SizedBox(width: 10),
                     Text('Incoming', style: TextStyle(color: Colors.grey)),

@@ -8,11 +8,11 @@ import 'package:flutter/material.dart';
 
 class CustomNavigation {
   static void navigateToUserProfile(
-      {BuildContext context,
-      bool isCameFromBottomNavigation,
-      String currentUserId,
-      AppUser appUser, 
-      String userId}) {
+      {required BuildContext context,
+      bool? isCameFromBottomNavigation,
+      String? currentUserId,
+      AppUser? appUser, 
+      String? userId}) {
     Navigator.push(
       context,
       MaterialPageRoute(
@@ -33,9 +33,9 @@ class CustomNavigation {
   //   Navigator.push(context,
   //       MaterialPageRoute(builder: (_) => ShowErrorDialog(errorMessage)));
   // }
-  static Future<List<CameraDescription>> getCameras(
+  static Future<List<CameraDescription>?> getCameras(
       BuildContext context) async {
-    List<CameraDescription> _cameras;
+    List<CameraDescription>? _cameras;
     try {
       _cameras = await availableCameras();
     } on CameraException catch (_) {
@@ -46,9 +46,9 @@ class CustomNavigation {
     return _cameras;
   }
 
-  static void navigateToHomeScreen(BuildContext context, String currentUserId,
+  static void navigateToHomeScreen(BuildContext context, String? currentUserId,
       {int initialPage = 1}) async {
-    List<CameraDescription> _cameras;
+    List<CameraDescription>? _cameras;
     if (initialPage == 0) {
       _cameras = await getCameras(context);
       if (_cameras == null) {

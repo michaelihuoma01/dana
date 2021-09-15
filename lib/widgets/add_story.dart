@@ -2,9 +2,9 @@ import 'package:dana/utils/constants.dart';
 import 'package:flutter/material.dart';
 
 class AddStory extends StatelessWidget {
-  Widget icon;
-  bool isAdded, hasName;
-  Color color;
+  Widget? icon;
+  bool? isAdded, hasName;
+  Color? color;
 
   AddStory({this.icon, this.color, this.hasName, this.isAdded});
 
@@ -19,7 +19,7 @@ class AddStory extends StatelessWidget {
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(100),
               border: Border.all(
-                  width: 2, color: isAdded ? color : Colors.transparent),
+                  width: 2, color: isAdded! ? color! : Colors.transparent),
             ),
             child: Padding(
               padding: const EdgeInsets.all(2),

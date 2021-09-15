@@ -15,7 +15,7 @@ class PickupScreen extends StatefulWidget {
   final Call call;
 
   PickupScreen({
-    @required this.call,
+    required this.call,
   });
 
   @override
@@ -30,7 +30,7 @@ class _PickupScreenState extends State<PickupScreen> {
   bool isCallMissed = true;
   AudioPlayer audioPlayer = AudioPlayer();
 
-  addToLocalStorage({@required String callStatus}) {
+  addToLocalStorage({required String callStatus}) {
     Log log = Log(
       callerName: widget.call.callerName,
       callerPic: widget.call.callerPic,
@@ -70,7 +70,7 @@ class _PickupScreenState extends State<PickupScreen> {
               image: DecorationImage(
                   fit: BoxFit.cover,
                   image: NetworkImage(
-                    widget.call.callerPic,
+                    widget.call.callerPic!,
                   ))),
           child: BackdropFilter(
             filter: ImageFilter.blur(sigmaX: 20.0, sigmaY: 20.0),
@@ -89,7 +89,7 @@ class _PickupScreenState extends State<PickupScreen> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
                 Text(
-                  widget.call.callerName,
+                  widget.call.callerName!,
                   style: TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 30,

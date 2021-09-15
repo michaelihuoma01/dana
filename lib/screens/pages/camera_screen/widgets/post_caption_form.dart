@@ -7,33 +7,33 @@ import 'package:gallery_saver/files.dart';
 import 'package:video_player/video_player.dart';
 
 class PostCaptionForm extends StatefulWidget {
-  final File imageFile;
-  final String imageUrl;
+  final File? imageFile;
+  final String? imageUrl;
   final TextEditingController controller;
   final Size screenSize;
   final Function onChanged;
   final bool isVideo;
 
   PostCaptionForm({
-    @required this.imageFile,
-    @required this.imageUrl,
-    @required this.controller,
-    @required this.screenSize,
-    @required this.onChanged,
-    @required this.isVideo,
+    required this.imageFile,
+    required this.imageUrl,
+    required this.controller,
+    required this.screenSize,
+    required this.onChanged,
+    required this.isVideo,
   });
   @override
   _PostCaptionFormState createState() => _PostCaptionFormState();
 }
 
 class _PostCaptionFormState extends State<PostCaptionForm> {
-  VideoPlayerController _controller;
+  late VideoPlayerController _controller;
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    _controller = VideoPlayerController.file(widget.imageFile)
+    _controller = VideoPlayerController.file(widget.imageFile!)
       ..initialize().then((_) {
         // print('succesful folks');
         // Ensure the first frame is shown after the video is initialized, even before the play button has been pressed.
@@ -57,17 +57,17 @@ class _PostCaptionFormState extends State<PostCaptionForm> {
                       image: DecorationImage(
                         fit: BoxFit.fill,
                         alignment: FractionalOffset.topCenter,
-                        image: widget.imageFile == null
+                        image: (widget.imageFile == null
                             ? CachedNetworkImageProvider(
                                 widget.imageUrl.toString())
-                            : FileImage(widget.imageFile),
+                            : FileImage(widget.imageFile!)) as ImageProvider<Object>,
                       ),
                     )),
                   )
                 : ClipRRect(
                     borderRadius: BorderRadius.circular(5),
                     child: Hero(
-                      tag: widget.imageFile,
+                      tag: widget.imageFile!,
                       child: _controller.value.isInitialized
                           ? AspectRatio(
                               aspectRatio: _controller.value.aspectRatio,

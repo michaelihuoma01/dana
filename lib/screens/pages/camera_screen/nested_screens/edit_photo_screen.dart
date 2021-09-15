@@ -6,6 +6,8 @@ import 'package:dana/services/core/filtered_image_converter.dart';
 import 'package:dana/services/core/liquid_swipe_pages.dart';
 import 'package:dana/utilities/filters.dart';
 import 'package:dana/utils/constants.dart';
+import 'package:dana/widgets/crop_key.dart';
+import 'package:dana/widgets/crop_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -13,22 +15,24 @@ import 'package:liquid_swipe/liquid_swipe.dart';
 
 class EditPhotoScreen extends StatefulWidget {
   final File imageFile;
-  final Function backToHomeScreen;
+  final Function? backToHomeScreen;
 
-  EditPhotoScreen({@required this.imageFile, this.backToHomeScreen});
+  EditPhotoScreen({required this.imageFile, this.backToHomeScreen});
   @override
   _EditPhotoScreenState createState() => _EditPhotoScreenState();
 }
 
 class _EditPhotoScreenState extends State<EditPhotoScreen>
     with TickerProviderStateMixin {
-  final GlobalKey _globalKey = GlobalKey();
-  TabController _tabController;
+  GlobalKey _globalKey = GlobalKey();
+  GlobalKey<CropState> cropKey = GlobalKey<CropState>();
+
+  TabController? _tabController;
   LiquidController _liquidController = LiquidController();
-  List<Container> _filterPages;
+  late List<Container> _filterPages;
   String _filterTitle = '';
   bool _newFilterTitle = false;
-
+  bool isCrop = true;
   int _selectedIndex = 0;
 
   @override
@@ -48,8 +52,42 @@ class _EditPhotoScreenState extends State<EditPhotoScreen>
     final Size size = MediaQuery.of(context).size;
 
     setState(() {
-      _filterPages = LiquidSwipePagesService.getImageFilteredPaged(
-          imageFile: widget.imageFile, height: size.width, width: size.width);
+      final Image image =
+          Image(image: FileImage(File('${widget.imageFile.path}')));
+
+      List<Container> pages = [];
+      filters.forEach((filter) {
+        Container colorFilterPage = Container(
+          child: ColorFiltered(
+            colorFilter: ColorFilter.matrix(filter.matrixValues),
+            child: Crop(
+              key: cropKey,
+              image: FileImage(widget.imageFile),
+              aspectRatio: 1.0 / 1.0,
+            ),
+
+            //  Container(
+            //     decoration: BoxDecoration(
+            //   color: Colors.white,
+            //   image: DecorationImage(
+            //     fit: (isCrop == true) ? BoxFit.cover : BoxFit.contain,
+            //     // alignment: FractionalOffset.topCenter,
+            //     image: croppedImage.image,
+            //   ),
+            // )),
+          ),
+        );
+        pages.add(colorFilterPage);
+        setState(() {
+          _filterPages = pages;
+        });
+      });
+
+      // _filterPages = LiquidSwipePagesService.getImageFilteredPaged(
+      //     isCrop: isCrop,
+      //     imageFile: widget.imageFile,
+      //     height: size.width,
+      //     width: size.width);
     });
 
     return Stack(
@@ -155,24 +193,8 @@ class _EditPhotoScreenState extends State<EditPhotoScreen>
                     Padding(
                         padding: const EdgeInsets.only(bottom: 30),
                         child: Text('Filters',
-                            style: TextStyle(color: Colors.white, fontSize: 20))
-                        // TabBar(
-                        //   controller: _tabController,
-                        //   indicatorWeight: 3.0,
-                        //   indicatorColor: Colors.blue,
-                        //   labelColor: Colors.blue,
-                        //   labelStyle: TextStyle(
-                        //     fontSize: 18.0,
-                        //     fontWeight: FontWeight.w600,
-                        //   ),
-                        //   unselectedLabelStyle: TextStyle(fontSize: 18.0),
-                        //   unselectedLabelColor:
-                        //       Theme.of(context).accentColor.withOpacity(0.7),
-                        //   tabs: <Widget>[
-                        //     Tab(text: 'Filters'),
-                        //   ],
-                        // ),
-                        ),
+                            style:
+                                TextStyle(color: Colors.white, fontSize: 20)))
                   ],
                 ),
               )
@@ -185,7 +207,7 @@ class _EditPhotoScreenState extends State<EditPhotoScreen>
 
   void convertFilteredImageToImageFile() async {
     File file = await FilteredImageConverter.convert(globalKey: _globalKey);
-    Navigator.of(_globalKey.currentContext).push(
+    Navigator.of(_globalKey.currentContext!).push(
       MaterialPageRoute(
         builder: (context) => CreatePostScreen(
             imageFile: file, backToHomeScreen: widget.backToHomeScreen),

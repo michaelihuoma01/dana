@@ -11,7 +11,7 @@ class HeartAnime extends StatelessWidget {
       tween: Tween(begin: 0.5, end: 1.4),
       curve: Curves.elasticOut,
       builder: (context, anim, child) => Transform.scale(
-        scale: anim.value,
+        scale: 1.0,
         child: Icon(
           Icons.favorite,
           size: size,

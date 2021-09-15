@@ -23,12 +23,12 @@ import 'package:provider/provider.dart';
 
 class ContactScreen extends StatefulWidget {
   final SearchFrom searchFrom;
-  final File imageFile;
-  AppUser currentUser;
-  bool isReadIcon = false;
+  final File? imageFile;
+  AppUser? currentUser;
+  bool? isReadIcon = false;
 
   ContactScreen(
-      {@required this.searchFrom,
+      {required this.searchFrom,
       this.currentUser,
       this.isReadIcon,
       this.imageFile});
@@ -39,7 +39,7 @@ class ContactScreen extends StatefulWidget {
 
 class _ContactScreenState extends State<ContactScreen> {
   TextEditingController _searchController = TextEditingController();
-  Future<QuerySnapshot> _users;
+  Future<QuerySnapshot>? _users;
   String _searchText = '';
 
   List<AppUser> _userFollowers = [];
@@ -76,14 +76,14 @@ class _ContactScreenState extends State<ContactScreen> {
 
   Future _setupFollowers() async {
     int userFollowersCount =
-        await DatabaseService.numFollowers(widget.currentUser.id);
+        await DatabaseService.numFollowers(widget.currentUser!.id);
     if (!mounted) return;
     setState(() {
       _followersCount = userFollowersCount;
     });
 
     List<String> userFollowersIds =
-        await DatabaseService.getUserFollowersIds(widget.currentUser.id);
+        await DatabaseService.getUserFollowersIds(widget.currentUser!.id);
     List<AppUser> userFollowers = [];
     List<bool> userFollowersState = [];
     for (String userId in userFollowersIds) {
@@ -104,14 +104,14 @@ class _ContactScreenState extends State<ContactScreen> {
 
   Future _setupFollowing() async {
     int userFollowingCount =
-        await DatabaseService.numFollowing(widget.currentUser.id);
+        await DatabaseService.numFollowing(widget.currentUser!.id);
     if (!mounted) return;
     setState(() {
       _followingCount = userFollowingCount;
     });
 
     List<String> userFollowingIds =
-        await DatabaseService.getUserFollowingIds(widget.currentUser.id);
+        await DatabaseService.getUserFollowingIds(widget.currentUser!.id);
 
     List<AppUser> userFollowing = [];
     List<bool> userFollowingState = [];
@@ -137,16 +137,16 @@ class _ContactScreenState extends State<ContactScreen> {
       AppUser user = AppUser.fromDoc(userDoc);
 
       isFollower = await DatabaseService.isUserFollower(
-        currentUserId: widget.currentUser.id,
+        currentUserId: widget.currentUser!.id,
         userId: user.id,
       );
 
       isFollowingUser = await DatabaseService.isFollowingUser(
-        currentUserId: widget.currentUser.id,
+        currentUserId: widget.currentUser!.id,
         userId: user.id,
       );
 
-      if (widget.currentUser.id == user.id) {
+      if (widget.currentUser!.id == user.id) {
         print('skipping current user');
       } else {
         if (isFollower == true && isFollowingUser == true) {
@@ -154,6 +154,9 @@ class _ContactScreenState extends State<ContactScreen> {
           _friends.add(user);
 
           print('friends ${user.name} $isFriends');
+          setState(() {
+            _isLoading = false;
+          });
         } else if (isFollower == true && isFollowingUser != true) {
           isRequest = true;
           _requests.add(user);
@@ -166,9 +169,6 @@ class _ContactScreenState extends State<ContactScreen> {
       }
     }
     print(_friends.length);
-    setState(() {
-      _isLoading = false;
-    });
   }
 
   Widget _buildUserTile(AppUser user) {
@@ -176,15 +176,16 @@ class _ContactScreenState extends State<ContactScreen> {
       leading: CircleAvatar(
         backgroundColor: Colors.grey,
         radius: 20.0,
-        backgroundImage: user.profileImageUrl.isEmpty
-            ? AssetImage(placeHolderImageRef)
-            : CachedNetworkImageProvider(user.profileImageUrl),
+        backgroundImage: (user.profileImageUrl!.isEmpty
+                ? AssetImage(placeHolderImageRef)
+                : CachedNetworkImageProvider(user.profileImageUrl!))
+            as ImageProvider<Object>?,
       ),
-      title: Text(user.name,
+      title: Text(user.name!,
           style: TextStyle(
               color: Colors.white, fontWeight: FontWeight.w600, fontSize: 18)),
-      subtitle:
-          Text('PIN: ${user.pin}', style: TextStyle(color: Colors.grey, fontSize: 12)),
+      subtitle: Text('PIN: ${user.pin}',
+          style: TextStyle(color: Colors.grey, fontSize: 12)),
       trailing: widget.searchFrom == SearchFrom.createStoryScreen
           ? FlatButton(
               child: Text(
@@ -218,7 +219,7 @@ class _ContactScreenState extends State<ContactScreen> {
                       //         initialPage: 0),
                       // isCameFromBottomNavigation: false,
                       userId: user.id,
-                      currentUserId: widget.currentUser.id),
+                      currentUserId: widget.currentUser!.id),
                 ),
               )
           : widget.searchFrom == SearchFrom.messagesScreen
@@ -238,9 +239,9 @@ class _ContactScreenState extends State<ContactScreen> {
 
   @override
   Widget build(BuildContext context) {
-    String _currentUserId = Provider.of<UserData>(context).currentUser.id;
+    String? _currentUserId = Provider.of<UserData>(context).currentUser!.id;
     void _clearSearch() {
-      WidgetsBinding.instance
+      WidgetsBinding.instance!
           .addPostFrameCallback((_) => _searchController.clear());
       setState(() {
         _users = null;
@@ -305,7 +306,7 @@ class _ContactScreenState extends State<ContactScreen> {
                         if (value.trim().isNotEmpty) {
                           setState(() {
                             _searchText = value;
-                            String sentence = toBeginningOfSentenceCase(value);
+                            String? sentence = toBeginningOfSentenceCase(value);
                             _users = DatabaseService.searchUsers(sentence);
                           });
                         }
@@ -314,7 +315,7 @@ class _ContactScreenState extends State<ContactScreen> {
                         if (input.trim().isNotEmpty) {
                           setState(() {
                             _searchText = input;
-                            String sentence = toBeginningOfSentenceCase(input);
+                            String? sentence = toBeginningOfSentenceCase(input);
                             _users = DatabaseService.searchUsers(sentence);
                           });
                         }
@@ -359,11 +360,13 @@ class _ContactScreenState extends State<ContactScreen> {
                                               int index) {
                                             AppUser following =
                                                 _requests[index];
-                                            String result = following.name;
+                                            String result = following.name!;
                                             if (result.contains(' ')) {
-                                              result = following.name.substring(
-                                                  0,
-                                                  following.name.indexOf(' '));
+                                              result = following.name!
+                                                  .substring(
+                                                      0,
+                                                      following.name!
+                                                          .indexOf(' '));
                                             }
 
                                             return Padding(
@@ -377,7 +380,7 @@ class _ContactScreenState extends State<ContactScreen> {
                                                       builder: (_) => UserProfile(
                                                           userId: following.id,
                                                           currentUserId: widget
-                                                              .currentUser.id),
+                                                              .currentUser!.id),
                                                     )),
                                                 child: Column(
                                                   children: [
@@ -389,15 +392,16 @@ class _ContactScreenState extends State<ContactScreen> {
                                                           radius: 25.0,
                                                           backgroundColor:
                                                               Colors.grey,
-                                                          backgroundImage: following
-                                                                  .profileImageUrl
+                                                          backgroundImage: (following
+                                                                  .profileImageUrl!
                                                                   .isEmpty
                                                               ? AssetImage(
                                                                   placeHolderImageRef)
                                                               : CachedNetworkImageProvider(
                                                                   following
-                                                                      .profileImageUrl,
-                                                                ),
+                                                                      .profileImageUrl!,
+                                                                )) as ImageProvider<
+                                                              Object>?,
                                                         ),
                                                       ),
                                                     ),
@@ -441,7 +445,7 @@ class _ContactScreenState extends State<ContactScreen> {
                                                       builder: (_) => UserProfile(
                                                           userId: follower.id,
                                                           currentUserId: widget
-                                                              .currentUser.id),
+                                                              .currentUser!.id),
                                                     )),
                                                 child: ContactTile(
                                                     appUser: follower));
@@ -461,7 +465,10 @@ class _ContactScreenState extends State<ContactScreen> {
                                       color: Colors.white, size: 40),
                                 );
                               }
-                              if (snapshot.data.docs.length == 0) {
+                              if ((snapshot.data! as QuerySnapshot)
+                                      .docs
+                                      .length ==
+                                  0) {
                                 return Center(
                                   child: Text(
                                       'No Users found! Please try again.',
@@ -471,11 +478,14 @@ class _ContactScreenState extends State<ContactScreen> {
                               return Container(
                                 height: 500,
                                 child: ListView.builder(
-                                    itemCount: snapshot.data.docs.length,
+                                    itemCount: (snapshot.data! as QuerySnapshot)
+                                        .docs
+                                        .length,
                                     itemBuilder:
                                         (BuildContext context, int index) {
                                       AppUser user = AppUser.fromDoc(
-                                          snapshot.data.docs[index]);
+                                          (snapshot.data! as QuerySnapshot)
+                                              .docs[index]);
                                       // Prevent current user to send messages to himself
                                       return (widget.searchFrom !=
                                                   SearchFrom.homeScreen &&

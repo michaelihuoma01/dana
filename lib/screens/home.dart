@@ -32,9 +32,9 @@ class HomeScreen extends StatefulWidget {
   static const String id = 'HomeScreen';
 
   // final AppUser currentUser;
-  final String currentUserId;
+  final String? currentUserId;
   final int initialPage;
-  final List<CameraDescription> cameras;
+  final List<CameraDescription>? cameras;
   HomeScreen({this.currentUserId, this.initialPage = 1, this.cameras});
 
   @override
@@ -47,16 +47,16 @@ class _HomeScreenState extends State<HomeScreen>
   int _currentTab = 0;
   int _currentPage = 0;
   int _lastTab = 0;
-  PageController _pageController;
-  AppUser _currentUser;
-  List<CameraDescription> _cameras;
+  PageController? _pageController;
+  AppUser? _currentUser;
+  List<CameraDescription>? _cameras;
   CameraConsumer _cameraConsumer = CameraConsumer.post;
   final ScrollController homeController = ScrollController();
   bool isRead = true;
   bool isSeen = true;
 
-  AppUser user;
-  TabController tabController;
+  AppUser? user;
+  TabController? tabController;
   int selectedIndex = 0;
   bool isSelected1 = true,
       isSelected2 = false,
@@ -80,7 +80,7 @@ class _HomeScreenState extends State<HomeScreen>
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addObserver(this);
+    WidgetsBinding.instance!.addObserver(this);
 
     _getCurrentUser();
     _getCameras();
@@ -90,8 +90,8 @@ class _HomeScreenState extends State<HomeScreen>
     _listenToNotifications();
     AuthService.updateToken();
     tabController = TabController(length: 5, vsync: this);
-    tabController.addListener(() {
-      onItemClicked(tabController.index);
+    tabController!.addListener(() {
+      onItemClicked(tabController!.index);
     });
 
     print('============//////////////=====$isRead');
@@ -141,7 +141,7 @@ class _HomeScreenState extends State<HomeScreen>
         if (isFollower == true && isFollowingUser == true) {
           isFriends = true;
           _friends.add(user);
-             setState(() {
+          setState(() {
             isSeen = true;
           });
 
@@ -290,14 +290,14 @@ class _HomeScreenState extends State<HomeScreen>
 
   void _backToHomeScreenFromCameraScreen() {
     _selectPage(1);
-    _pageController.animateToPage(1,
+    _pageController!.animateToPage(1,
         duration: Duration(milliseconds: 200), curve: Curves.easeIn);
   }
 
   void onItemClicked(int index) {
     setState(() {
       selectedIndex = index;
-      tabController..index = selectedIndex;
+      tabController?..index = selectedIndex;
       print(selectedIndex);
 
       switch (index) {
@@ -440,7 +440,7 @@ class _HomeScreenState extends State<HomeScreen>
                                 radius: 25.0,
                                 backgroundColor: Colors.grey,
                                 backgroundImage: CachedNetworkImageProvider(
-                                    _currentUser?.profileImageUrl),
+                                    _currentUser!.profileImageUrl!),
                               ),
                             ),
                       title: Text(isSelected5 ? 'Profile' : '',

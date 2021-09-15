@@ -54,28 +54,55 @@ class _CreateStoryScreenState extends State<CreateStoryScreen> {
   String _storyCaption = '';
   String _storyLocation = '';
   String _storyLink = '';
-  int _storyDuration = 10;
-  Size _screenSize;
-  List<Container> _filterPages;
+  int? _storyDuration = 10;
+  Size? _screenSize;
+  late List<Container> _filterPages;
 
   @override
   void dispose() {
-    _captionController?.dispose();
-    _locationController?.dispose();
-    _linkController?.dispose();
+    _captionController.dispose();
+    _locationController.dispose();
+    _linkController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    final AppUser _currentUser = Provider.of<UserData>(context).currentUser;
+    final AppUser? _currentUser = Provider.of<UserData>(context).currentUser;
 
     setState(() {
       _screenSize = MediaQuery.of(context).size;
-      _filterPages = LiquidSwipePagesService.getImageFilteredPaged(
-          imageFile: widget.imageFile,
-          height: _screenSize.height,
-          width: _screenSize.width);
+      // _filterPages = LiquidSwipePagesService.getImageFilteredPaged(
+      //     imageFile: widget.imageFile,
+      //     height: _screenSize.height,
+      //     width: _screenSize.width);
+
+      final Image image =
+          Image(image: FileImage(File('${widget.imageFile.path}')));
+
+      List<Container> pages = [];
+      filters.forEach((filter) {
+        Container colorFilterPage = Container(
+          height: _screenSize!.height,
+          width: _screenSize!.width,
+          child: ColorFiltered(
+            colorFilter: ColorFilter.matrix(filter.matrixValues),
+            child: Container(
+                decoration: BoxDecoration(
+              // color: Colors.white,
+              image: DecorationImage(
+                fit: BoxFit.contain,
+                // alignment: FractionalOffset.topCenter,
+                image: FileImage(widget.imageFile),
+              ),
+            )),
+          ),
+        );
+        pages.add(colorFilterPage);
+        setState(() {
+          _filterPages = pages;
+        });
+      });
     });
 
     return Scaffold(
@@ -120,7 +147,7 @@ class _CreateStoryScreenState extends State<CreateStoryScreen> {
           if (!_isLoading) _displayEditStoryButtons(_currentUser),
 
           // displays post buttons on bottom of the screen
-          if (!_isLoading) _displayBottomButtons(_currentUser),
+          if (!_isLoading) _displayBottomButtons(_currentUser!),
         ],
       ),
     );
@@ -138,7 +165,7 @@ class _CreateStoryScreenState extends State<CreateStoryScreen> {
     });
   }
 
-  void _showEditStory({@required Function onSave, @required Widget widget}) {
+  void _showEditStory({required Function onSave, required Widget widget}) {
     showModalBottomSheet(
         shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.vertical(top: Radius.circular(25.0))),
@@ -157,8 +184,8 @@ class _CreateStoryScreenState extends State<CreateStoryScreen> {
                   SizedBox(height: 10),
                   FlatButton(
                       onPressed: () {
-                        if (_formKey.currentState.validate() && !_isLoading) {
-                          _formKey.currentState.save();
+                        if (_formKey.currentState!.validate() && !_isLoading) {
+                          _formKey.currentState!.save();
                           onSave();
                           Navigator.pop(context);
                         }
@@ -178,7 +205,7 @@ class _CreateStoryScreenState extends State<CreateStoryScreen> {
 
   Align _displayLocationText() {
     return Align(
-      alignment: Alignment.lerp(Alignment.center, Alignment.bottomCenter, 0.6),
+      alignment: Alignment.lerp(Alignment.center, Alignment.bottomCenter, 0.6)!,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
@@ -218,10 +245,11 @@ class _CreateStoryScreenState extends State<CreateStoryScreen> {
                   CircleAvatar(
                     backgroundColor: Colors.grey,
                     radius: 15.0,
-                    backgroundImage: _currentUser.profileImageUrl.isEmpty
-                        ? AssetImage(placeHolderImageRef)
-                        : CachedNetworkImageProvider(
-                            _currentUser.profileImageUrl),
+                    backgroundImage: (_currentUser.profileImageUrl!.isEmpty
+                            ? AssetImage(placeHolderImageRef)
+                            : CachedNetworkImageProvider(
+                                _currentUser.profileImageUrl!))
+                        as ImageProvider<Object>?,
                   ),
                   SizedBox(
                     width: 10.0,
@@ -266,7 +294,7 @@ class _CreateStoryScreenState extends State<CreateStoryScreen> {
 
   Align _displayStoryCaption() {
     return Align(
-      alignment: Alignment.lerp(Alignment.center, Alignment.bottomCenter, 0.4),
+      alignment: Alignment.lerp(Alignment.center, Alignment.bottomCenter, 0.4)!,
       child: Text(
         _storyCaption,
         textAlign: TextAlign.center,
@@ -275,8 +303,8 @@ class _CreateStoryScreenState extends State<CreateStoryScreen> {
     );
   }
 
-  Align _displayEditStoryButtons(AppUser currentuser) {
-    int _duration;
+  Align _displayEditStoryButtons(AppUser? currentuser) {
+    int? _duration;
     return Align(
       alignment: Alignment.topCenter,
       child: Padding(
@@ -382,7 +410,7 @@ class _CreateStoryScreenState extends State<CreateStoryScreen> {
                     ),
                     onTap: () => _showEditStory(
                       onSave: () async {
-                        String url = await UrlValidatorService.isUrlValid(
+                        String? url = await UrlValidatorService.isUrlValid(
                             context, _linkController.text.trim());
                         if (url != null) {
                           setState(() => _storyLink = url);
@@ -457,7 +485,7 @@ class _CreateStoryScreenState extends State<CreateStoryScreen> {
     );
   }
 
-  void _createStory(String currentUserId) async {
+  void _createStory(String? currentUserId) async {
     if (!_isLoading && widget.imageFile != null) {
       setState(() => _isLoading = true);
       File imageFile =

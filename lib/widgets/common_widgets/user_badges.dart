@@ -6,14 +6,14 @@ class UserBadges extends StatelessWidget {
   final double size;
   final bool secondSizedBox;
   UserBadges(
-      {@required this.user, @required this.size, this.secondSizedBox = true});
+      {required this.user, required this.size, this.secondSizedBox = true});
 
   @override
   Widget build(BuildContext context) {
     return Row(
       children: <Widget>[
-        if (user?.isVerified == true) SizedBox(width: 5),
-        if (user?.isVerified)
+        if (user.isVerified == true) SizedBox(width: 5),
+        if (user.isVerified!)
           Tooltip(
             message: 'User is Verified',
             child: Image.asset(

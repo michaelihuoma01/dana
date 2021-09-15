@@ -7,15 +7,15 @@ import 'package:flutter/material.dart';
 
 class StoryCircle extends StatefulWidget {
   final List<Story> userStories;
-  final String currentUserId;
-  final AppUser user;
+  final String? currentUserId;
+  final AppUser? user;
   final double size;
   final bool showUserName;
 
   StoryCircle({
-    @required this.userStories,
-    @required this.user,
-    @required this.currentUserId,
+    required this.userStories,
+    required this.user,
+    required this.currentUserId,
     this.size = 60,
     this.showUserName = true,
   });
@@ -24,7 +24,7 @@ class StoryCircle extends StatefulWidget {
 }
 
 class _StoryCircleState extends State<StoryCircle> {
-  int _seenStories = 0;
+  int? _seenStories = 0;
   @override
   void initState() {
     super.initState();
@@ -36,7 +36,7 @@ class _StoryCircleState extends State<StoryCircle> {
     int seenStories = 0;
 
     for (Story story in widget.userStories) {
-      if (story.views.containsKey(widget.currentUserId)) {
+      if (story.views!.containsKey(widget.currentUserId)) {
         seenStories++;
       }
     }
@@ -90,9 +90,9 @@ class _StoryCircleState extends State<StoryCircle> {
               }),
               child: ClipOval(
                 child: Image(
-                  image: widget.user.profileImageUrl.isEmpty
+                  image: (widget.user!.profileImageUrl!.isEmpty
                       ? AssetImage(placeHolderImageRef)
-                      : CachedNetworkImageProvider(widget.user.profileImageUrl),
+                      : CachedNetworkImageProvider(widget.user!.profileImageUrl!)) as ImageProvider<Object>,
                   height: widget.size,
                   width: widget.size,
                   fit: BoxFit.cover,
@@ -103,7 +103,7 @@ class _StoryCircleState extends State<StoryCircle> {
           if (widget.showUserName)
             Expanded(
               child: Text(
-                widget.user.name,
+                widget.user!.name!,
                 textAlign: TextAlign.center,
                 overflow: TextOverflow.clip,
                 style: TextStyle(color: Colors.white),

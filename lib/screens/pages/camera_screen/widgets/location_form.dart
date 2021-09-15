@@ -1,22 +1,22 @@
 import 'package:dana/services/core/location_service.dart';
 import 'package:dana/utils/constants.dart';
 import 'package:flutter/material.dart';
-import 'package:geocoder/geocoder.dart';
+import 'package:geocode/geocode.dart'; 
 import 'package:ionicons/ionicons.dart';
 
 class LocationForm extends StatefulWidget {
   final TextEditingController controller;
-  final Size screenSize;
+  final Size? screenSize;
   LocationForm({
-    @required this.controller,
-    @required this.screenSize,
+    required this.controller,
+    required this.screenSize,
   });
   @override
   _LocationFormState createState() => _LocationFormState();
 }
 
 class _LocationFormState extends State<LocationForm> {
-  Address _address;
+  Address? _address;
   Map<String, double> _currentLocation = Map();
   bool _isLoading = false;
 
@@ -49,7 +49,7 @@ class _LocationFormState extends State<LocationForm> {
           leading: Icon(Icons.location_pin, color: lightColor),
           title: Container(
             child: TextFormField(
-              validator: (input) => input.trim().length > 30
+              validator: (input) => input!.trim().length > 30
                   ? 'Please enter a location less than 30 characters'
                   : null,
               maxLength: 30,
@@ -75,12 +75,13 @@ class _LocationFormState extends State<LocationForm> {
                 padding: const EdgeInsets.only(right: 5.0, left: 5.0),
                 child: Row(
                   children: <Widget>[
-                    _buildLocationButton(_address.featureName),
-                    _buildLocationButton(_address.subLocality),
-                    _buildLocationButton(_address.locality),
-                    _buildLocationButton(_address.subAdminArea),
-                    _buildLocationButton(_address.adminArea),
-                    _buildLocationButton(_address.countryName),
+                    // _buildLocationButton(_address.featureName),
+                    // _buildLocationButton(_address.subLocality),
+                    // _buildLocationButton(_address.locality),
+                    _buildLocationButton(_address!.region),
+                    _buildLocationButton(_address!.streetAddress),
+                    _buildLocationButton(_address!.city),
+                    _buildLocationButton(_address!.countryName),
                   ],
                 ),
               ),
@@ -109,8 +110,8 @@ class _LocationFormState extends State<LocationForm> {
   }
 
   //method to build buttons with location.
-  _buildLocationButton(String locationName) {
-    if (locationName != null ?? locationName.isNotEmpty) {
+  _buildLocationButton(String? locationName) {
+    if (locationName != null) {
       return InkWell(
         onTap: () {
           widget.controller.text = locationName;

@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:collection/collection.dart' show IterableExtension;
 import 'package:dana/models/models.dart';
 import 'package:dana/services/services.dart';
 import 'package:dana/utilities/constants.dart';
@@ -15,11 +16,11 @@ import 'package:rflutter_alert/rflutter_alert.dart';
 
 class BroadcastMessage extends StatefulWidget {
   final SearchFrom searchFrom;
-  final File imageFile;
-  AppUser currentUser;
+  final File? imageFile;
+  AppUser? currentUser;
 
   BroadcastMessage(
-      {@required this.searchFrom, this.currentUser, this.imageFile});
+      {required this.searchFrom, this.currentUser, this.imageFile});
 
   @override
   _BroadcastMessageState createState() => _BroadcastMessageState();
@@ -27,10 +28,10 @@ class BroadcastMessage extends StatefulWidget {
 
 class _BroadcastMessageState extends State<BroadcastMessage> {
   TextEditingController _searchController = TextEditingController();
-  Future<QuerySnapshot> _users;
+  Future<QuerySnapshot>? _users;
   String _searchText = '';
   List<AppUser> _userFollowing = [];
-  List<AppUser> _selectedUsers = List();
+  List<AppUser> _selectedUsers = [];
 
   List<bool> _userFollowingState = [];
   int _followingCount = 0;
@@ -43,9 +44,9 @@ class _BroadcastMessageState extends State<BroadcastMessage> {
     // _selectedUsers.add(widget.currentUser);
 
     Timestamp timestamp = Timestamp.now();
-    Map<String, dynamic> readStatus = {};
+    Map<String?, dynamic> readStatus = {};
 
-    readStatus[widget.currentUser.id] = false;
+    readStatus[widget.currentUser!.id] = false;
 
     for (AppUser user in _selectedUsers) {
       readStatus[user.id] = false;
@@ -56,37 +57,37 @@ class _BroadcastMessageState extends State<BroadcastMessage> {
     _selectedUsers.forEach((element) async {
       print('sent to ${element.name}');
 
-      Chat chat =
-          await ChatService.getChatByUsers([widget.currentUser.id, element.id]);
+      Chat? chat =
+          await ChatService.getChatByUsers([widget.currentUser!.id, element.id]);
 
       bool isChatExist = chat != null;
-      DocumentReference res;
+      late DocumentReference res;
 
       if (isChatExist == false) {
         res = await chatsRef.add({
           'groupName': '',
           'admin': '',
-          'memberIds': [widget.currentUser.id, element.id],
+          'memberIds': [widget.currentUser!.id, element.id],
           'recentMessage': groupName,
-          'recentSender': widget.currentUser.id,
+          'recentSender': widget.currentUser!.id,
           'recentTimestamp': timestamp,
           'readStatus': readStatus
         });
       }
 
       Chat _chat = Chat(
-        id: (isChatExist == false) ? res.id : chat.id,
+        id: (isChatExist == false) ? res.id : chat!.id,
         recentMessage: groupName,
         admin: '',
         groupName: '',
-        recentSender: widget.currentUser.id,
+        recentSender: widget.currentUser!.id,
         recentTimestamp: timestamp,
-        memberIds: [widget.currentUser.id, element.id],
+        memberIds: [widget.currentUser!.id, element.id],
         readStatus: readStatus,
       );
 
       Message message = Message(
-        senderId: widget.currentUser.id,
+        senderId: widget.currentUser!.id,
         text: groupName,
         imageUrl: null,
         fileName: null,
@@ -101,7 +102,7 @@ class _BroadcastMessageState extends State<BroadcastMessage> {
       ChatService.sendChatMessage(_chat, message, element);
       chatsRef.doc(_chat.id).update({
         'readStatus.${element.id}': false,
-        'readStatus.${widget.currentUser.id}': true
+        'readStatus.${widget.currentUser!.id}': true
       });
     });
   }
@@ -137,14 +138,14 @@ class _BroadcastMessageState extends State<BroadcastMessage> {
     });
 
     int userFollowingCount =
-        await DatabaseService.numFollowing(widget.currentUser.id);
+        await DatabaseService.numFollowing(widget.currentUser!.id);
     if (!mounted) return;
     setState(() {
       _followingCount = userFollowingCount;
     });
 
     List<String> userFollowingIds =
-        await DatabaseService.getUserFollowingIds(widget.currentUser.id);
+        await DatabaseService.getUserFollowingIds(widget.currentUser!.id);
 
     List<AppUser> userFollowing = [];
     List<bool> userFollowingState = [];
@@ -171,15 +172,15 @@ class _BroadcastMessageState extends State<BroadcastMessage> {
       leading: CircleAvatar(
         backgroundColor: Colors.grey,
         radius: 20.0,
-        backgroundImage: user.profileImageUrl.isEmpty
+        backgroundImage: (user.profileImageUrl!.isEmpty
             ? AssetImage(placeHolderImageRef)
-            : CachedNetworkImageProvider(user.profileImageUrl),
+            : CachedNetworkImageProvider(user.profileImageUrl!)) as ImageProvider<Object>?,
       ),
-      title: Text(user.name,
+      title: Text(user.name!,
           style: TextStyle(
               color: Colors.white, fontWeight: FontWeight.w600, fontSize: 18)),
       subtitle:
-          Text(user.pin, style: TextStyle(color: Colors.grey, fontSize: 12)),
+          Text(user.pin!, style: TextStyle(color: Colors.grey, fontSize: 12)),
       trailing: widget.searchFrom == SearchFrom.createStoryScreen
           ? FlatButton(
               child: Text(
@@ -234,9 +235,9 @@ class _BroadcastMessageState extends State<BroadcastMessage> {
 
   @override
   Widget build(BuildContext context) {
-    String _currentUserId = Provider.of<UserData>(context).currentUser.id;
+    String? _currentUserId = Provider.of<UserData>(context).currentUser!.id;
     void _clearSearch() {
-      WidgetsBinding.instance
+      WidgetsBinding.instance!
           .addPostFrameCallback((_) => _searchController.clear());
       setState(() {
         _users = null;
@@ -335,9 +336,8 @@ class _BroadcastMessageState extends State<BroadcastMessage> {
                       itemCount: _userFollowing.length,
                       itemBuilder: (BuildContext context, int index) {
                         AppUser follower = _userFollowing[index];
-                        AppUser filteritem = _selectedUsers.firstWhere(
-                            (item) => item.id == follower.id,
-                            orElse: () => null);
+                        AppUser? filteritem = _selectedUsers.firstWhereOrNull(
+                            (item) => item.id == follower.id);
                         return Theme(
                             data: ThemeData(unselectedWidgetColor: lightColor),
                             child: CheckboxListTile(
@@ -353,10 +353,10 @@ class _BroadcastMessageState extends State<BroadcastMessage> {
                                     radius: 25.0,
                                     backgroundColor: Colors.grey,
                                     backgroundImage:
-                                        follower.profileImageUrl.isEmpty
+                                        (follower.profileImageUrl!.isEmpty
                                             ? AssetImage(placeHolderImageRef)
                                             : CachedNetworkImageProvider(
-                                                follower.profileImageUrl),
+                                                follower.profileImageUrl!)) as ImageProvider<Object>?,
                                   ),
                                 ),
                                 SizedBox(width: 15),
@@ -365,7 +365,7 @@ class _BroadcastMessageState extends State<BroadcastMessage> {
                                     crossAxisAlignment:
                                         CrossAxisAlignment.start,
                                     children: [
-                                      Text(follower.name,
+                                      Text(follower.name!,
                                           style:
                                               TextStyle(color: Colors.white)),
                                       SizedBox(height: 3),

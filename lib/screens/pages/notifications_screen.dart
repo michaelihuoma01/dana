@@ -16,7 +16,7 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
 class NotificationsScreen extends StatefulWidget {
-  AppUser currentUser;
+  AppUser? currentUser;
 
   NotificationsScreen({this.currentUser});
 
@@ -27,7 +27,7 @@ class NotificationsScreen extends StatefulWidget {
 class _NotificationsScreenState extends State<NotificationsScreen> {
   List<Activity> _activities = [];
   bool _isLoading = false;
-  var stream;
+  late var stream;
   @override
   @override
   void initState() {
@@ -38,7 +38,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
   _setupActivities() async {
     setState(() => _isLoading = true);
     List<Activity> activities =
-        await DatabaseService.getActivities(widget.currentUser.id);
+        await DatabaseService.getActivities(widget.currentUser!.id);
     if (mounted) {
       setState(() {
         _activities = activities;
@@ -66,9 +66,9 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
           leading: CircleAvatar(
             radius: 20,
             backgroundColor: Colors.grey,
-            backgroundImage: (user.profileImageUrl == null)
+            backgroundImage: ((user.profileImageUrl == null)
                 ? AssetImage(placeHolderImageRef)
-                : CachedNetworkImageProvider(user.profileImageUrl),
+                : CachedNetworkImageProvider(user.profileImageUrl!)) as ImageProvider<Object>?,
           ),
           title: activity.isFollowEvent == true
               ? Row(
@@ -119,26 +119,26 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                       ],
                     ),
           subtitle: Text(
-            timeago.format(activity.timestamp.toDate()),
+            timeago.format(activity.timestamp!.toDate()),
             style: TextStyle(color: Colors.grey),
           ),
           trailing: activity.postImageUrl == null
               ? SizedBox.shrink()
               : CachedNetworkImage(
-                  imageUrl: activity.postImageUrl,
+                  imageUrl: activity.postImageUrl!,
                   fadeInDuration: Duration(milliseconds: 500),
                   height: 40.0,
                   width: 40.0,
                   fit: BoxFit.cover),
-          onTap: activity.isFollowEvent
+          onTap: activity.isFollowEvent!
               ? () => CustomNavigation.navigateToUserProfile(
                   context: context,
-                  currentUserId: widget.currentUser.id,
+                  currentUserId: widget.currentUser!.id,
                   isCameFromBottomNavigation: false,
                   userId: activity.fromUserId)
               : () async {
                   Post post = await DatabaseService.getUserPost(
-                    widget.currentUser.id,
+                    widget.currentUser!.id,
                     activity.postId,
                   );
                   Navigator.push(

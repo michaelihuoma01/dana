@@ -1,5 +1,4 @@
 import 'package:another_flushbar/flushbar.dart';
-import 'package:code_field/code_field.dart';
 import 'package:dana/screens/auth/verification.dart';
 import 'package:dana/services/api/auth_service.dart';
 import 'package:dana/utils/constants.dart';
@@ -15,7 +14,7 @@ import 'package:flutter/material.dart';
 class ForgotPasswordScreen extends StatefulWidget {
   static const String id = 'ForgotPasswordScreen';
 
-  final bool isPassword;
+  final bool? isPassword;
 
   ForgotPasswordScreen({this.isPassword});
 
@@ -24,7 +23,7 @@ class ForgotPasswordScreen extends StatefulWidget {
 }
 
 class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
-  String _email;
+  String? _email;
   bool _isLoading = false;
   static final FirebaseAuth _auth = FirebaseAuth.instance;
 
@@ -53,7 +52,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                   print(_email);
                   try {
                     await _auth
-                        .sendPasswordResetEmail(email: _email)
+                        .sendPasswordResetEmail(email: _email!)
                         .then((value) {
                       showDialog(
                           context: context,
@@ -62,7 +61,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                   } catch (err) {
                     Utility.showMessage(context,
                         bgColor: Colors.red,
-                        message: err.message,
+                        message: err.toString(),
                         pulsate: false,
                         type: MessageTypes.error);
                   }

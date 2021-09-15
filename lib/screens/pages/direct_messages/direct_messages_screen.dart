@@ -15,7 +15,7 @@ class _DirectMessagesScreenState extends State<DirectMessagesScreen> {
       appBar: AppBar(
         leading: IconButton(
           icon: Icon(Icons.arrow_back),
-          onPressed: widget.backToHomeScreen,
+          onPressed: widget.backToHomeScreen as void Function()?,
         ),
         title: Text('Direct'),
       ),

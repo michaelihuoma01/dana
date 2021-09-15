@@ -6,11 +6,11 @@ enum ImageType { ASSET_IMAGE, FILE_IMAGE, NONE, NETWORK_IMAGE }
 
 class ImagePortrait extends StatelessWidget {
   final double height;
-  final String imagePath;
+  final String? imagePath;
   final ImageType imageType;
 
   ImagePortrait(
-      {@required this.imageType, this.imagePath, this.height = 250.0});
+      {required this.imageType, this.imagePath, this.height = 250.0});
 
   @override
   Widget build(BuildContext context) {
@@ -28,14 +28,14 @@ class ImagePortrait extends StatelessWidget {
     );
   }
 
-  Widget getImage() {
+  Widget? getImage() {
     if (imageType == ImageType.NONE || imagePath == null) return null;
     if (imageType == ImageType.FILE_IMAGE) {
-      return Image.file(File(imagePath), fit: BoxFit.fill);
+      return Image.file(File(imagePath!), fit: BoxFit.fill);
     } else if (imageType == ImageType.ASSET_IMAGE) {
-      return Image.asset(imagePath, fit: BoxFit.fitHeight);
+      return Image.asset(imagePath!, fit: BoxFit.fitHeight);
     } else if (imageType == ImageType.NETWORK_IMAGE) {
-      return Image.network(imagePath, fit: BoxFit.fitHeight);
+      return Image.network(imagePath!, fit: BoxFit.fitHeight);
     } else
       return null;
   }

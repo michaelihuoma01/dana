@@ -6,16 +6,16 @@ import 'package:flutter_svg/svg.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class AppBarWidget extends StatelessWidget {
-  final String title, subtitle;
-  Widget icon;
-  final bool leading, isTab;
+  final String? title, subtitle;
+  Widget? icon;
+  final bool? leading, isTab;
 
   AppBarWidget(
       {this.title, this.subtitle, this.icon, this.isTab, this.leading});
 
   @override
   Widget build(BuildContext context) {
-    return (isTab)
+    return isTab!
         ? AppBar(
             toolbarHeight: 100,
             actions: [
@@ -23,7 +23,7 @@ class AppBarWidget extends StatelessWidget {
                 padding: const EdgeInsets.all(20),
                 child: Row(
                   children: [
-                    icon,
+                    icon!,
                     SizedBox(width: 20),
                     InkWell(
                         onTap: () {
@@ -54,13 +54,13 @@ class AppBarWidget extends StatelessWidget {
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(title,
+                      Text(title!,
                           style: TextStyle(
                               fontSize: 22,
                               color: Colors.white,
                               fontFamily: 'Poppins-Regular',
                               fontWeight: FontWeight.w600)),
-                      Text(subtitle,
+                      Text(subtitle!,
                           style: TextStyle(
                               fontSize: 15,
                               fontFamily: 'Poppins-Regular',
@@ -78,7 +78,7 @@ class AppBarWidget extends StatelessWidget {
           )
         : AppBar(
             toolbarHeight: 100,
-            title: Text(title,
+            title: Text(title!,
                 style: TextStyle(
                     fontFamily: 'Poppins-Bold',
                     color: Colors.white,

@@ -15,7 +15,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
 class CallsScreen extends StatefulWidget {
-  AppUser currentUser;
+  AppUser? currentUser;
 
   CallsScreen({this.currentUser});
 
@@ -24,15 +24,15 @@ class CallsScreen extends StatefulWidget {
 }
 
 class _CallsScreenState extends State<CallsScreen> {
-  AppUser receiverUser;
+  late AppUser receiverUser;
 
   Stream<List<Call>> getCalls() async* {
     try {
-      List<Call> dataToReturn = List();
+      List<Call> dataToReturn = [];
 
       Stream<QuerySnapshot> stream = FirebaseFirestore.instance
           .collection('calls')
-          .doc(widget.currentUser.id)
+          .doc(widget.currentUser!.id)
           .collection('callHistory')
           .snapshots();
 
@@ -89,7 +89,7 @@ class _CallsScreenState extends State<CallsScreen> {
     }
   }
 
-  _buildCall(Call call, String currentUserId) {
+  _buildCall(Call call, String? currentUserId) {
     // final bool isRead = chat.readStatus[currentUserId];
     // widget.isReadIcon = isRead;
     // final TextStyle readStyle = TextStyle(
@@ -111,24 +111,24 @@ class _CallsScreenState extends State<CallsScreen> {
           child: CircleAvatar(
             backgroundColor: Colors.white,
             radius: 28.0,
-            backgroundImage: call.receiverPic.isEmpty
+            backgroundImage: (call.receiverPic!.isEmpty
                 ? AssetImage(placeHolderImageRef)
-                : CachedNetworkImageProvider(call.receiverPic),
+                : CachedNetworkImageProvider(call.receiverPic!)) as ImageProvider<Object>?,
           ),
         ),
-        title: Text(call.receiverName,
+        title: Text(call.receiverName!,
             style: TextStyle(
                 color: Colors.white,
                 fontWeight: FontWeight.w600,
                 fontSize: 18)),
         subtitle: Row(
           children: [
-            (call.isAudio)
+            call.isAudio!
                 ? Icon(FontAwesomeIcons.phoneAlt, color: Colors.grey, size: 14)
                 : Icon(FontAwesomeIcons.video, size: 14, color: Colors.grey),
             SizedBox(width: 5),
             Text(
-              (call.hasDialled) ? 'Outgoing' : 'Incoming',
+              call.hasDialled! ? 'Outgoing' : 'Incoming',
               style: TextStyle(color: Colors.grey),
             ),
           ],
@@ -139,10 +139,10 @@ class _CallsScreenState extends State<CallsScreen> {
         // ),
 
         onTap: () {
-          if (call.isAudio) {
+          if (call.isAudio!) {
             try {
               CallUtils.dial(
-                  from: widget.currentUser,
+                  from: widget.currentUser!,
                   to: receiverUser,
                   context: context,
                   isAudio: true);
@@ -152,7 +152,7 @@ class _CallsScreenState extends State<CallsScreen> {
           } else {
              try {
               CallUtils.dial(
-                  from: widget.currentUser,
+                  from: widget.currentUser!,
                   to: receiverUser,
                   context: context,
                   isAudio: false);
@@ -213,7 +213,7 @@ class _CallsScreenState extends State<CallsScreen> {
                       itemBuilder: (BuildContext context, int index) {
                         Call call = snapshot.data[index];
 
-                        return _buildCall(call, widget.currentUser.id);
+                        return _buildCall(call, widget.currentUser!.id);
                       },
                       itemCount: snapshot.data.length,
                     )),

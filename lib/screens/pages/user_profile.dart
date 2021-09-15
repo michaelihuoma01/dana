@@ -25,11 +25,11 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 class UserProfile extends StatefulWidget {
-  final String userId;
-  final String currentUserId;
-  final Function onProfileEdited;
-  final File imageFile;
-  final AppUser appUser;
+  final String? userId;
+  final String? currentUserId;
+  final Function? onProfileEdited;
+  final File? imageFile;
+  final AppUser? appUser;
 
   UserProfile(
       {this.userId,
@@ -48,9 +48,9 @@ class _UserProfileState extends State<UserProfile> {
   int _followingCount = 0;
   List<Post> _posts = [];
   int _displayPosts = 0; // 0 - grid, 1 - column
-  AppUser _profileUser;
-  AppUser _currentUser;
-  List<Story> _userStories;
+  AppUser? _profileUser;
+  late AppUser _currentUser;
+  List<Story>? _userStories;
   var _future;
   bool isFollower = false;
   bool isFollowingUser = false;
@@ -121,14 +121,14 @@ class _UserProfileState extends State<UserProfile> {
       _currentUser = currentUser;
     });
     if (profileUser.id ==
-        Provider.of<UserData>(context, listen: false).currentUser.id) {
+        Provider.of<UserData>(context, listen: false).currentUser!.id) {
       AuthService.updateTokenWithUser(profileUser);
       Provider.of<UserData>(context, listen: false).currentUser = profileUser;
     }
   }
 
   _setupUserStories() async {
-    List<Story> userStories =
+    List<Story>? userStories =
         await StoriesService.getStoriesByUserId(widget.userId, true);
     if (!mounted) return;
 
@@ -194,7 +194,7 @@ class _UserProfileState extends State<UserProfile> {
     DatabaseService.followUser(
       currentUserId: widget.currentUserId,
       userId: widget.userId,
-      receiverToken: _profileUser.token,
+      receiverToken: _profileUser!.token,
     );
     if (!mounted) return;
   }
@@ -391,7 +391,7 @@ class _UserProfileState extends State<UserProfile> {
                     //     child: Icon(Icons.qr_code, color: Colors.white),
                     //   ),
                     // ],
-                    title: Text(user.name,
+                    title: Text(user.name!,
                         style: TextStyle(color: Colors.white, fontSize: 22)),
                     iconTheme: IconThemeData(color: Colors.white),
                   ),
@@ -416,7 +416,7 @@ class _UserProfileState extends State<UserProfile> {
                           width: double.infinity,
                           child: CachedNetworkImage(
                             fit: BoxFit.fitWidth,
-                            imageUrl: user.profileImageUrl,
+                            imageUrl: user.profileImageUrl!,
                             progressIndicatorBuilder:
                                 (context, url, downloadProgress) {
                               return Center(
@@ -452,7 +452,7 @@ class _UserProfileState extends State<UserProfile> {
                                           Utility.showMessage(context,
                                               message: 'Pin Copied!',
                                               pulsate: false,
-                                              bgColor: Colors.green[600]);
+                                              bgColor: Colors.green[600]!);
                                         },
                                         child: Text('PIN: ${user.pin}',
                                             style: TextStyle(
@@ -460,7 +460,7 @@ class _UserProfileState extends State<UserProfile> {
                                                 fontSize: 18)),
                                       ),
                                       SizedBox(width: 15),
-                                      if (!user.isPublic && isFriends)
+                                      if (!user.isPublic! && isFriends)
                                         GestureDetector(
                                             onTap: () {
                                               Navigator.push(
@@ -473,18 +473,18 @@ class _UserProfileState extends State<UserProfile> {
                                                               isGroup: false,
                                                               imageFile: widget
                                                                   .imageFile)));
-                                              print(_profileUser.id);
+                                              print(_profileUser!.id);
                                             },
                                             child: Icon(Icons.chat_bubble,
                                                 color: Colors.white, size: 17)),
                                       SizedBox(width: 15),
-                                      if (!user.isPublic && isFriends)
+                                      if (!user.isPublic! && isFriends)
                                         GestureDetector(
                                             onTap: () {
                                               try {
                                                 CallUtils.dial(
                                                     from: _currentUser,
-                                                    to: _profileUser,
+                                                    to: _profileUser!,
                                                     context: context,
                                                     isAudio: false);
                                               } catch (e) {
@@ -494,13 +494,13 @@ class _UserProfileState extends State<UserProfile> {
                                             child: Icon(FontAwesomeIcons.video,
                                                 color: Colors.white, size: 15)),
                                       SizedBox(width: 15),
-                                      if (!user.isPublic && isFriends)
+                                      if (!user.isPublic! && isFriends)
                                         GestureDetector(
                                             onTap: () {
                                               try {
                                                 CallUtils.dial(
                                                     from: _currentUser,
-                                                    to: _profileUser,
+                                                    to: _profileUser!,
                                                     context: context,
                                                     isAudio: true);
                                               } catch (e) {
@@ -556,7 +556,7 @@ class _UserProfileState extends State<UserProfile> {
                             Padding(
                               padding:
                                   const EdgeInsets.symmetric(horizontal: 10),
-                              child: Text(user.bio,
+                              child: Text(user.bio!,
                                   style: TextStyle(
                                       color: Colors.white70, fontSize: 14)),
                             ),
@@ -564,7 +564,7 @@ class _UserProfileState extends State<UserProfile> {
                           ],
                         ),
                       ),
-                      (!user.isPublic && isFriends)
+                      (!user.isPublic! && isFriends)
                           ? ListView.builder(
                               shrinkWrap: true,
                               physics: NeverScrollableScrollPhysics(),
@@ -589,7 +589,7 @@ class _UserProfileState extends State<UserProfile> {
                                       return SizedBox.shrink();
                                     }
 
-                                    AppUser author = snapshot.data;
+                                    AppUser? author = snapshot.data;
 
                                     return (post.imageUrl == null)
                                         ? TextPost(

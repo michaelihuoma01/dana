@@ -20,12 +20,12 @@ const double BUBBLE_RADIUS_AUDIO = 16;
 ///chat bubble [TextStyle] can be customized using [textStyle]
 
 class BubbleNormalAudio extends StatelessWidget {
-  final void Function(double value) onSeekChanged;
-  final void Function() onPlayPauseButtonClick;
+  final void Function(double value)? onSeekChanged;
+  final void Function()? onPlayPauseButtonClick;
   final bool isPlaying;
   final bool isPause;
-  final double duration;
-  final double position;
+  final double? duration;
+  final double? position;
   final bool isLoading;
   final double bubbleRadius;
   final bool isSender;
@@ -37,7 +37,7 @@ class BubbleNormalAudio extends StatelessWidget {
   final TextStyle textStyle;
 
   BubbleNormalAudio({
-    Key key,
+    Key? key,
     this.onSeekChanged,
     this.onPlayPauseButtonClick,
     this.isPlaying = false,
@@ -62,7 +62,7 @@ class BubbleNormalAudio extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     bool stateTick = false;
-    Icon stateIcon;
+    Icon? stateIcon;
     if (sent) {
       stateTick = true;
       stateIcon = Icon(
@@ -153,7 +153,7 @@ class BubbleNormalAudio extends StatelessWidget {
                           activeColor: Colors.white,
                           inactiveColor: Colors.grey,
                           min: 0.0,
-                          max: duration + 1 ?? 0.0,
+                          max: duration! + 1 ,
                           value: position ?? 0.0,
                           onChanged: onSeekChanged,
                         ),

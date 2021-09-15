@@ -11,11 +11,11 @@ import 'package:provider/provider.dart';
 
 class ChatService {
   static Future<Chat> createChat(
-      List<AppUser> users, List<dynamic> userIds) async {
-    Map<String, dynamic> readStatus = {};
+      List<AppUser?> users, List<dynamic>? userIds) async {
+    Map<String?, dynamic> readStatus = {};
 
-    for (AppUser user in users) {
-      readStatus[user.id] = false;
+    for (AppUser? user in users) {
+      readStatus[user!.id] = false;
     }
 
     Timestamp timestamp = Timestamp.now();
@@ -81,8 +81,8 @@ class ChatService {
   }
 
   static void setChatRead(BuildContext context, Chat chat, bool read) async {
-    String currentUserId =
-        Provider.of<UserData>(context, listen: false).currentUser.id;
+    String? currentUserId =
+        Provider.of<UserData>(context, listen: false).currentUser!.id;
     chatsRef.doc(chat.id).update({'readStatus.$currentUserId': read});
   }
 
@@ -103,7 +103,7 @@ class ChatService {
     return Chat();
   }
 
-  static Future<Chat> getChatByUsers(List<dynamic> users) async {
+  static Future<Chat?> getChatByUsers(List<dynamic> users) async {
     QuerySnapshot snapshot = await chatsRef.where('memberIds', whereIn: [
       [users[1], users[0]]
     ]).get();
@@ -120,8 +120,8 @@ class ChatService {
     return null;
   }
 
-  static Future<Null> likeUnlikeMessage(Message message, String chatId,
-      bool isLiked, AppUser receiverUser, String currentUserId) {
+  static Future<Null>? likeUnlikeMessage(Message message, String? chatId,
+      bool isLiked, AppUser receiverUser, String? currentUserId) {
     chatsRef
         .doc(chatId)
         .collection('messages')

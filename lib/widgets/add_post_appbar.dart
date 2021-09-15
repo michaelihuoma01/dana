@@ -10,11 +10,11 @@ import 'package:flutter_svg/svg.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class AddPostAppbar extends StatelessWidget {
-  final String title, subtitle;
-  Widget icon;
-  final bool leading, isTab, isPost;
-  Function onTap;
-  final Color bgColor;
+  final String? title, subtitle;
+  Widget? icon;
+  final bool? leading, isTab, isPost;
+  Function? onTap;
+  final Color? bgColor;
 
   var cameras, backToHomeScreenFromCameraScreen, cameraConsumer;
 
@@ -33,7 +33,7 @@ class AddPostAppbar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return isPost
+    return isPost!
         ? AppBar(
             leading: Column(
               children: [
@@ -53,9 +53,7 @@ class AddPostAppbar extends StatelessWidget {
                         builder: (context) => CameraScreen(cameras,
                             backToHomeScreenFromCameraScreen, cameraConsumer)));
               },
-              child: Padding(
-                padding: const EdgeInsets.only(top: 0),
-                child: Row(
+              child:  Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     // Icon(FontAwesomeIcons.globeAsia,
@@ -71,7 +69,7 @@ class AddPostAppbar extends StatelessWidget {
                     Icon(Icons.camera_alt_outlined,
                         size: 25, color: Colors.white),
                     SizedBox(width: 10),
-                    Text(title,
+                    Text(title!,
                         style: TextStyle(
                             fontFamily: 'Poppins-Regular',
                             color: Colors.white,
@@ -81,25 +79,21 @@ class AddPostAppbar extends StatelessWidget {
                   ],
                 ),
               ),
-            ),
+           
             actions: [
               Padding(
-                  padding: const EdgeInsets.only(right: 20, bottom: 7, top: 7),
-                  child: TextButton(
-                    style: ButtonStyle(
-                        minimumSize: MaterialStateProperty.all(Size.zero),
-                        shape: MaterialStateProperty.all(RoundedRectangleBorder(
-                            borderRadius: new BorderRadius.circular(10))),
-                        backgroundColor: MaterialStateProperty.all(bgColor)),
-                    onPressed: onTap,
-                    child: Container(
+                  padding: const EdgeInsets.only(right: 17,   top: 15),
+                  child: GestureDetector( 
+                    onTap: onTap as void Function()?,
+                     
                       child: Text(
                         'Post',
                         style: TextStyle(
-                            fontSize: 16,
-                            color: Colors.white,
+                            fontSize: 17,
+                            color: lightColor,
+                            fontWeight: FontWeight.bold,
                             fontFamily: 'Poppins-Regular'),
-                      ),
+                       
                     ),
                   )),
             ],

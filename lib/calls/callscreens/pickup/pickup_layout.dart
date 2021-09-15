@@ -9,9 +9,9 @@ import 'package:provider/provider.dart';
 class PickupLayout extends StatelessWidget {
   final Widget scaffold;
   final CallMethods callMethods = CallMethods();
-  final AppUser currentUser;
+  final AppUser? currentUser;
 
-  PickupLayout({@required this.scaffold, this.currentUser});
+  PickupLayout({required this.scaffold, this.currentUser});
 
   @override
   Widget build(BuildContext context) {
@@ -19,14 +19,14 @@ class PickupLayout extends StatelessWidget {
 
     return (currentUser != null)
         ? StreamBuilder<DocumentSnapshot>(
-            stream: callMethods.callStream(uid: currentUser.id),
+            stream: callMethods.callStream(uid: currentUser!.id),
             builder: (context, snapshot) {
-              if (snapshot.hasData && snapshot.data.data() != null) {
-                print(snapshot.data.reference);
+              if (snapshot.hasData && snapshot.data!.data() != null) {
+                print(snapshot.data!.reference);
 
-                Call call = Call.fromMap(snapshot.data.data());
+                Call call = Call.fromMap(snapshot.data!.data());
 
-                if (!call.hasDialled) {
+                if (!call.hasDialled!) {
                   return PickupScreen(call: call);
                 }
               }

@@ -43,12 +43,12 @@ import 'package:record_mp3/record_mp3.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
 class ChatScreen extends StatefulWidget {
-  final AppUser receiverUser;
-  final File imageFile;
-  final List<dynamic> userIds, groupMembers;
-  final bool isGroup;
-  final String groupName, admin;
-  final Chat chat;
+  final AppUser? receiverUser;
+  final File? imageFile;
+  final List<dynamic>? userIds, groupMembers;
+  final bool? isGroup;
+  final String? groupName, admin;
+  final Chat? chat;
 
   const ChatScreen(
       {this.receiverUser,
@@ -66,48 +66,48 @@ class ChatScreen extends StatefulWidget {
 class _ChatScreenState extends State<ChatScreen> {
   final TextEditingController _messageController = TextEditingController();
   bool _isComposingMessage = false;
-  Chat _chat;
+  Chat? _chat;
   bool _isChatExist = false;
-  AppUser _currentUser;
-  List<dynamic> _userIds;
-  List<AppUser> _memberInfo;
+  AppUser? _currentUser;
+  List<dynamic>? _userIds;
+  late List<AppUser?> _memberInfo;
   bool _isLoading = false;
-  List<AppUser> groupMembers = [];
+  List<AppUser?> groupMembers = [];
   bool isPlayingMsg = false, isRecording = false, isSending = false;
-  String recordFilePath;
+  late String recordFilePath;
 
   @override
   void initState() {
     super.initState();
 
     _setup();
-    print('===============${widget.receiverUser.status}');
+    print('===============${widget.receiverUser!.status}');
     print(
-        '===============${timeago.format(widget.receiverUser.lastSeenOnline.toDate())}');
+        '===============${timeago.format(widget.receiverUser!.lastSeenOnline!.toDate())}');
     print(
-        '===============${timeago.format(widget.receiverUser.lastSeenOffline.toDate())}');
+        '===============${timeago.format(widget.receiverUser!.lastSeenOffline!.toDate())}');
   }
 
   _setup() async {
     setState(() => _isLoading = true);
 
     AppUser currentUser =
-        Provider.of<UserData>(context, listen: false).currentUser;
+        Provider.of<UserData>(context, listen: false).currentUser!;
 
-    List<String> userIds = [];
+    List<String?> userIds = [];
     userIds.add(currentUser.id);
-    userIds.add(widget.receiverUser.id);
+    userIds.add(widget.receiverUser!.id);
 
-    List<AppUser> users = [];
+    List<AppUser?> users = [];
     users.add(currentUser);
     users.add(widget.receiverUser);
 
-    Chat chat = await ChatService.getChatByUsers(userIds);
+    Chat? chat = await ChatService.getChatByUsers(userIds);
 
     bool isChatExist = chat != null;
 
     if (widget.groupMembers != null) {
-      for (AppUser user in widget.groupMembers) {
+      for (AppUser? user in widget.groupMembers as Iterable<AppUser?>) {
         groupMembers.add(user);
       }
     }
@@ -155,7 +155,7 @@ class _ChatScreenState extends State<ChatScreen> {
 
   uploadAudio() {
     final Reference firebaseStorageRef = FirebaseStorage.instance.ref().child(
-        'audio/messages/${_currentUser.id}/audio${DateTime.now().millisecondsSinceEpoch.toString()}.mp3');
+        'audio/messages/${_currentUser!.id}/audio${DateTime.now().millisecondsSinceEpoch.toString()}.mp3');
 
     UploadTask task = firebaseStorageRef.putFile(File(recordFilePath));
     task.then((value) async {
@@ -236,14 +236,14 @@ class _ChatScreenState extends State<ChatScreen> {
                   child: Column(
                     children: [
                       Text(
-                        'Send Image To ${widget.receiverUser.name}?',
+                        'Send Image To ${widget.receiverUser!.name}?',
                         textAlign: TextAlign.center,
                       ),
                       SizedBox(
                         height: 20,
                       ),
                       Image.file(
-                        widget.imageFile,
+                        widget.imageFile!,
                         height: 300,
                       ),
                       SizedBox(
@@ -263,7 +263,7 @@ class _ChatScreenState extends State<ChatScreen> {
 
                           String imageUrl =
                               await StroageService.uploadMessageImage(
-                                  widget.imageFile);
+                                  widget.imageFile!);
                           _sendMessage(
                               text: null,
                               imageUrl: imageUrl,
@@ -339,7 +339,7 @@ class _ChatScreenState extends State<ChatScreen> {
                                     GestureDetector(
                                       onTap: () async {
                                         List<Media> res =
-                                            await ImagesPicker.pick(
+                                            await (ImagesPicker.pick(
                                           count: 5,
                                           pickType: PickType.image,
                                           gif: true,
@@ -348,7 +348,7 @@ class _ChatScreenState extends State<ChatScreen> {
                                             cropType: CropType
                                                 .rect, // currently for android
                                           ),
-                                        );
+                                        ) as FutureOr<List<Media>>);
                                         setState(() => isSending = true);
 
                                         res.forEach((element) async {
@@ -402,9 +402,9 @@ class _ChatScreenState extends State<ChatScreen> {
                                     GestureDetector(
                                       onTap: () async {
                                         var pickedFile =
-                                            await ImagePicker().pickVideo(
+                                            await (ImagePicker().pickVideo(
                                           source: ImageSource.gallery,
-                                        );
+                                        ) as FutureOr<XFile>);
                                         File imageFile = File(pickedFile.path);
                                         setState(() => isSending = true);
 
@@ -458,18 +458,18 @@ class _ChatScreenState extends State<ChatScreen> {
                                     ),
                                     GestureDetector(
                                       onTap: () async {
-                                        FilePickerResult result =
+                                        FilePickerResult? result =
                                             await FilePicker.platform
                                                 .pickFiles();
 
                                         if (result != null) {
-                                          Uint8List fileBytes =
+                                          Uint8List? fileBytes =
                                               result.files.first.bytes;
                                           String fileName =
                                               result.files.first.name;
 
                                           String mimeStr = lookupMimeType(
-                                              result.paths.first);
+                                              result.paths.first!)!;
                                           var fileType = mimeStr.split('/');
                                           print(
                                               'file type ${result.files.first.size}');
@@ -479,7 +479,7 @@ class _ChatScreenState extends State<ChatScreen> {
 
                                           String fileUrl = await StroageService
                                               .uploadMessageFile(
-                                                  File(result.files.first.path),
+                                                  File(result.files.first.path!),
                                                   result.files.first.extension);
                                           String fileNamePath =
                                               result.files.first.name;
@@ -541,7 +541,7 @@ class _ChatScreenState extends State<ChatScreen> {
                           color: lightColor, size: 22),
                     ),
                     onTap: () async {
-                      GiphyGif gif = await GiphyGet.getGif(
+                      GiphyGif? gif = await GiphyGet.getGif(
                         context: context,
                         apiKey: 'kGiphyApiKey', //YOUR API KEY HERE
                         lang: GiphyLanguage.spanish,
@@ -550,7 +550,7 @@ class _ChatScreenState extends State<ChatScreen> {
                         _sendMessage(
                             text: null,
                             imageUrl: null,
-                            giphyUrl: gif.images.original.url,
+                            giphyUrl: gif.images!.original!.url,
                             audioUrl: null,
                             videoUrl: null,
                             fileName: null,
@@ -587,11 +587,11 @@ class _ChatScreenState extends State<ChatScreen> {
                 child: GestureDetector(
                     onTap: () async {
                       var pickedFile =
-                          await ImagesPicker.openCamera(pickType: PickType.all);
+                          await (ImagesPicker.openCamera(pickType: PickType.all) as FutureOr<List<Media>>);
 
                       File imageFile = File(pickedFile.first.path);
                       if (imageFile != null) {
-                        String mimeStr = lookupMimeType(pickedFile.first.path);
+                        String mimeStr = lookupMimeType(pickedFile.first.path)!;
                         var fileType = mimeStr.split('/');
                         print('file type ${fileType}');
                         setState(() => isSending = true);
@@ -703,13 +703,13 @@ class _ChatScreenState extends State<ChatScreen> {
   }
 
   _sendMessage(
-      {String text,
-      String imageUrl,
-      String giphyUrl,
-      String audioUrl,
-      String videoUrl,
-      String fileUrl,
-      String fileName}) async {
+      {String? text,
+      String? imageUrl,
+      String? giphyUrl,
+      String? audioUrl,
+      String? videoUrl,
+      String? fileUrl,
+      String? fileName}) async {
     if ((text != null && text.trim().isNotEmpty) ||
         (fileName != null && fileName.trim().isNotEmpty) ||
         imageUrl != null ||
@@ -733,7 +733,7 @@ class _ChatScreenState extends State<ChatScreen> {
       }
 
       Message message = Message(
-        senderId: _currentUser.id,
+        senderId: _currentUser!.id,
         text: text,
         imageUrl: imageUrl,
         fileName: fileName,
@@ -745,10 +745,10 @@ class _ChatScreenState extends State<ChatScreen> {
         isLiked: false,
       );
 
-      ChatService.sendChatMessage(_chat, message, widget.receiverUser);
+      ChatService.sendChatMessage(_chat!, message, widget.receiverUser!);
       chatsRef
-          .doc(_chat.id)
-          .update({'readStatus.${widget.receiverUser.id}': false});
+          .doc(_chat!.id)
+          .update({'readStatus.${widget.receiverUser!.id}': false});
       setState(() => isSending = false);
     }
   }
@@ -756,7 +756,7 @@ class _ChatScreenState extends State<ChatScreen> {
   _buildMessagesStream() {
     return StreamBuilder(
       stream: chatsRef
-          .doc(_chat.id)
+          .doc(_chat!.id)
           .collection('messages')
           .orderBy('timestamp', descending: true)
           .limit(20)
@@ -773,7 +773,7 @@ class _ChatScreenState extends State<ChatScreen> {
                   const EdgeInsets.symmetric(horizontal: 10.0, vertical: 20.0),
               physics: AlwaysScrollableScrollPhysics(),
               reverse: true,
-              children: _buildMessageBubbles(snapshot),
+              children: _buildMessageBubbles(snapshot as AsyncSnapshot<QuerySnapshot<Object>>),
             ),
           ),
         );
@@ -786,18 +786,18 @@ class _ChatScreenState extends State<ChatScreen> {
   ) {
     List<MessageBubble> messageBubbles = [];
 
-    messages.data.docs.forEach((doc) {
+    messages.data!.docs.forEach((doc) {
       Message message = Message.fromDoc(doc);
-      print(_chat.id);
+      print(_chat!.id);
       MessageBubble messageBubble = MessageBubble(
-        user: message.senderId == _currentUser.id
+        user: message.senderId == _currentUser!.id
             ? _currentUser
             : widget.receiverUser,
         chat: _chat,
         message: message,
         isGroup: widget.isGroup,
       );
-      messageBubbles.removeWhere((msgBbl) => message.id == msgBbl.message.id);
+      messageBubbles.removeWhere((msgBbl) => message.id == msgBbl.message!.id);
       messageBubbles.add(messageBubble);
     });
     return messageBubbles;
@@ -820,7 +820,7 @@ class _ChatScreenState extends State<ChatScreen> {
         WillPopScope(
           onWillPop: () {
             if (_chat != null) {
-              ChatService.setChatRead(context, _chat, true);
+              ChatService.setChatRead(context, _chat!, true);
             }
 
             return Future.value(true);
@@ -840,8 +840,8 @@ class _ChatScreenState extends State<ChatScreen> {
                             onTap: () async {
                               try {
                                 CallUtils.dial(
-                                    from: _currentUser,
-                                    to: widget.receiverUser,
+                                    from: _currentUser!,
+                                    to: widget.receiverUser!,
                                     context: context,
                                     isAudio: false);
                               } catch (e) {
@@ -854,8 +854,8 @@ class _ChatScreenState extends State<ChatScreen> {
                             onTap: () async {
                               try {
                                 CallUtils.dial(
-                                    from: _currentUser,
-                                    to: widget.receiverUser,
+                                    from: _currentUser!,
+                                    to: widget.receiverUser!,
                                     context: context,
                                     isAudio: true);
                               } catch (e) {
@@ -872,8 +872,8 @@ class _ChatScreenState extends State<ChatScreen> {
                         CustomNavigation.navigateToUserProfile(
                           context: context,
                           appUser: widget.receiverUser,
-                          userId: widget.receiverUser.id,
-                          currentUserId: _currentUser.id,
+                          userId: widget.receiverUser!.id,
+                          currentUserId: _currentUser!.id,
                           isCameFromBottomNavigation: false,
                         );
                       },
@@ -883,16 +883,16 @@ class _ChatScreenState extends State<ChatScreen> {
                               radius: 15,
                               backgroundColor: Colors.grey,
                               backgroundImage:
-                                  widget.receiverUser.profileImageUrl.isEmpty
+                                  (widget.receiverUser!.profileImageUrl!.isEmpty
                                       ? AssetImage(placeHolderImageRef)
                                       : CachedNetworkImageProvider(
-                                          widget.receiverUser.profileImageUrl),
+                                          widget.receiverUser!.profileImageUrl!)) as ImageProvider<Object>?,
                             ),
                     ),
                     SizedBox(width: 15.0),
                     GestureDetector(
                         onTap: () {
-                          (widget.isGroup)
+                          widget.isGroup!
                               ? Navigator.push(
                                   context,
                                   MaterialPageRoute(
@@ -906,8 +906,8 @@ class _ChatScreenState extends State<ChatScreen> {
                                 )
                               : CustomNavigation.navigateToUserProfile(
                                   context: context,
-                                  userId: widget.receiverUser.id,
-                                  currentUserId: _currentUser.id,
+                                  userId: widget.receiverUser!.id,
+                                  currentUserId: _currentUser!.id,
                                   isCameFromBottomNavigation: false,
                                 );
                         },
@@ -916,19 +916,19 @@ class _ChatScreenState extends State<ChatScreen> {
                           children: [
                             Text(
                                 (widget.isGroup == true)
-                                    ? widget.groupName
-                                    : widget.receiverUser.name,
+                                    ? widget.groupName!
+                                    : widget.receiverUser!.name!,
                                 style: TextStyle(
                                     color: Colors.white,
                                     fontSize: 16,
                                     fontWeight: FontWeight.w600)),
                             SizedBox(height: 3),
                             Text(
-                                (widget.isGroup)
-                                    ? '${groupMembers.map((e) => e.name).join(', ')}'
-                                    : (widget.receiverUser.status == 'online')
+                                widget.isGroup!
+                                    ? '${groupMembers.map((e) => e!.name).join(', ')}'
+                                    : (widget.receiverUser!.status == 'online')
                                         ? 'Online'
-                                        : 'Last seen ${timeago.format(widget.receiverUser.lastSeenOnline.toDate())}',
+                                        : 'Last seen ${timeago.format(widget.receiverUser!.lastSeenOnline!.toDate())}',
                                 style:
                                     TextStyle(color: Colors.grey, fontSize: 11))
                           ],

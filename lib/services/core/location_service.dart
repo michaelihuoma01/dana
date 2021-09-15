@@ -1,12 +1,13 @@
 import 'package:flutter/services.dart';
-import 'package:geocoder/geocoder.dart';
+import 'package:geocode/geocode.dart';
 import 'package:location/location.dart';
 
 class LocationService {
   static Future<Address> getUserLocation() async {
-    LocationData currentLocation;
+    LocationData? currentLocation;
     String error;
     Location location = Location();
+    GeoCode geo = GeoCode();
     try {
       currentLocation = await location.getLocation();
     } on PlatformException catch (e) {
@@ -20,11 +21,14 @@ class LocationService {
       }
       currentLocation = null;
     }
-    final coordinates =
-        Coordinates(currentLocation.latitude, currentLocation.longitude);
-    var addresses =
-        await Geocoder.local.findAddressesFromCoordinates(coordinates);
-    var first = addresses.first;
+    // final coordinates = Coordinates(
+    //     latitude: currentLocation.latitude,
+    //     longitude: currentLocation.longitude);
+    var addresses = await geo.reverseGeocoding(
+        latitude: currentLocation!.latitude!,
+        longitude: currentLocation.longitude!);
+
+    var first = addresses;
     return first;
   }
 }

@@ -7,15 +7,15 @@ import 'package:flutter/material.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
 class StoryInfo extends StatelessWidget {
-  final AppUser user;
+  final AppUser? user;
   final Story story;
   final double height;
   final Function onSwipeUp;
   const StoryInfo({
-    @required this.user,
-    @required this.story,
-    @required this.height,
-    @required this.onSwipeUp,
+    required this.user,
+    required this.story,
+    required this.height,
+    required this.onSwipeUp,
   });
 
   @override
@@ -36,7 +36,7 @@ class StoryInfo extends StatelessWidget {
   _buildStoryCaption() {
     return Center(
       child: Text(
-        story.caption,
+        story.caption!,
         textAlign: TextAlign.center,
         style: TextStyle(fontSize: 30, color: Colors.white),
       ),
@@ -57,9 +57,9 @@ class StoryInfo extends StatelessWidget {
                   CircleAvatar(
                     radius:20.0,
                     backgroundColor: Colors.grey[200],
-                    backgroundImage: user.profileImageUrl.isEmpty
+                    backgroundImage: (user!.profileImageUrl!.isEmpty
                         ? AssetImage(placeHolderImageRef)
-                        : CachedNetworkImageProvider(user.profileImageUrl),
+                        : CachedNetworkImageProvider(user!.profileImageUrl!)) as ImageProvider<Object>?,
                   ),
                   const SizedBox(width: 10.0),
                   Column(
@@ -69,7 +69,7 @@ class StoryInfo extends StatelessWidget {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Text(
-                            user.name,
+                            user!.name!,
                             style: TextStyle(fontSize: 16, color: Colors.white),
                           ),
                           // UserBadges(user: user, size: 20),
@@ -85,7 +85,7 @@ class StoryInfo extends StatelessWidget {
                                 )
                               : SizedBox.shrink(),
                           Text(
-                            '${timeago.format(story.timeStart.toDate(), locale: 'en_short')}',
+                            '${timeago.format(story.timeStart!.toDate(), locale: 'en_short')}',
                             style: TextStyle(color: Colors.white),
                           ),
                         ],
@@ -94,7 +94,7 @@ class StoryInfo extends StatelessWidget {
                           ? Row(
                               children: [
                                 Text(
-                                  story.location,
+                                  story.location!,
                                   style: TextStyle(color: Colors.white),
                                 ),
                                 Icon(

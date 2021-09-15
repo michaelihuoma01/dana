@@ -19,9 +19,9 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
 
 class AddPost extends StatefulWidget {
-  String currentUserId;
+  String? currentUserId;
   // final int initialPage;
-  List<CameraDescription> cameras;
+  List<CameraDescription>? cameras;
   AddPost({this.currentUserId, this.cameras});
 
   @override
@@ -29,16 +29,16 @@ class AddPost extends StatefulWidget {
 }
 
 class _AddPostState extends State<AddPost> {
-  AppUser _currentUser;
-  List<CameraDescription> _cameras; 
+  AppUser? _currentUser;
+  List<CameraDescription>? _cameras; 
   CameraConsumer _cameraConsumer = CameraConsumer.post;
 
   TextEditingController _captionController = TextEditingController();
   TextEditingController _locationController = TextEditingController();
 
   String _caption = '';
-  String _currentUserId;
-  Post _post;
+  String? _currentUserId;
+  Post? _post;
   final _formKey = GlobalKey<FormState>();
   bool _isLoading = false;
 
@@ -50,8 +50,8 @@ class _AddPostState extends State<AddPost> {
     _getCurrentUser();
     _getCameras();
 
-    String currentUserId =
-        Provider.of<UserData>(context, listen: false).currentUser.id;
+    String? currentUserId =
+        Provider.of<UserData>(context, listen: false).currentUser!.id;
 
     setState(() {
       _currentUserId = currentUserId;
@@ -157,7 +157,7 @@ class _AddPostState extends State<AddPost> {
     return Scaffold(
       backgroundColor: darkColor,
       appBar: PreferredSize(
-          preferredSize: const Size.fromHeight(70),
+          preferredSize: const Size.fromHeight(50),
           child: AddPostAppbar(
             isTab: false,
             title: 'Camera',

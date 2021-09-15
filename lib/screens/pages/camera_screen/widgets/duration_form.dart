@@ -3,21 +3,21 @@ import 'package:flutter/material.dart';
 
 class DurationForm extends StatefulWidget {
   final Function onChange;
-  final Size screenSize;
-  final int duration;
-  final AppUser currentUser;
+  final Size? screenSize;
+  final int? duration;
+  final AppUser? currentUser;
 
   DurationForm(
-      {@required this.screenSize,
-      @required this.onChange,
-      @required this.duration,
-      @required this.currentUser});
+      {required this.screenSize,
+      required this.onChange,
+      required this.duration,
+      required this.currentUser});
   @override
   _DurationFormState createState() => _DurationFormState();
 }
 
 class _DurationFormState extends State<DurationForm> {
-  double _currentSliderValue;
+  late double _currentSliderValue;
   double _maxValue = 10;
 
   double _minValue = 5;
@@ -27,8 +27,8 @@ class _DurationFormState extends State<DurationForm> {
     super.initState();
 
     // if current user is admin
-    if (widget.currentUser.role == 'admin') setState(() => _maxValue = 15);
-    _currentSliderValue = widget.duration.toDouble();
+    if (widget.currentUser!.role == 'admin') setState(() => _maxValue = 15);
+    _currentSliderValue = widget.duration!.toDouble();
   }
 
   @override

@@ -12,23 +12,23 @@ import 'package:provider/provider.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
 class CommentsScreen extends StatefulWidget {
-  final Post post;
-  final int likeCount;
-  final AppUser author;
+  final Post? post;
+  final int? likeCount;
+  final AppUser? author;
   final PostStatus postStatus;
-  String currentUserID;
+  String? currentUserID;
   CommentsScreen(
       {this.post,
       this.likeCount,
       this.currentUserID,
       this.author,
-      @required this.postStatus});
+      required this.postStatus});
 
   @override
   _CommentsScreenState createState() => _CommentsScreenState();
 }
 
-_goToUserProfile(BuildContext context, Comment comment, String currentUserId) {
+_goToUserProfile(BuildContext context, Comment comment, String? currentUserId) {
   CustomNavigation.navigateToUserProfile(
       context: context,
       currentUserId: currentUserId,
@@ -39,9 +39,9 @@ _goToUserProfile(BuildContext context, Comment comment, String currentUserId) {
 class _CommentsScreenState extends State<CommentsScreen> {
   final TextEditingController _commentController = TextEditingController();
   bool _isCommenting = false;
-  int commentCount = 0;
+  int? commentCount = 0;
 
-  _buildComment(Comment comment, String currentUserId) {
+  _buildComment(Comment comment, String? currentUserId) {
     return FutureBuilder(
       future: DatabaseService.getUserWithId(comment.authorId),
       builder: (BuildContext context, AsyncSnapshot snapshot) {
@@ -49,7 +49,7 @@ class _CommentsScreenState extends State<CommentsScreen> {
           return SizedBox.shrink();
         }
         AppUser author = snapshot.data;
-                                print(author.profileImageUrl);
+        print(author.profileImageUrl);
 
         return _buildListTile(context, author, comment, currentUserId);
       },
@@ -57,23 +57,24 @@ class _CommentsScreenState extends State<CommentsScreen> {
   }
 
   _buildListTile(BuildContext context, AppUser author, Comment comment,
-      String currentUserId) {
+      String? currentUserId) {
     return ListTile(
       leading: GestureDetector(
         onTap: () => _goToUserProfile(context, comment, currentUserId),
         child: CircleAvatar(
           radius: 20.0,
           backgroundColor: Colors.grey,
-          backgroundImage: author.profileImageUrl.isEmpty
-              ? AssetImage(placeHolderImageRef)
-              : CachedNetworkImageProvider(author.profileImageUrl),
+          backgroundImage: (author.profileImageUrl!.isEmpty
+                  ? AssetImage(placeHolderImageRef)
+                  : CachedNetworkImageProvider(author.profileImageUrl!))
+              as ImageProvider<Object>?,
         ),
       ),
       title: GestureDetector(
           onTap: () => _goToUserProfile(context, comment, currentUserId),
           child: Row(
             children: [
-              Text(author.name,
+              Text(author.name!,
                   style: TextStyle(
                       color: Colors.white, fontWeight: FontWeight.w700)),
               // UserBadges(user: widget.author, size: 15)
@@ -86,13 +87,13 @@ class _CommentsScreenState extends State<CommentsScreen> {
             height: 6.0,
           ),
           Text(
-            comment.content,
+            comment.content!,
             style: TextStyle(color: Colors.white),
           ),
           SizedBox(
             height: 6.0,
           ),
-          Text(timeago.format(comment.timestamp.toDate()),
+          Text(timeago.format(comment.timestamp!.toDate()),
               style: TextStyle(color: Colors.grey)),
         ],
       ),
@@ -102,7 +103,7 @@ class _CommentsScreenState extends State<CommentsScreen> {
   _buildCommentTF() {
     String hintText;
     if (widget.postStatus == PostStatus.feedPost) {
-      if (widget.post.commentsAllowed) {
+      if (widget.post!.commentsAllowed!) {
         hintText = 'Add a comment...';
       } else {
         hintText = 'Comment aren\'t allowed here...';
@@ -114,7 +115,7 @@ class _CommentsScreenState extends State<CommentsScreen> {
     }
 
     final profileImageUrl = Provider.of<UserData>(context, listen: false)
-        .currentUser
+        .currentUser!
         .profileImageUrl;
     return IconTheme(
       data: IconThemeData(
@@ -131,9 +132,10 @@ class _CommentsScreenState extends State<CommentsScreen> {
                 ? CircleAvatar(
                     radius: 15.0,
                     backgroundColor: Colors.grey,
-                    backgroundImage: profileImageUrl.isEmpty
-                        ? AssetImage(placeHolderImageRef)
-                        : CachedNetworkImageProvider(profileImageUrl),
+                    backgroundImage: (profileImageUrl.isEmpty
+                            ? AssetImage(placeHolderImageRef)
+                            : CachedNetworkImageProvider(profileImageUrl))
+                        as ImageProvider<Object>?,
                   )
                 : SizedBox.shrink(),
             SizedBox(width: 20.0),
@@ -141,7 +143,7 @@ class _CommentsScreenState extends State<CommentsScreen> {
               child: AutoDirection(
                 text: _commentController.text,
                 child: TextField(
-                  enabled: widget.post.commentsAllowed &&
+                  enabled: widget.post!.commentsAllowed! &&
                       widget.postStatus == PostStatus.feedPost,
                   controller: _commentController,
                   textCapitalization: TextCapitalization.sentences,
@@ -166,21 +168,21 @@ class _CommentsScreenState extends State<CommentsScreen> {
               // margin: const EdgeInsets.symmetric(horizontal: 4.0),
               child: GestureDetector(
                   onTap: widget.postStatus != PostStatus.feedPost ||
-                          !widget.post.commentsAllowed
+                          !widget.post!.commentsAllowed!
                       ? null
                       : () {
                           if (_isCommenting) {
                             DatabaseService.commentOnPost(
                               currentUserId: widget.currentUserID,
-                              post: widget.post,
+                              post: widget.post!,
                               comment: _commentController.text,
-                              recieverToken: widget.author.token,
+                              recieverToken: widget.author!.token,
                             );
                             _commentController.clear();
                             print(widget.currentUserID);
                             setState(() {
                               _isCommenting = false;
-                              commentCount++;
+                              commentCount = commentCount! + 1;
                             });
                           }
                         },
@@ -197,17 +199,17 @@ class _CommentsScreenState extends State<CommentsScreen> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    commentCount = widget.post.commentCount;
+    commentCount = widget.post!.commentCount;
   }
 
   @override
   Widget build(BuildContext context) {
     print(widget.currentUserID);
     Comment postDescription = Comment(
-        authorId: widget.author.id,
-        content: widget.post.caption,
-        id: widget.post.id,
-        timestamp: widget.post.timestamp);
+        authorId: widget.author!.id,
+        content: widget.post!.caption,
+        id: widget.post!.id,
+        timestamp: widget.post!.timestamp);
 
     return Stack(
       children: [
@@ -237,12 +239,12 @@ class _CommentsScreenState extends State<CommentsScreen> {
               child: Column(
                 children: <Widget>[
                   SizedBox(height: 10.0),
-                  _buildListTile(context, widget.author, postDescription,
+                  _buildListTile(context, widget.author!, postDescription,
                       widget.currentUserID),
                   Divider(color: Colors.grey),
                   StreamBuilder(
                     stream: commentsRef
-                        .doc(widget.post.id)
+                        .doc(widget.post!.id)
                         .collection('postComments')
                         .orderBy('timestamp', descending: true)
                         .snapshots(),

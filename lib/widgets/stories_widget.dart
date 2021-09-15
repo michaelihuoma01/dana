@@ -21,11 +21,11 @@ class StoriesWidget extends StatefulWidget {
 
 class _StoriesWidgetState extends State<StoriesWidget> {
   bool _isLoading = false;
-  List<AppUser> _followingUsers = [];
+  List<AppUser?> _followingUsers = [];
   List<Story> _stories = [];
-  AppUser _currentUser;
+  AppUser? _currentUser;
   bool _isCurrentUserHasStories = false;
-  List<CameraDescription> _cameras;
+  List<CameraDescription>? _cameras;
   CameraConsumer _cameraConsumer = CameraConsumer.story;
 
   @override
@@ -44,7 +44,7 @@ class _StoriesWidgetState extends State<StoriesWidget> {
         MaterialPageRoute(
             builder: (context) => HomeScreen(
                 currentUserId: Provider.of<UserData>(context, listen: false)
-                    .currentUser
+                    .currentUser!
                     .id)));
   }
 
@@ -69,12 +69,12 @@ class _StoriesWidgetState extends State<StoriesWidget> {
 
     if (!mounted) return;
 
-    List<AppUser> followingUsersWithStories = [];
+    List<AppUser?> followingUsersWithStories = [];
 
     List<Story> stories = [];
 
-    List<Story> currentUserStories = await StoriesService.getStoriesByUserId(
-        Provider.of<UserData>(context, listen: false).currentUser.id, true);
+    List<Story>? currentUserStories = await StoriesService.getStoriesByUserId(
+        Provider.of<UserData>(context, listen: false).currentUser!.id, true);
 
     if (currentUserStories != null) {
       followingUsersWithStories.add(_currentUser);
@@ -84,7 +84,7 @@ class _StoriesWidgetState extends State<StoriesWidget> {
     }
 
     for (AppUser user in widget.users) {
-      List<Story> userStories =
+      List<Story>? userStories =
           await StoriesService.getStoriesByUserId(user.id, true);
       if (!mounted) return;
 
@@ -149,12 +149,12 @@ class _StoriesWidgetState extends State<StoriesWidget> {
   }
 
   StoryCircle _buildStoryCircle(int index) {
-    AppUser user = _followingUsers[index];
+    AppUser? user = _followingUsers[index];
     List<Story> userStories =
-        _stories.where((Story story) => story.authorId == user.id).toList();
+        _stories.where((Story story) => story.authorId == user!.id).toList();
 
     return StoryCircle(
-      currentUserId: _currentUser.id,
+      currentUserId: _currentUser!.id,
       user: user,
       userStories: userStories,
       size: 60,

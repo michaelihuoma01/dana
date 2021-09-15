@@ -2,12 +2,12 @@ import 'package:dana/utilities/themes.dart';
 import 'package:flutter/material.dart';
 
 class CircularIconButton extends StatelessWidget {
-  final Function onTap;
-  final Widget icon;
+  final Function? onTap;
+  final Widget? icon;
   final double containerRadius;
   final EdgeInsets padding;
   final Color backColor;
-  final Color splashColor;
+  final Color? splashColor;
 
   const CircularIconButton(
       {this.icon,
@@ -21,7 +21,7 @@ class CircularIconButton extends StatelessWidget {
     return Padding(
       padding: padding,
       child: InkWell(
-        onTap: onTap,
+        onTap: onTap as void Function()?,
         child: ClipOval(
           child: Material(
             color: backColor, // button color
@@ -31,7 +31,7 @@ class CircularIconButton extends StatelessWidget {
                   : splashColor, // inkwell color
               child: SizedBox(
                   width: containerRadius, height: containerRadius, child: icon),
-              onTap: onTap,
+              onTap: onTap as void Function()?,
             ),
           ),
         ),

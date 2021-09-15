@@ -5,8 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class QrDialog extends StatefulWidget {
-  Function onPressed;
-  String userName;
+  Function? onPressed;
+  String? userName;
 
   QrDialog({this.onPressed, this.userName});
   @override

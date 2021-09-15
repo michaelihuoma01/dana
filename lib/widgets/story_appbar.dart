@@ -3,7 +3,7 @@ import 'package:dana/widgets/BrandDivider.dart';
 import 'package:flutter/material.dart';
 
 class StoryAppbar extends StatelessWidget {
-  bool unread, online;
+  bool? unread, online;
 
   StoryAppbar({this.online, this.unread});
 

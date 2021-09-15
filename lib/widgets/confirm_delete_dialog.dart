@@ -5,8 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class DeleteDialog extends StatefulWidget {
-  Function onPressed;
-  String userName;
+  Function? onPressed;
+  String? userName;
 
   DeleteDialog({this.onPressed, this.userName});
   @override
@@ -41,7 +41,7 @@ class _DeleteDialogState extends State<DeleteDialog> {
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: [
                           GestureDetector(
-                              onTap: widget.onPressed,
+                              onTap: widget.onPressed as void Function()?,
                               child: Text('Delete',
                                   textAlign: TextAlign.center,
                                   style: TextStyle(

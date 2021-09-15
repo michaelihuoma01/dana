@@ -23,29 +23,29 @@ import 'package:timeago/timeago.dart' as timeago;
 import 'dart:math' as math; // import this
 
 class TextPost extends StatefulWidget {
-  final String currentUserId;
-  final Post post;
-  final AppUser author;
+  final String? currentUserId;
+  final Post? post;
+  final AppUser? author;
   final PostStatus postStatus;
 
   TextPost(
-      {this.currentUserId, this.post, this.author, @required this.postStatus});
+      {this.currentUserId, this.post, this.author, required this.postStatus});
   @override
   _TextPostState createState() => _TextPostState();
 }
 
 class _TextPostState extends State<TextPost> {
-  int _likeCount = 0;
-  int _commentCount = 0;
+  int? _likeCount = 0;
+  int? _commentCount = 0;
   bool _isLiked = false;
   bool _heartAnim = false;
-  Post _post;
+  Post? _post;
 
   @override
   void initState() {
     super.initState();
-    _likeCount = widget.post.likeCount;
-    _commentCount = widget.post.commentCount;
+    _likeCount = widget.post!.likeCount;
+    _commentCount = widget.post!.commentCount;
 
     _post = widget.post;
     _initPostLiked();
@@ -54,9 +54,9 @@ class _TextPostState extends State<TextPost> {
   @override
   didUpdateWidget(TextPost oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (oldWidget.post.likeCount != _post.likeCount) {
-      _likeCount = widget.post.likeCount;
-      _commentCount = widget.post.commentCount;
+    if (oldWidget.post!.likeCount != _post!.likeCount) {
+      _likeCount = widget.post!.likeCount;
+      _commentCount = widget.post!.commentCount;
     }
   }
 
@@ -70,7 +70,7 @@ class _TextPostState extends State<TextPost> {
 
   _initPostLiked() async {
     bool isLiked = await DatabaseService.didLikePost(
-        currentUserId: widget.currentUserId, post: _post);
+        currentUserId: widget.currentUserId, post: _post!);
     if (mounted) {
       setState(() {
         _isLiked = isLiked;
@@ -82,21 +82,21 @@ class _TextPostState extends State<TextPost> {
     if (_isLiked) {
       // Unlike Post
       DatabaseService.unlikePost(
-          currentUserId: widget.currentUserId, post: _post);
+          currentUserId: widget.currentUserId, post: _post!);
       setState(() {
         _isLiked = false;
-        _likeCount--;
+        _likeCount = _likeCount! - 1;
       });
     } else {
       // Like Post
       DatabaseService.likePost(
           currentUserId: widget.currentUserId,
-          post: _post,
-          receiverToken: widget.author.token);
+          post: _post!,
+          receiverToken: widget.author!.token);
       setState(() {
         _heartAnim = true;
         _isLiked = true;
-        _likeCount++;
+        _likeCount = _likeCount! + 1;
       });
       Timer(Duration(milliseconds: 350), () {
         setState(() {
@@ -122,16 +122,16 @@ class _TextPostState extends State<TextPost> {
   }
 
   _saveAndShareFile() async {
-    final RenderBox box = context.findRenderObject();
+    final RenderBox box = context.findRenderObject() as RenderBox;
 
-    var response = await get(Uri.parse(widget.post.imageUrl));
-    final documentDirectory = (await getExternalStorageDirectory()).path;
-    File imgFile = new File('$documentDirectory/${widget.post.id}.png');
+    var response = await get(Uri.parse(widget.post!.imageUrl!));
+    final documentDirectory = (await getExternalStorageDirectory())!.path;
+    File imgFile = new File('$documentDirectory/${widget.post!.id}.png');
     imgFile.writeAsBytesSync(response.bodyBytes);
 
     Share.shareFiles([imgFile.path],
-        subject: 'Have a look at ${widget.author.name} post!',
-        text: '${widget.author.name} : ${widget.post.caption}',
+        subject: 'Have a look at ${widget.author!.name} post!',
+        text: '${widget.author!.name} : ${widget.post!.caption}',
         sharePositionOrigin: box.localToGlobal(Offset.zero) & box.size);
   }
 
@@ -187,12 +187,12 @@ class _TextPostState extends State<TextPost> {
               //         },
               //       )
               //     : SizedBox.shrink(),
-              _post.authorId == widget.currentUserId &&
+              _post!.authorId == widget.currentUserId &&
                       widget.postStatus != PostStatus.deletedPost
                   ? SimpleDialogOption(
                       child: Text('Delete Post'),
                       onPressed: () {
-                        DatabaseService.deletePost(_post, widget.postStatus);
+                        DatabaseService.deletePost(_post!, widget.postStatus);
                         _goToHomeScreen(context);
                       },
                     )
@@ -224,26 +224,26 @@ class _TextPostState extends State<TextPost> {
               //         },
               //       )
               // : SizedBox.shrink(),
-              _post.authorId == widget.currentUserId &&
+              _post!.authorId == widget.currentUserId &&
                       widget.postStatus == PostStatus.feedPost
                   ? SimpleDialogOption(
-                      child: Text(_post.commentsAllowed
+                      child: Text(_post!.commentsAllowed!
                           ? 'Turn off commenting'
                           : 'Allow comments'),
                       onPressed: () {
                         DatabaseService.allowDisAllowPostComments(
-                            _post, !_post.commentsAllowed);
+                            _post!, !_post!.commentsAllowed!);
                         Navigator.pop(context);
                         setState(() {
                           _post = new Post(
-                              authorId: widget.post.authorId,
-                              caption: widget.post.caption,
-                              commentsAllowed: !_post.commentsAllowed,
-                              id: _post.id,
-                              imageUrl: _post.imageUrl,
-                              likeCount: _post.likeCount,
-                              location: _post.location,
-                              timestamp: _post.timestamp);
+                              authorId: widget.post!.authorId,
+                              caption: widget.post!.caption,
+                              commentsAllowed: !_post!.commentsAllowed!,
+                              id: _post!.id,
+                              imageUrl: _post!.imageUrl,
+                              likeCount: _post!.likeCount,
+                              location: _post!.location,
+                              timestamp: _post!.timestamp);
                         });
                       },
                     )
@@ -271,7 +271,7 @@ class _TextPostState extends State<TextPost> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           GestureDetector(
-            onTap: () => _goToUserProfile(context, widget.post),
+            onTap: () => _goToUserProfile(context, widget.post!),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -280,25 +280,25 @@ class _TextPostState extends State<TextPost> {
                     height: 30,
                     child: CircleAvatar(
                       backgroundColor: Colors.grey,
-                      backgroundImage: widget.author.profileImageUrl.isEmpty
+                      backgroundImage: (widget.author!.profileImageUrl!.isEmpty
                           ? AssetImage(placeHolderImageRef)
                           : CachedNetworkImageProvider(
-                              widget.author.profileImageUrl,
-                            ),
+                              widget.author!.profileImageUrl!,
+                            )) as ImageProvider<Object>?,
                     ),
                   ),
                   SizedBox(width: 5),
                   Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(widget.author.name,
+                        Text(widget.author!.name!,
                             style:
                                 TextStyle(color: Colors.white, fontSize: 16)),
-                        Text(timeago.format(_post.timestamp.toDate()),
+                        Text(timeago.format(_post!.timestamp!.toDate()),
                             style: TextStyle(color: Colors.grey, fontSize: 12)),
                       ]),
                 ]),
-                if (widget.author.id == widget.currentUserId)
+                if (widget.author!.id == widget.currentUserId)
                   Padding(
                       padding: const EdgeInsets.all(0),
                       child: GestureDetector(
@@ -313,7 +313,7 @@ class _TextPostState extends State<TextPost> {
           SizedBox(height: 8),
           Padding(
             padding: const EdgeInsets.only(left: 5),
-            child: Text(_post.caption,
+            child: Text(_post!.caption!,
                 style: TextStyle(color: Colors.white, fontSize: 16)),
           ),
           SizedBox(height: 8),

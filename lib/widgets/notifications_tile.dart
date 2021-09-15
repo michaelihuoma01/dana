@@ -3,7 +3,7 @@ import 'package:dana/widgets/BrandDivider.dart';
 import 'package:flutter/material.dart';
 
 class NotificationsTile extends StatelessWidget {
-  String title;
+  String? title;
 
   NotificationsTile({this.title});
   @override
@@ -26,7 +26,7 @@ class NotificationsTile extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(title,
+                  Text(title!,
                       style: TextStyle(color: Colors.white, fontSize: 16)),
                   Text('17 seconds ago', style: TextStyle(color: Colors.grey)),
                 ],

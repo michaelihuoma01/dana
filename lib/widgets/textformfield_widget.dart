@@ -2,23 +2,23 @@ import 'package:dana/utils/constants.dart';
 import 'package:flutter/material.dart';
 
 class TextFormFieldWidget extends StatelessWidget {
-  final String label, hintText, suffixText;
-  final IconData iconData, prefixIconData;
+  final String? label, hintText, suffixText;
+  final IconData? iconData, prefixIconData;
   final bool obscureText, enabled;
-  final String initialValue;
-  final TextEditingController controller;
-  final Function onChanged, onSaved, onIconTap, onFieldSubmitted;
-  final String Function(String) validator;
-  final TextInputType type;
-  final Color borderColor;
-  final Color fillColor;
-  final FocusNode focusNode;
+  final String? initialValue;
+  final TextEditingController? controller;
+  final Function? onChanged, onSaved, onIconTap, onFieldSubmitted;
+  final String Function(String?)? validator;
+  final TextInputType? type;
+  final Color? borderColor;
+  final Color? fillColor;
+  final FocusNode? focusNode;
   final int maxLines;
-  final TextStyle hintStyle;
-  final Widget suffix;
+  final TextStyle? hintStyle;
+  final Widget? suffix;
 
   const TextFormFieldWidget({
-    Key key,
+    Key? key,
     this.label,
     this.suffix,
     this.hintText,
@@ -109,10 +109,10 @@ class TextFormFieldWidget extends StatelessWidget {
             ),
       obscureText: obscureText,
       enabled: enabled,
-      onSaved: onSaved,
+      onSaved: onSaved as void Function(String?)?,
       initialValue: initialValue,
-      onChanged: onChanged,
-      onFieldSubmitted: onFieldSubmitted,
+      onChanged: onChanged as void Function(String)?,
+      onFieldSubmitted: onFieldSubmitted as void Function(String)?,
       controller: controller,
       validator: validator,
       focusNode: focusNode,
