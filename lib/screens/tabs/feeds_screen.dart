@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:dana/generated/l10n.dart';
 import 'package:dana/models/models.dart';
 import 'package:dana/models/user_model.dart';
 import 'package:dana/screens/auth/login.dart';
@@ -203,7 +204,7 @@ class _FeedsScreenState extends State<FeedsScreen> {
                               context: context,
                               builder: (BuildContext context) => QrDialog());
                         },
-                        child: Text('PIN: ${widget.currentUser?.pin}',
+                        child: Text('${ S.of(context)!.pin}: ${widget.currentUser?.pin}',
                             style: TextStyle(
                                 color: Colors.white,
                                 fontSize: 16,
@@ -304,7 +305,7 @@ class _FeedsScreenState extends State<FeedsScreen> {
                                 height: MediaQuery.of(context).size.height,
                                 child: Center(
                                   child: Text(
-                                      'No posts found, Start following users or add a post',
+                                       S.of(context)!.nopost,
                                       style: TextStyle(color: Colors.white)),
                                 ),
                               );

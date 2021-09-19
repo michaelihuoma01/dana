@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dana/classes/language.dart';
+import 'package:dana/generated/l10n.dart';
 import 'package:dana/localization/language_constants.dart';
 import 'package:dana/main.dart';
 import 'package:dana/models/user_data.dart';
@@ -33,14 +34,14 @@ class ReportScreenState extends State<ReportScreen> {
       backgroundColor: darkColor,
       appBar: PreferredSize(
           preferredSize: const Size.fromHeight(50),
-          child: AppBarWidget(isTab: false, title: 'Contact Us')),
+          child: AppBarWidget(isTab: false, title: S.of(context)!.contact)),
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(20),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('Please describe your issue',
+              Text(S.of(context)!.describe,
                   style: TextStyle(color: Colors.white, fontSize: 18)),
               SizedBox(height: 10),
               TextFormField(
@@ -65,7 +66,7 @@ class ReportScreenState extends State<ReportScreen> {
                               BorderSide(color: lightColor, width: 1)))),
               SizedBox(height: 20),
               ButtonWidget(
-                title: 'Submit',
+                title: S.of(context)!.submit,
                 onPressed: () async {
                   print(currentUser!.email);
                   print(emailBody);

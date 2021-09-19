@@ -1,4 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:dana/generated/l10n.dart';
 import 'package:dana/models/models.dart';
 import 'package:dana/models/user_data.dart';
 import 'package:dana/models/user_model.dart';
@@ -305,7 +306,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                         pulsate: false,
                                         bgColor: Colors.green[600]!);
                                   },
-                                  child: Text('PIN: ${user.pin}',
+                                  child: Text(
+                                      '${S.of(context)!.pin}: ${user.pin}',
                                       style: TextStyle(
                                           color: Colors.white, fontSize: 16)),
                                 ),
@@ -326,7 +328,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             Padding(
                               padding:
                                   const EdgeInsets.symmetric(horizontal: 10),
-                              child: Text('Bio',
+                              child: Text( S.of(context)!.bio,
                                   style: TextStyle(
                                       color: Colors.white, fontSize: 16)),
                             ),

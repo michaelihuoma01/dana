@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dana/calls/call_utilities.dart';
+import 'package:dana/generated/l10n.dart';
 import 'package:dana/models/models.dart';
 import 'package:dana/models/post_model.dart';
 import 'package:dana/models/story_model.dart';
@@ -454,7 +455,7 @@ class _UserProfileState extends State<UserProfile> {
                                               pulsate: false,
                                               bgColor: Colors.green[600]!);
                                         },
-                                        child: Text('PIN: ${user.pin}',
+                                        child: Text('${ S.of(context)!.pin}: ${user.pin}',
                                             style: TextStyle(
                                                 color: Colors.white,
                                                 fontSize: 18)),
@@ -532,12 +533,12 @@ class _UserProfileState extends State<UserProfile> {
                                         onPressed: _followOrUnfollow,
                                         child: Text(
                                             (isFriends == true)
-                                                ? 'Remove'
+                                                ?  S.of(context)!.remove
                                                 : (isRequest == true)
-                                                    ? 'Accept'
+                                                    ?  S.of(context)!.accept
                                                     : (pendingFriends == true)
                                                         ? 'Sent'
-                                                        : 'Add',
+                                                        :  S.of(context)!.add,
                                             style: TextStyle(
                                                 fontSize: 14,
                                                 color: Colors.white,
@@ -549,7 +550,7 @@ class _UserProfileState extends State<UserProfile> {
                             Padding(
                               padding:
                                   const EdgeInsets.symmetric(horizontal: 10),
-                              child: Text('Bio',
+                              child: Text( S.of(context)!.bio,
                                   style: TextStyle(
                                       color: Colors.white, fontSize: 16)),
                             ),
@@ -573,7 +574,7 @@ class _UserProfileState extends State<UserProfile> {
                                 if (_posts.length == 0) {
                                   //If there is no posts
                                   return Center(
-                                      child: Text('No post yet',
+                                      child: Text( S.of(context)!.nopost,
                                           style:
                                               TextStyle(color: Colors.white)));
                                 }

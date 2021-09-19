@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:dana/generated/l10n.dart';
 import 'package:dana/models/models.dart';
 import 'package:dana/models/user_model.dart';
 import 'package:dana/screens/pages/comments_screen/comments_screen.dart';
@@ -67,8 +68,9 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
             radius: 20,
             backgroundColor: Colors.grey,
             backgroundImage: ((user.profileImageUrl == null)
-                ? AssetImage(placeHolderImageRef)
-                : CachedNetworkImageProvider(user.profileImageUrl!)) as ImageProvider<Object>?,
+                    ? AssetImage(placeHolderImageRef)
+                    : CachedNetworkImageProvider(user.profileImageUrl!))
+                as ImageProvider<Object>?,
           ),
           title: activity.isFollowEvent == true
               ? Row(
@@ -79,7 +81,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                     SizedBox(width: 5),
                     Expanded(
                       child: Text(
-                        'added you as a friend',
+                        S.of(context)!.added,
                         overflow: TextOverflow.ellipsis,
                         style: TextStyle(color: Colors.white),
                       ),
@@ -96,7 +98,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                         SizedBox(width: 5),
                         Expanded(
                             child: Text(
-                          'commented: "${activity.comment}',
+                          '${S.of(context)!.commented}: "${activity.comment}',
                           overflow: TextOverflow.ellipsis,
                           style: TextStyle(color: Colors.white),
                         )),
@@ -111,7 +113,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                         SizedBox(width: 5),
                         Expanded(
                           child: Text(
-                            'liked your post',
+                            S.of(context)!.liked,
                             overflow: TextOverflow.ellipsis,
                             style: TextStyle(color: Colors.white),
                           ),
@@ -175,7 +177,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
           backgroundColor: Colors.transparent,
           appBar: PreferredSize(
               preferredSize: const Size.fromHeight(70),
-              child: AppBarWidget(isTab: false, title: 'Notifications')),
+              child: AppBarWidget(isTab: false, title: S.of(context)!.notif)),
           body: Padding(
             padding: const EdgeInsets.symmetric(vertical: 10),
             child: RefreshIndicator(

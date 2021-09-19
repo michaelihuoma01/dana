@@ -1,4 +1,5 @@
 import 'package:another_flushbar/flushbar.dart';
+import 'package:dana/generated/l10n.dart';
 import 'package:dana/screens/auth/verification.dart';
 import 'package:dana/services/api/auth_service.dart';
 import 'package:dana/utils/constants.dart';
@@ -47,7 +48,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
             child: Padding(
               padding: const EdgeInsets.symmetric(vertical: 50, horizontal: 25),
               child: ButtonWidget(
-                title: 'Continue',
+                title: S.of(context)!.continueBtn,
                 onPressed: () async {
                   print(_email);
                   try {
@@ -71,7 +72,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
             ),
           ),
           appBar: AppBar(
-              title: Text('Reset Password',
+              title: Text(S.of(context)!.forgotPassword,
                   style: TextStyle(
                       color: Colors.white,
                       fontSize: 20,
@@ -91,12 +92,12 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                 children: [
                   SizedBox(height: 25),
                   Text(
-                    'You\'ll receive a link to reset your password',
+                    S.of(context)!.passwordLink,
                     style: TextStyle(color: Colors.white, fontSize: 16),
                   ),
                   SizedBox(height: 25),
                   TextFormFieldWidget(
-                      hintText: 'Email address',
+                      hintText: S.of(context)!.formFieldEmail,
                       fillColor: Colors.white,
                       onChanged: (value) {
                         _email = value;

@@ -7,6 +7,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dana/calls/call_utilities.dart';
 import 'package:dana/calls/callscreens/pickup/pickup_layout.dart';
+import 'package:dana/generated/l10n.dart';
 import 'package:dana/models/chat_model.dart';
 import 'package:dana/models/message_model.dart';
 import 'package:dana/models/user_data.dart';
@@ -412,8 +413,6 @@ class _ChatScreenState extends State<ChatScreen> {
                                           String videoUrl = await StroageService
                                               .uploadMessageVideo(imageFile);
 
-                                          print(
-                                              '===================================$videoUrl');
                                           _sendMessage(
                                               text: null,
                                               imageUrl: null,
@@ -422,9 +421,6 @@ class _ChatScreenState extends State<ChatScreen> {
                                               videoUrl: videoUrl,
                                               fileName: null,
                                               fileUrl: null);
-
-                                          print(
-                                              '=========================== wetin dey happen now');
                                         }
                                         setState(() => isSending = false);
 
@@ -579,12 +575,12 @@ class _ChatScreenState extends State<ChatScreen> {
                         focusedBorder: InputBorder.none,
                         enabledBorder: InputBorder.none,
                         hintStyle: TextStyle(color: Colors.grey),
-                        hintText: 'Message..'),
+                        hintText: S.of(context)!.entermsg),
                   ),
                 ),
               ),
               Padding(
-                padding: const EdgeInsets.only(left: 10),
+                padding: const EdgeInsets.only(left: 10, right: 10),
                 child: GestureDetector(
                     onTap: () async {
                       var pickedFile =
@@ -651,7 +647,7 @@ class _ChatScreenState extends State<ChatScreen> {
                     });
                   },
                   child: Padding(
-                    padding: const EdgeInsets.only(right: 8.0),
+                    padding: const EdgeInsets.only(right: 10, left: 10),
                     child: Container(
                       decoration: BoxDecoration(
                           shape: BoxShape.circle,
@@ -932,7 +928,7 @@ class _ChatScreenState extends State<ChatScreen> {
                                     ? '${groupMembers.map((e) => e!.name).join(', ')}'
                                     : (widget.receiverUser!.status == 'online')
                                         ? 'Online'
-                                        : 'Last seen ${timeago.format(widget.receiverUser!.lastSeenOnline!.toDate())}',
+                                        : '${S.of(context)!.lastseen} ${timeago.format(widget.receiverUser!.lastSeenOnline!.toDate())}',
                                 style:
                                     TextStyle(color: Colors.grey, fontSize: 11))
                           ],

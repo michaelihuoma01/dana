@@ -1,7 +1,8 @@
+import 'package:dana/generated/l10n.dart';
 import 'package:dana/services/core/location_service.dart';
 import 'package:dana/utils/constants.dart';
 import 'package:flutter/material.dart';
-import 'package:geocode/geocode.dart'; 
+import 'package:geocode/geocode.dart';
 import 'package:ionicons/ionicons.dart';
 
 class LocationForm extends StatefulWidget {
@@ -60,7 +61,7 @@ class _LocationFormState extends State<LocationForm> {
                   focusedBorder: InputBorder.none,
                   enabledBorder: InputBorder.none,
                   disabledBorder: InputBorder.none,
-                  hintText: 'Where was this photo taken?',
+                  hintText: S.of(context)!.location,
                   hintStyle: TextStyle(color: Colors.grey),
                   border: InputBorder.none),
             ),

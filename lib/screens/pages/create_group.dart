@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:dana/generated/l10n.dart';
 import 'package:dana/models/models.dart';
 import 'package:dana/services/services.dart';
 import 'package:dana/utilities/constants.dart';
@@ -243,12 +244,12 @@ class _CreateGroupState extends State<CreateGroup> {
                       }
                     },
                     child: Padding(
-                      padding: const EdgeInsets.only(right: 15),
+                      padding: const EdgeInsets.only(right: 15, left: 15),
                       child: Icon(Icons.done_all, color: lightColor),
                     ),
                   )
                 ],
-                title: Text('Create Group',
+                title: Text(S.of(context)!.creategroup,
                     style: TextStyle(
                         color: Colors.white, fontFamily: 'Poppins-Regular')),
                 backgroundColor: darkColor,
@@ -298,12 +299,6 @@ class _CreateGroupState extends State<CreateGroup> {
                   ),
                 ),
                 SizedBox(height: 10),
-                Text('Choose Friends',
-                    style: TextStyle(
-                        color: Colors.white,
-                        fontFamily: 'Poppins-Regular',
-                        fontWeight: FontWeight.bold)),
-                SizedBox(height: 10),
                 Expanded(
                   child: Container(
                     child: ListView.builder(
@@ -337,8 +332,8 @@ class _CreateGroupState extends State<CreateGroup> {
                           data: ThemeData(unselectedWidgetColor: lightColor),
                           child: CheckboxListTile(
                             value: (_selectAll == true)
-                                  ? true
-                                  : filteritem != null,
+                                ? true
+                                : filteritem != null,
                             checkColor: darkColor,
                             activeColor: lightColor,
                             selectedTileColor: lightColor,
@@ -365,7 +360,7 @@ class _CreateGroupState extends State<CreateGroup> {
                                     Text(follower.name!,
                                         style: TextStyle(
                                             color: Colors.white, fontSize: 18)),
-                                    Text('${follower.pin}',
+                                    Text('${S.of(context)!.pin}: ${follower.pin}',
                                         maxLines: 3,
                                         style: TextStyle(color: Colors.grey)),
                                   ],

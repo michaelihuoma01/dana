@@ -79,10 +79,9 @@ class AppBarWidget extends StatelessWidget {
         : AppBar(
             toolbarHeight: 100,
             title: Text(title!,
-                style: TextStyle(
-                    fontFamily: 'Poppins-Bold',
+                style: TextStyle( 
                     color: Colors.white,
-                    fontSize: 23)),
+                    fontSize: 20)),
             automaticallyImplyLeading: true,
             iconTheme: IconThemeData(color: Colors.white),
             centerTitle: true,

@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:collection/collection.dart' show IterableExtension;
+import 'package:dana/generated/l10n.dart';
 import 'package:dana/models/models.dart';
 import 'package:dana/services/services.dart';
 import 'package:dana/utilities/constants.dart';
@@ -273,12 +274,12 @@ class _BroadcastMessageState extends State<BroadcastMessage> {
                       }
                     },
                     child: Padding(
-                      padding: const EdgeInsets.only(right: 15),
+                      padding: const EdgeInsets.only(right: 15, left: 15),
                       child: Icon(Icons.done_all, color: lightColor),
                     ),
                   )
                 ],
-                title: Text('Broadcast Message',
+                title: Text(S.of(context)!.broadcast,
                     style: TextStyle(
                         color: Colors.white, fontFamily: 'Poppins-Regular')),
                 backgroundColor: darkColor,
@@ -312,7 +313,7 @@ class _BroadcastMessageState extends State<BroadcastMessage> {
                     maxLines: 5,
                     controller: textEditingController,
                     decoration: InputDecoration(
-                        hintText: 'Enter Message',
+                        hintText: S.of(context)!.entermsg,
                         hintStyle: TextStyle(color: Colors.grey),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(5),
@@ -373,7 +374,7 @@ class _BroadcastMessageState extends State<BroadcastMessage> {
                                           style:
                                               TextStyle(color: Colors.white)),
                                       SizedBox(height: 3),
-                                      Text('PIN: ${follower.pin}',
+                                      Text('${S.of(context)!.pin}: ${follower.pin}',
                                           maxLines: 3,
                                           style: TextStyle(
                                               color: Colors.grey,

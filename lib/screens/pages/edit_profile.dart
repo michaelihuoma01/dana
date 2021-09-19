@@ -2,6 +2,7 @@ import 'dart:io';
 import 'dart:math';
 
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:dana/generated/l10n.dart';
 import 'package:dana/models/user_model.dart';
 import 'package:dana/screens/auth/login.dart';
 import 'package:dana/screens/home.dart';
@@ -160,7 +161,7 @@ class _EditProfileState extends State<EditProfile> {
                     padding:
                         const EdgeInsets.only(bottom: 50, left: 20, right: 20),
                     child: ButtonWidget(
-                      title: 'Save',
+                      title: S.of(context)!.save,
                       onPressed: () {
                         _pin = user.pin;
                         updateProfile();
@@ -174,7 +175,9 @@ class _EditProfileState extends State<EditProfile> {
                 appBar: PreferredSize(
                     preferredSize: const Size.fromHeight(50),
                     child: AppBarWidget(
-                        title: 'Edit Profile', isTab: false, leading: true)),
+                        title: S.of(context)!.edit,
+                        isTab: false,
+                        leading: true)),
                 backgroundColor: Colors.transparent,
                 key: _scaffoldKey,
                 body: Padding(
@@ -234,7 +237,7 @@ class _EditProfileState extends State<EditProfile> {
                           ),
                         ),
                         SizedBox(height: 30),
-                        Text('Name',
+                        Text(S.of(context)!.displayName,
                             style:
                                 TextStyle(color: Colors.white, fontSize: 18)),
                         SizedBox(height: 10),
@@ -245,7 +248,7 @@ class _EditProfileState extends State<EditProfile> {
                             onChanged: (value) => _name = value,
                             type: TextInputType.name),
                         SizedBox(height: 25),
-                        Text('Bio',
+                        Text(S.of(context)!.bio,
                             style:
                                 TextStyle(color: Colors.white, fontSize: 18)),
                         SizedBox(height: 10),
@@ -256,7 +259,7 @@ class _EditProfileState extends State<EditProfile> {
                             onChanged: (value) => _bio = value,
                             type: TextInputType.name),
                         SizedBox(height: 25),
-                        Text('Pin',
+                        Text(S.of(context)!.pin,
                             style:
                                 TextStyle(color: Colors.white, fontSize: 18)),
                         SizedBox(height: 10),

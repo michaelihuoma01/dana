@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:dana/generated/l10n.dart';
 import 'package:dana/models/post_model.dart';
 import 'package:dana/models/user_data.dart';
 import 'package:dana/screens/pages/camera_screen/widgets/location_form.dart';
@@ -197,21 +198,21 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
               brightness: Brightness.dark,
               iconTheme: IconThemeData(color: Colors.white),
               centerTitle: true,
-              title: Text(widget.imageFile == null ? 'Edit Post' : 'New Post',
+              title: Text(widget.imageFile == null ? 'Edit Post' : S.of(context)!.newpost,
                   style: TextStyle(color: Colors.white)),
               actions: <Widget>[
                 !_isLoading
                     ? FlatButton(
                         onPressed: _submit,
                         child: Text(
-                          widget.imageFile == null ? 'Save' : 'Share',
+                          widget.imageFile == null ? 'Save' : S.of(context)!.share,
                           style: TextStyle(
                               color: lightColor,
                               fontWeight: FontWeight.bold,
                               fontSize: 18),
                         ))
                     : Padding(
-                        padding: const EdgeInsets.only(right: 10.0),
+                        padding: const EdgeInsets.only(right: 10.0, left:10),
                         child: Center(
                           child: SizedBox(
                             child: CircularProgressIndicator(color: lightColor),

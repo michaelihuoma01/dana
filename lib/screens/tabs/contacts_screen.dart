@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:dana/generated/l10n.dart';
 import 'package:dana/models/user_data.dart';
 import 'package:dana/models/user_model.dart';
 import 'package:dana/screens/pages/direct_messages/nested_screens/chat_screen.dart';
@@ -154,7 +155,6 @@ class _ContactScreenState extends State<ContactScreen> {
           _friends.add(user);
 
           print('friends ${user.name} $isFriends');
-         
         } else if (isFollower == true && isFollowingUser != true) {
           isRequest = true;
           _requests.add(user);
@@ -166,9 +166,9 @@ class _ContactScreenState extends State<ContactScreen> {
         }
       }
     }
-     setState(() {
-            _isLoading = false;
-          });
+    setState(() {
+      _isLoading = false;
+    });
     print(_friends.length);
   }
 
@@ -185,7 +185,7 @@ class _ContactScreenState extends State<ContactScreen> {
       title: Text(user.name!,
           style: TextStyle(
               color: Colors.white, fontWeight: FontWeight.w600, fontSize: 18)),
-      subtitle: Text('PIN: ${user.pin}',
+      subtitle: Text('${S.of(context)!.pin}: ${user.pin}',
           style: TextStyle(color: Colors.grey, fontSize: 12)),
       trailing: widget.searchFrom == SearchFrom.createStoryScreen
           ? FlatButton(
@@ -266,7 +266,7 @@ class _ContactScreenState extends State<ContactScreen> {
         appBar: PreferredSize(
             preferredSize: const Size.fromHeight(50),
             child: AppBar(
-              title: Text('Friends',
+              title: Text(S.of(context)!.friends,
                   style: TextStyle(
                       color: Colors.white,
                       fontSize: 30,
@@ -292,7 +292,7 @@ class _ContactScreenState extends State<ContactScreen> {
                       decoration: InputDecoration(
                           focusedBorder: InputBorder.none,
                           enabledBorder: InputBorder.none,
-                          hintText: 'Search by pin',
+                          hintText: S.of(context)!.searchby,
                           suffixIcon: _searchText.trim().isEmpty
                               ? null
                               : GestureDetector(
@@ -331,7 +331,8 @@ class _ContactScreenState extends State<ContactScreen> {
                                     mainAxisAlignment:
                                         MainAxisAlignment.spaceBetween,
                                     children: [
-                                      Text('${_requests.length} Requests',
+                                      Text(
+                                          '${_requests.length} ${S.of(context)!.request}',
                                           style: TextStyle(
                                               color: Colors.white,
                                               fontSize: 16,
@@ -418,13 +419,12 @@ class _ContactScreenState extends State<ContactScreen> {
                                         ),
                                       )
                                     : Center(
-                                        child: Text(
-                                            'You have no friend request',
+                                        child: Text(S.of(context)!.norequest,
                                             style:
                                                 TextStyle(color: Colors.grey))),
                                 SizedBox(height: 20),
                                 Text(
-                                    '${_friends.length.toString()} ${(_friends.length == 1) ? 'Friend' : 'Friends'} ',
+                                    '${_friends.length.toString()} ${(_friends.length == 1) ? S.of(context)!.friends : S.of(context)!.friends} ',
                                     style: TextStyle(
                                         color: Colors.white,
                                         fontSize: 16,

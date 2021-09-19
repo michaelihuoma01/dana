@@ -6,6 +6,7 @@ import 'package:camera/camera.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:dana/calls/callscreens/pickup/pickup_layout.dart';
+import 'package:dana/generated/l10n.dart';
 import 'package:dana/models/chat_model.dart';
 import 'package:dana/models/user_data.dart';
 import 'package:dana/models/user_model.dart';
@@ -395,7 +396,7 @@ class _HomeScreenState extends State<HomeScreen>
                         child: SvgPicture.asset('assets/images/feeds.svg',
                             color: isSelected1 ? lightColor : Colors.grey),
                       ),
-                      title: Text(isSelected1 ? 'Feeds' : '',
+                      title: Text(isSelected1 ?  S.of(context)!.feeds : '',
                           style: TextStyle(
                               fontSize: 10,
                               color: isSelected1
@@ -413,7 +414,7 @@ class _HomeScreenState extends State<HomeScreen>
                                     color: Colors.red, size: 12))
                         ],
                       ),
-                      title: Text(isSelected2 ? 'Messages' : '',
+                      title: Text(isSelected2 ?  S.of(context)!.messages : '',
                           style: TextStyle(
                               fontSize: 10,
                               color: isSelected2
@@ -422,7 +423,7 @@ class _HomeScreenState extends State<HomeScreen>
                   BottomNavigationBarItem(
                       icon: SvgPicture.asset('assets/images/call.svg',
                           color: isSelected3 ? lightColor : Colors.grey),
-                      title: Text(isSelected3 ? 'Calls' : '',
+                      title: Text(isSelected3 ?  S.of(context)!.messages : '',
                           style: TextStyle(
                               fontSize: 10,
                               color: isSelected3
@@ -440,7 +441,7 @@ class _HomeScreenState extends State<HomeScreen>
                                     color: Colors.red, size: 12))
                         ],
                       ),
-                      title: Text(isSelected4 ? 'Friends' : '',
+                      title: Text(isSelected4 ?  S.of(context)!.friends : '',
                           style: TextStyle(
                               fontSize: 10,
                               color: isSelected4
@@ -461,12 +462,12 @@ class _HomeScreenState extends State<HomeScreen>
                                     _currentUser!.profileImageUrl!),
                               ),
                             ),
-                      title: Text(isSelected5 ? 'Profile' : '',
+                      title: Text(isSelected5 ?  S.of(context)!.profile : '',
                           style: TextStyle(
                               fontSize: 9,
                               color: isSelected4
                                   ? lightColor
-                                  : Colors.transparent))),
+                                  : lightColor))),
                 ],
                 backgroundColor: darkColor,
                 selectedItemColor: lightColor,

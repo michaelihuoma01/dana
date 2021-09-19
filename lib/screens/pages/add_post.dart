@@ -1,5 +1,6 @@
 import 'package:camera/camera.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:dana/generated/l10n.dart';
 import 'package:dana/models/models.dart';
 import 'package:dana/models/user_data.dart';
 import 'package:dana/models/user_model.dart';
@@ -160,7 +161,7 @@ class _AddPostState extends State<AddPost> {
           preferredSize: const Size.fromHeight(50),
           child: AddPostAppbar(
             isTab: false,
-            title: 'Camera',
+            title:  S.of(context)!.cam,
             isPost: true,
             backToHomeScreenFromCameraScreen: _backToHomeScreenFromCameraScreen,
             cameras: _cameras,
@@ -169,8 +170,7 @@ class _AddPostState extends State<AddPost> {
                 (_caption != '') ? lightColor : lightColor.withOpacity(0.5),
             onTap: (_caption != '')
                 ? () {
-                    _submit();
-                    print('post text');
+                    _submit(); 
                   }
                 : null,
           )),
@@ -192,7 +192,7 @@ class _AddPostState extends State<AddPost> {
                 },
                 decoration: InputDecoration(
                   border: UnderlineInputBorder(borderSide: BorderSide.none),
-                  hintText: 'What\'s happening?',
+                  hintText:  S.of(context)!.happening,
                   focusedBorder:
                       UnderlineInputBorder(borderSide: BorderSide.none),
                   enabledBorder:

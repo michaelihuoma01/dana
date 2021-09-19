@@ -1,3 +1,4 @@
+import 'package:dana/generated/l10n.dart';
 import 'package:dana/screens/home.dart';
 import 'package:dana/screens/pages/camera_screen/camera_screen.dart';
 import 'package:dana/screens/pages/notifications_screen.dart';
@@ -82,12 +83,12 @@ class AddPostAppbar extends StatelessWidget {
            
             actions: [
               Padding(
-                  padding: const EdgeInsets.only(right: 17,   top: 15),
+                  padding: const EdgeInsets.only(right: 17,   top: 15, left: 17),
                   child: GestureDetector( 
                     onTap: onTap as void Function()?,
                      
                       child: Text(
-                        'Post',
+                         S.of(context)!.post,
                         style: TextStyle(
                             fontSize: 17,
                             color: lightColor,
@@ -104,8 +105,8 @@ class AddPostAppbar extends StatelessWidget {
             elevation: 5,
           )
         : AppBar(
-            title: Text('Settings',
-                style: TextStyle(fontSize: 22, color: Colors.white)),
+            title: Text(S.of(context)!.settings,
+                style: TextStyle(fontSize: 20, color: Colors.white)),
             iconTheme: IconThemeData(color: Colors.white),
             centerTitle: true,
             backgroundColor: darkColor,

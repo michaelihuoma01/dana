@@ -1,4 +1,5 @@
 import 'package:dana/classes/language.dart';
+import 'package:dana/generated/l10n.dart';
 import 'package:dana/localization/language_constants.dart';
 import 'package:dana/main.dart';
 import 'package:dana/models/user_model.dart';
@@ -38,8 +39,7 @@ class SettingsScreenState extends State<SettingsScreen> {
       backgroundColor: darkColor,
       appBar: PreferredSize(
           preferredSize: const Size.fromHeight(50),
-          child:
-              AddPostAppbar(isTab: false, title: 'Mokolosos', isPost: false)),
+          child: AddPostAppbar(isTab: false, isPost: false)),
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(10),
@@ -60,7 +60,7 @@ class SettingsScreenState extends State<SettingsScreen> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text('Terms and Privacy Policy',
+                  Text(S.of(context)!.tandc,
                       style: TextStyle(color: Colors.white, fontSize: 18)),
                   Icon(Icons.chevron_right, color: Colors.white)
                 ],
@@ -76,7 +76,7 @@ class SettingsScreenState extends State<SettingsScreen> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text('Report Issue',
+                    Text(S.of(context)!.report,
                         style: TextStyle(color: Colors.white, fontSize: 18)),
                     Icon(Icons.chevron_right, color: Colors.white)
                   ],
@@ -93,7 +93,7 @@ class SettingsScreenState extends State<SettingsScreen> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text('Private Account',
+                    Text(S.of(context)!.private,
                         style: TextStyle(color: Colors.white, fontSize: 18)),
                     SwitcherButton(
                       onColor: lightColor,
@@ -119,7 +119,7 @@ class SettingsScreenState extends State<SettingsScreen> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text('Language',
+                  Text(S.of(context)!.formFieldChangeLanguage,
                       style: TextStyle(color: Colors.white, fontSize: 18)),
                   DropdownButton<Language>(
                     underline: SizedBox(),
@@ -154,7 +154,7 @@ class SettingsScreenState extends State<SettingsScreen> {
               GestureDetector(
                 onTap: () => AuthService.logout(context),
                 child: Center(
-                  child: Text('Logout',
+                  child: Text(S.of(context)!.logout,
                       style: TextStyle(color: Colors.red, fontSize: 18)),
                 ),
               ),

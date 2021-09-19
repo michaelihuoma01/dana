@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 import 'package:camera/camera.dart';
+import 'package:dana/generated/l10n.dart';
 import 'package:dana/screens/pages/camera_screen/nested_screens/create_post_screen.dart';
 import 'package:dana/services/core/filtered_image_converter.dart';
 import 'package:dana/services/core/liquid_swipe_pages.dart';
@@ -106,7 +107,7 @@ class _EditPhotoScreenState extends State<EditPhotoScreen>
           backgroundColor: Colors.transparent,
           appBar: AppBar(
             title: Text(
-              "Edit Photo",
+              S.of(context)!.editphoto,
               style: TextStyle(color: Colors.white),
             ),
             centerTitle: true,
@@ -115,10 +116,10 @@ class _EditPhotoScreenState extends State<EditPhotoScreen>
             iconTheme: IconThemeData(color: Colors.white),
             actions: [
               Padding(
-                  padding: const EdgeInsets.only(right: 15, top: 17),
+                  padding: const EdgeInsets.only(right: 15, top: 17, left: 15),
                   child: GestureDetector(
                       onTap: convertFilteredImageToImageFile,
-                      child: Text('Next',
+                      child: Text(S.of(context)!.next,
                           style:
                               TextStyle(color: Colors.white, fontSize: 20)))),
             ],
@@ -189,12 +190,12 @@ class _EditPhotoScreenState extends State<EditPhotoScreen>
                             }),
                       ),
                     ),
-                    Expanded(child: SizedBox()),
-                    Padding(
-                        padding: const EdgeInsets.only(bottom: 30),
-                        child: Text('Filters',
-                            style:
-                                TextStyle(color: Colors.white, fontSize: 20)))
+                    // Expanded(child: SizedBox()),
+                    // Padding(
+                    //     padding: const EdgeInsets.only(bottom: 30),
+                    //     child: Text('Filters',
+                    //         style:
+                    //             TextStyle(color: Colors.white, fontSize: 20)))
                   ],
                 ),
               )

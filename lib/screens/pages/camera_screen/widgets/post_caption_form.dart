@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:dana/generated/l10n.dart';
 import 'package:dana/utils/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:gallery_saver/files.dart';
@@ -58,9 +59,10 @@ class _PostCaptionFormState extends State<PostCaptionForm> {
                         fit: BoxFit.fill,
                         alignment: FractionalOffset.topCenter,
                         image: (widget.imageFile == null
-                            ? CachedNetworkImageProvider(
-                                widget.imageUrl.toString())
-                            : FileImage(widget.imageFile!)) as ImageProvider<Object>,
+                                ? CachedNetworkImageProvider(
+                                    widget.imageUrl.toString())
+                                : FileImage(widget.imageFile!))
+                            as ImageProvider<Object>,
                       ),
                     )),
                   )
@@ -90,7 +92,7 @@ class _PostCaptionFormState extends State<PostCaptionForm> {
                   focusedBorder: InputBorder.none,
                   enabledBorder: InputBorder.none,
                   disabledBorder: InputBorder.none,
-                  hintText: 'Write a caption...',
+                  hintText: S.of(context)!.caption,
                   hintStyle: TextStyle(color: Colors.grey),
                   border: InputBorder.none),
             ),

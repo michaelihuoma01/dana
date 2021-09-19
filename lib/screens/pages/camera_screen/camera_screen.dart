@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:camera/camera.dart';
+import 'package:dana/generated/l10n.dart';
 import 'package:dana/screens/pages/camera_screen/nested_screens/create_post_screen.dart';
 import 'package:dana/screens/pages/camera_screen/nested_screens/create_story_screen.dart';
 import 'package:dana/screens/pages/camera_screen/nested_screens/edit_photo_screen.dart';
@@ -131,7 +132,7 @@ class _CameraScreenState extends State<CameraScreen>
                           ? Colors.white.withOpacity(0.85)
                           : Colors.black38,
                       child: Text(
-                        'Post',
+                         S.of(context)!.post,
                         style: TextStyle(
                           fontSize: 18,
                           color: _cameraConsumer == CameraConsumer.post
@@ -153,7 +154,7 @@ class _CameraScreenState extends State<CameraScreen>
                           ? Colors.white.withOpacity(0.85)
                           : Colors.black38,
                       child: Text(
-                        'Story',
+                        S.of(context)!.story,
                         style: TextStyle(
                           fontSize: 18,
                           color: _cameraConsumer == CameraConsumer.story
@@ -194,9 +195,9 @@ class _CameraScreenState extends State<CameraScreen>
                             },
                             child: Column(
                               children: [
-                                Text('Tap for photo & hold to record',
+                                Text( S.of(context)!.tap,
                                     style: TextStyle(color: Colors.white)),
-                                SizedBox(height: 5),
+                                 
                                 Container(
                                     decoration: BoxDecoration(
                                         shape: BoxShape.circle,
@@ -207,7 +208,7 @@ class _CameraScreenState extends State<CameraScreen>
                                                   : Colors.transparent,
                                               spreadRadius: 3)
                                         ]),
-                                    padding: EdgeInsets.all(3.0),
+                                    padding: EdgeInsets.all(1.0),
                                     // child: Image.asset(
                                     //     'assets/images/shutter.png',
                                     //     width: 68,

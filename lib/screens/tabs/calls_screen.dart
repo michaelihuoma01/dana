@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dana/calls/call.dart';
 import 'package:dana/calls/call_utilities.dart';
+import 'package:dana/generated/l10n.dart';
 import 'package:dana/models/models.dart';
 import 'package:dana/services/api/database_service.dart';
 import 'package:dana/utilities/constants.dart';
@@ -112,11 +113,15 @@ class _CallsScreenState extends State<CallsScreen> {
             backgroundColor: Colors.white,
             radius: 28.0,
             backgroundImage: (call.receiverPic!.isEmpty
-                ? AssetImage(placeHolderImageRef)
-                : CachedNetworkImageProvider(call.receiverPic!)) as ImageProvider<Object>?,
+                    ? AssetImage(placeHolderImageRef)
+                    : CachedNetworkImageProvider(call.receiverPic!))
+                as ImageProvider<Object>?,
           ),
         ),
-        title: Text( (call.receiverName! == widget.currentUser?.name) ? call.callerName! : call.receiverName!,
+        title: Text(
+            (call.receiverName! == widget.currentUser?.name)
+                ? call.callerName!
+                : call.receiverName!,
             style: TextStyle(
                 color: Colors.white,
                 fontWeight: FontWeight.w600,
@@ -128,7 +133,9 @@ class _CallsScreenState extends State<CallsScreen> {
                 : Icon(FontAwesomeIcons.video, size: 14, color: Colors.grey),
             SizedBox(width: 5),
             Text(
-              call.hasDialled! ? 'Outgoing' : 'Incoming',
+              call.hasDialled!
+                  ? S.of(context)!.outgoing
+                  : S.of(context)!.incoming,
               style: TextStyle(color: Colors.grey),
             ),
           ],
@@ -150,7 +157,7 @@ class _CallsScreenState extends State<CallsScreen> {
               print('=============$e');
             }
           } else {
-             try {
+            try {
               CallUtils.dial(
                   from: widget.currentUser!,
                   to: receiverUser,
@@ -181,7 +188,7 @@ class _CallsScreenState extends State<CallsScreen> {
         appBar: PreferredSize(
             preferredSize: const Size.fromHeight(50),
             child: AppBar(
-              title: Text('Calls',
+              title: Text(S.of(context)!.calls,
                   style: TextStyle(
                       color: Colors.white,
                       fontSize: 30,

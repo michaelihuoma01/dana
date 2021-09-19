@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'dart:math';
 
+import 'package:dana/generated/l10n.dart';
 import 'package:dana/models/user_model.dart';
 import 'package:dana/screens/auth/login.dart';
 import 'package:dana/screens/home.dart';
@@ -215,7 +216,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
               child: Padding(
                 padding: const EdgeInsets.only(bottom: 30, left: 20, right: 20),
                 child: ButtonWidget(
-                  title: 'Continue',
+                  title:  S.of(context)!.continueBtn,
                   onPressed: () {
                     if ((_name.length) < 3) {
                       Utility.showMessage(
@@ -286,7 +287,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
               ),
             ),
             appBar: AppBar(
-                title: Text('Setup your profile',
+                title: Text(S.of(context)!.setupProfile,
                     style: TextStyle(
                         color: Colors.white,
                         fontSize: 20,
@@ -352,13 +353,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     ),
                     SizedBox(height: 30),
                     TextFormFieldWidget(
-                        hintText: 'Display name',
+                        hintText: S.of(context)!.displayName,
                         fillColor: Colors.white,
                         onChanged: (value) => _name = value,
                         type: TextInputType.name),
                     SizedBox(height: 25),
                     TextFormFieldWidget(
-                        hintText: 'Bio',
+                        hintText: S.of(context)!.bio,
                         fillColor: Colors.white,
                         onChanged: (value) => _bio = value,
                         type: TextInputType.name),
@@ -372,7 +373,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         padding: const EdgeInsets.symmetric(horizontal: 15),
                         child: DropdownButton(
                           hint: Text(
-                            (_gender == '') ? 'Gender' : _gender!,
+                            (_gender == '') ? S.of(context)!.gender : _gender!,
                             style: TextStyle(color: Colors.grey, fontSize: 16),
                           ),
                           isExpanded: true,
@@ -415,7 +416,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         }, currentTime: DateTime.now(), locale: LocaleType.en);
                       },
                       child: TextFormFieldWidget(
-                          hintText: 'Date of Birth',
+                          hintText: S.of(context)!.dob,
                           fillColor: Colors.white,
                           enabled: false,
                           iconData: Icons.refresh,

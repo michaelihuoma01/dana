@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:dana/generated/l10n.dart';
 import 'package:dana/services/api/auth_service.dart';
 import 'package:dana/utils/constants.dart';
 import 'package:dana/utils/utility.dart';
@@ -83,7 +84,7 @@ class _SetupAccountState extends State<SetupAccount> {
                 padding:
                     const EdgeInsets.symmetric(vertical: 50, horizontal: 25),
                 child: ButtonWidget(
-                  title: 'Continue',
+                  title: S.of(context)!.continueBtn,
                   onPressed: () {
                     registerUser();
                   },
@@ -92,7 +93,7 @@ class _SetupAccountState extends State<SetupAccount> {
               ),
             ),
             appBar: AppBar(
-                title: Text('Choose your \nemail and password',
+                title: Text(S.of(context)!.chooseEmail,
                     style: TextStyle(
                         color: Colors.white,
                         fontSize: 20,
@@ -111,18 +112,18 @@ class _SetupAccountState extends State<SetupAccount> {
                   children: [
                     SizedBox(height: 25),
                     Text(
-                      'Let\'s get you started with your account',
+                      S.of(context)!.getStarted,
                       style: TextStyle(color: Colors.white, fontSize: 16),
                     ),
                     SizedBox(height: 45),
                     TextFormFieldWidget(
-                        hintText: 'Email address',
+                        hintText: S.of(context)!.formFieldEmail,
                         fillColor: Colors.white,
                         onChanged: (value) => _inputEmail = value,
                         type: TextInputType.emailAddress),
                     SizedBox(height: 20),
                     TextFormFieldWidget(
-                        hintText: 'Password',
+                        hintText: S.of(context)!.formFieldPassword,
                         fillColor: Colors.white,
                         obscureText: true,
                         onChanged: (value) => _inputPassword = value,

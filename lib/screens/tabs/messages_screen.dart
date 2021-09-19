@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:dana/generated/l10n.dart';
 import 'package:dana/models/models.dart';
 import 'package:dana/models/user_model.dart';
 import 'package:dana/screens/pages/broadcast_message.dart';
@@ -218,8 +219,8 @@ class _MessagesScreenState extends State<MessagesScreen> {
         subtitle: chat.recentSender!.isEmpty
             ? Text(
                 (chat.memberIds!.length > 2)
-                    ? 'You were added'
-                    : 'Chat Created',
+                    ? S.of(context)!.youadd
+                    : S.of(context)!.chatcreated,
                 overflow: TextOverflow.ellipsis,
                 style: readStyle,
               )
@@ -230,7 +231,7 @@ class _MessagesScreenState extends State<MessagesScreen> {
                     style: readStyle,
                   )
                 : Text(
-                    'Sent an attachment',
+                  S.of(context)!.attach,
                     overflow: TextOverflow.ellipsis,
                     style: readStyle,
                   ),
@@ -288,7 +289,7 @@ class _MessagesScreenState extends State<MessagesScreen> {
                     child: Icon(Icons.group_add, color: lightColor, size: 30)),
                 SizedBox(width: 15)
               ],
-              title: Text('Messages',
+              title: Text(S.of(context)!.messages,
                   style: TextStyle(
                       color: Colors.white,
                       fontSize: 30,
@@ -330,7 +331,7 @@ class _MessagesScreenState extends State<MessagesScreen> {
                           children: [
                             Icon(Icons.search, color: Colors.white),
                             SizedBox(width: 10),
-                            Text('Search',
+                            Text(S.of(context)!.search,
                                 style: TextStyle(color: Colors.grey)),
                           ],
                         ),
