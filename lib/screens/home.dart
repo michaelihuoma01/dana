@@ -1,8 +1,10 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:camera/camera.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:dana/calls/callscreens/pickup/pickup_layout.dart';
 import 'package:dana/models/chat_model.dart';
 import 'package:dana/models/user_data.dart';
@@ -21,6 +23,7 @@ import 'package:dana/utilities/constants.dart';
 import 'package:dana/utilities/show_error_dialog.dart';
 import 'package:dana/utils/constants.dart';
 import 'package:dana/utils/shared_preferences_utils.dart';
+import 'package:dana/utils/utility.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
@@ -76,12 +79,30 @@ class _HomeScreenState extends State<HomeScreen>
   bool isFollowingUser = false;
   bool isFriends = false;
   bool isRequest = false;
+  late StreamSubscription<ConnectivityResult> subscription;
 
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance!.addObserver(this);
+    subscription = Connectivity()
+        .onConnectivityChanged
+        .listen((ConnectivityResult result) {
+      // Got a new connectivity status!
+      print('=================$result');
+      if (result == ConnectivityResult.none) {
+        print('=================No internet');
 
+        Utility.showMessage(context,
+            bgColor: Colors.red,
+            message: 'No Internet Connection',
+            pulsate: false,
+            duration: Duration(seconds: 2),
+            type: MessageTypes.error);
+      } else {
+        print('================= internet');
+      }
+    });
     _getCurrentUser();
     _getCameras();
     checkUnreadMessages();
@@ -93,13 +114,12 @@ class _HomeScreenState extends State<HomeScreen>
     tabController!.addListener(() {
       onItemClicked(tabController!.index);
     });
-
-    print('============//////////////=====$isRead');
   }
 
   @override
   void dispose() {
     _pageController?.dispose();
+    subscription.cancel();
     super.dispose();
   }
 
@@ -108,10 +128,8 @@ class _HomeScreenState extends State<HomeScreen>
     if (state == AppLifecycleState.resumed) {
       //TODO: set status to online here in firestore
       DatabaseService.updateStatusOnline(widget.currentUserId);
-      print('==============USER ONLINE');
     } else {
       //TODO: set status to offline here in firestore
-      print('==============USER OFFLINE');
 
       DatabaseService.updateStatusOffline(widget.currentUserId);
     }

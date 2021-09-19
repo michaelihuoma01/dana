@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dana/models/story_model.dart';
 import 'package:dana/utilities/constants.dart';
+import 'package:flutter/cupertino.dart';
 
 class StoriesService {
   static Future<void> createStory(Story story) async {
@@ -19,8 +20,7 @@ class StoriesService {
   }
 
   static Future<Story> getStoryById(String storyId) async {
-    DocumentSnapshot storyDocSnapshot =
-        await storiesRef.doc(storyId).get();
+    DocumentSnapshot storyDocSnapshot = await storiesRef.doc(storyId).get();
     if (storyDocSnapshot.exists) {
       return Story.fromDoc(storyDocSnapshot);
     }
@@ -41,10 +41,7 @@ class StoriesService {
           .where('timeEnd', isGreaterThanOrEqualTo: timeNow)
           .get();
     } else {
-      snapshot = await storiesRef
-          .doc(userId)
-          .collection('stories')
-          .get();
+      snapshot = await storiesRef.doc(userId).collection('stories').get();
     }
 
     if (snapshot.docs.isNotEmpty) {
@@ -77,5 +74,16 @@ class StoriesService {
           .doc(story.id)
           .update({'views': storyViews});
     }
+  }
+
+  static void deleteStory(Story story, context) {
+    storiesRef
+        .doc(story.authorId)
+        .collection('stories')
+        .doc(story.id)
+        .delete()
+        .then((value) {
+      Navigator.pop(context);
+    });
   }
 }

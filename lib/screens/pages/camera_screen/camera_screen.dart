@@ -10,7 +10,7 @@ import 'package:dana/utilities/themes.dart';
 import 'package:dana/utils/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:gallery_saver/gallery_saver.dart'; 
+import 'package:gallery_saver/gallery_saver.dart';
 // import 'package:image_cropping/constant/enums.dart';
 // import 'package:image_cropping/image_cropping.dart';
 // import 'package:image_cropper/image_cropper.dart';
@@ -43,9 +43,8 @@ class _CameraScreenState extends State<CameraScreen>
   CameraConsumer? _cameraConsumer = CameraConsumer.post;
   bool fromCamera = false;
   bool isRecording = false;
-  File? imgFile; 
+  File? imgFile;
 
-  
   @override
   void initState() {
     WidgetsBinding.instance!.addObserver(this);
@@ -191,7 +190,7 @@ class _CameraScreenState extends State<CameraScreen>
                             onLongPressEnd: (details) {
                               print('end recording');
 
-                              _captureVideo();
+                              stopRecording();
                             },
                             child: Column(
                               children: [
@@ -332,21 +331,6 @@ class _CameraScreenState extends State<CameraScreen>
   //   });
   // }
 
-  void _captureVideo() {
-    stopRecording().then((String? filePath) {
-      if (mounted) {
-        setState(() {
-          imagePath = filePath;
-        });
-        if (filePath != null) {
-          showMessage('Picture saved to $filePath');
-          fromCamera = true;
-          setCameraResult();
-        }
-      }
-    });
-  }
-
   void getGalleryImage() async {
     var pickedFile = await A.ImagesPicker.pick(
       language: A.Language.English,
@@ -373,71 +357,23 @@ class _CameraScreenState extends State<CameraScreen>
         print('file type $fileType');
 
         if (fileType.first.contains('video')) {
+          print('===========ITS a video');
+
           Navigator.push(
             context,
             MaterialPageRoute(
                 builder: (_) => CreatePostScreen(
-                      imageFile: imgFile,
+                      imageFile: File(imagePath!),
                       backToHomeScreen: widget.backToHomeScreen,
                     )),
           );
-          print('===========ITS a video');
         } else {
-          // final ByteData bytes = await rootBundle.load(pickedFile.first.path);
-          // final Uint8List list = bytes.buffer.asUint8List();
-
-          // var croppedImage;
-          // ImageCropping.cropImage(
-          //   context,
-          //   list,
-          //   () {
-          //     CircularProgressIndicator(color: lightColor);
-          //   },
-          //   () {
-          //     // hideLoader();
-          //     print('done============');
-          //   },
-          //   (data) {
-          //     setState(
-          //       () {
-          //     print('done///////////////');
-
-          //         pickedFile.first.path = data;
-          //         croppedImage = data;
-          //       },
-          //     );
-          //   },
-          //   selectedImageRatio: ImageRatio.RATIO_1_1,
-          //   visibleOtherAspectRatios: true,
-          //   squareBorderWidth: 2,
-          //   squareCircleColor: Colors.black,
-          //   defaultTextColor: lightColor,
-          //   selectedTextColor: Colors.black,
-          //   colorForWhiteSpace: Colors.white,
-          // );
-
-          // var croppedImage = await ImageCropper.cropImage(
-          //   androidUiSettings: AndroidUiSettings(
-          //     backgroundColor: Theme.of(context).backgroundColor,
-          //     toolbarColor: Theme.of(context).appBarTheme.color,
-          //     toolbarWidgetColor: Theme.of(context).accentColor,
-          //     toolbarTitle: 'Crop Photo',
-          //     activeControlsWidgetColor: Colors.blue,
-          //   ),
-          //   sourcePath: pickedFile.first.path,
-          //   aspectRatio: CropAspectRatio(ratioX: 1.0, ratioY: 1.0),
-          // );
-
           Navigator.push(
             context,
             MaterialPageRoute(
                 builder: (_) => EditPhotoScreen(
                     imageFile: File(imagePath!),
-                    backToHomeScreen: widget.backToHomeScreen)
-                //  CreatePostScreen(
-                //   imageFile: croppedImage,
-                // ),
-                ),
+                    backToHomeScreen: widget.backToHomeScreen)),
           );
         }
       } else {
@@ -455,12 +391,6 @@ class _CameraScreenState extends State<CameraScreen>
 
   void setCameraResult() async {
     if (_cameraConsumer == CameraConsumer.post) {
-      var croppedImage = await _cropImage(File(imagePath!));
-
-      if (croppedImage == null) {
-        return;
-      }
-
       String mimeStr = lookupMimeType(imagePath!)!;
       var fileType = mimeStr.split('/');
       print('file type $fileType');
@@ -470,22 +400,22 @@ class _CameraScreenState extends State<CameraScreen>
           context,
           MaterialPageRoute(
               builder: (_) => CreatePostScreen(
-                  imageFile: imgFile,
+                  imageFile: File(imagePath!),
                   backToHomeScreen: widget.backToHomeScreen)),
         );
         print('===========ITS a video');
       } else {
+        var croppedImage = await _cropImage(File(imagePath!));
+
+        if (croppedImage == null) {
+          return;
+        }
         Navigator.push(
-          context,
-          MaterialPageRoute(
-              builder: (_) => EditPhotoScreen(
-                  imageFile: croppedImage,
-                  backToHomeScreen: widget.backToHomeScreen)
-              //  CreatePostScreen(
-              //   imageFile: croppedImage,
-              // ),
-              ),
-        );
+            context,
+            MaterialPageRoute(
+                builder: (_) => EditPhotoScreen(
+                    imageFile: croppedImage,
+                    backToHomeScreen: widget.backToHomeScreen)));
       }
     } else {
       Navigator.push(
@@ -551,7 +481,7 @@ class _CameraScreenState extends State<CameraScreen>
     }
   }
 
-  Future<String?> stopRecording() async {
+  Future<File?> stopRecording() async {
     if (!controller!.value.isInitialized) {
       showMessage('Error: select a camera first.');
       return null;
@@ -570,15 +500,17 @@ class _CameraScreenState extends State<CameraScreen>
       controller!.stopVideoRecording().then((value) {
         setState(() {
           isRecording = false;
+          imgFile = File(value.path);
         });
-        imgFile = File(value.path);
         GallerySaver.saveVideo(value.path);
+        fromCamera = true;
+        setCameraResult();
       });
     } on CameraException catch (e) {
       showException(e);
       return null;
     }
-    return filePath;
+    return imgFile;
   }
 
   _cropImage(var imageFile) async {
@@ -614,7 +546,6 @@ class _CameraScreenState extends State<CameraScreen>
 // final ByteData bytes = await rootBundle.load(imageFile.path);
 //           final Uint8List list = bytes.buffer.asUint8List();
 
-        
         // Crop(
         //   key: cropKey,
         //   image:  ,

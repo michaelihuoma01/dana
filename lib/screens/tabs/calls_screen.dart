@@ -116,7 +116,7 @@ class _CallsScreenState extends State<CallsScreen> {
                 : CachedNetworkImageProvider(call.receiverPic!)) as ImageProvider<Object>?,
           ),
         ),
-        title: Text(call.receiverName!,
+        title: Text( (call.receiverName! == widget.currentUser?.name) ? call.callerName! : call.receiverName!,
             style: TextStyle(
                 color: Colors.white,
                 fontWeight: FontWeight.w600,

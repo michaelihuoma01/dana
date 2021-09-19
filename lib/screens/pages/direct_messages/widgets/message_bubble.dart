@@ -81,8 +81,8 @@ class _MessageBubbleState extends State<MessageBubble> {
   }
 
   _likeUnLikeMessage(String? currentUserId) {
-    ChatService.likeUnlikeMessage(
-        widget.message!, widget.chat!.id, !_isLiked!, widget.user!, currentUserId);
+    ChatService.likeUnlikeMessage(widget.message!, widget.chat!.id, !_isLiked!,
+        widget.user!, currentUserId);
     setState(() => _isLiked = !_isLiked!);
 
     if (_isLiked!) {
@@ -182,69 +182,60 @@ class _MessageBubbleState extends State<MessageBubble> {
           //   showTime = true;
           // });
 
-          int result =
-              await audioPlayer.play('https://nf1f8200-a.akamaihd.net/downloads/ringtones/files/mp3/classic-5916.mp3', isLocal: false);
-          if (result == 1) {
-            // success
-            print(result);
-          } else {
-            print('failed');
+          // showModalBottomSheet(
+          //     context: context,
+          //     backgroundColor: Colors.transparent,
+          //     builder: (context) {
+          //       return Padding(
+          //         padding: const EdgeInsets.all(20),
+          //         child: Container(
+          //           height: 120,
+          //           decoration: BoxDecoration(color: darkColor),
+          //           child: Column(
+          //             mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          //             children: <Widget>[
+          //               GestureDetector(
+          //                 onTap: () async {
+          //                   print(widget.message!.id);
+          //                   Navigator.pop(context);
 
-          }
-          showModalBottomSheet(
-              context: context,
-              backgroundColor: Colors.transparent,
-              builder: (context) {
-                return Padding(
-                  padding: const EdgeInsets.all(20),
-                  child: Container(
-                    height: 120,
-                    decoration: BoxDecoration(color: darkColor),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: <Widget>[
-                        GestureDetector(
-                          onTap: () async {
-                            print(widget.message!.id);
-                            Navigator.pop(context);
-
-                            await chatsRef
-                                .doc(widget.chat!.id)
-                                .collection('messages')
-                                .doc(widget.message!.id)
-                                .delete()
-                                .then((docs) {
-                              print('=======succesful');
-                            });
-                          },
-                          child: Padding(
-                              padding: const EdgeInsets.only(top: 20),
-                              child: Text('Delete',
-                                  style: TextStyle(
-                                      color: Colors.red,
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w600))),
-                        ),
-                        GestureDetector(
-                          onTap: () async {
-                            print(widget.message!.id);
-                            Clipboard.setData(
-                                ClipboardData(text: widget.message!.text));
-                            Navigator.pop(context);
-                          },
-                          child: Padding(
-                              padding: const EdgeInsets.only(bottom: 20),
-                              child: Text('Copy',
-                                  style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w600))),
-                        ),
-                      ],
-                    ),
-                  ),
-                );
-              });
+          //                   await chatsRef
+          //                       .doc(widget.chat!.id)
+          //                       .collection('messages')
+          //                       .doc(widget.message!.id)
+          //                       .delete()
+          //                       .then((docs) {
+          //                     print('=======succesful');
+          //                   });
+          //                 },
+          //                 child: Padding(
+          //                     padding: const EdgeInsets.only(top: 20),
+          //                     child: Text('Delete',
+          //                         style: TextStyle(
+          //                             color: Colors.red,
+          //                             fontSize: 16,
+          //                             fontWeight: FontWeight.w600))),
+          //               ),
+          //               GestureDetector(
+          //                 onTap: () async {
+          //                   print(widget.message!.id);
+          //                   Clipboard.setData(
+          //                       ClipboardData(text: widget.message!.text));
+          //                   Navigator.pop(context);
+          //                 },
+          //                 child: Padding(
+          //                     padding: const EdgeInsets.only(bottom: 20),
+          //                     child: Text('Copy',
+          //                         style: TextStyle(
+          //                             color: Colors.white,
+          //                             fontSize: 16,
+          //                             fontWeight: FontWeight.w600))),
+          //               ),
+          //             ],
+          //           ),
+          //         ),
+          //       );
+          //     });
         },
         onDoubleTap: widget.message!.senderId == currentUser.id
             ? null
@@ -359,6 +350,47 @@ class _MessageBubbleState extends State<MessageBubble> {
           setState(() {
             showTime = true;
           });
+
+          showModalBottomSheet(
+              context: context,
+              backgroundColor: Colors.transparent,
+              builder: (context) {
+                return Padding(
+                  padding: const EdgeInsets.all(20),
+                  child: Container(
+                    height: 120,
+                    decoration: BoxDecoration(color: darkColor),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: <Widget>[
+                        GestureDetector(
+                          onTap: () async {
+                            print(widget.message!.id);
+                            Navigator.pop(context);
+
+                            await chatsRef
+                                .doc(widget.chat!.id)
+                                .collection('messages')
+                                .doc(widget.message!.id)
+                                .delete()
+                                .then((docs) {
+                              print('=======succesful');
+                            });
+                          },
+                          child: Padding(
+                              padding: const EdgeInsets.only(top: 20),
+                              child: Text('Delete',
+                                  style: TextStyle(
+                                      color: Colors.red,
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w600))),
+                        ),
+                         
+                      ],
+                    ),
+                  ),
+                );
+              });
         },
         onDoubleTap: widget.message!.senderId == currentUser.id
             ? null
@@ -411,6 +443,45 @@ class _MessageBubbleState extends State<MessageBubble> {
           setState(() {
             showTime = true;
           });
+          showModalBottomSheet(
+              context: context,
+              backgroundColor: Colors.transparent,
+              builder: (context) {
+                return Padding(
+                  padding: const EdgeInsets.all(20),
+                  child: Container(
+                    height: 120,
+                    decoration: BoxDecoration(color: darkColor),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: <Widget>[
+                        GestureDetector(
+                          onTap: () async {
+                            print(widget.message!.id);
+                            Navigator.pop(context);
+
+                            await chatsRef
+                                .doc(widget.chat!.id)
+                                .collection('messages')
+                                .doc(widget.message!.id)
+                                .delete()
+                                .then((docs) {
+                              print('=======succesful');
+                            });
+                          },
+                          child: Padding(
+                              padding: const EdgeInsets.only(top: 20),
+                              child: Text('Delete',
+                                  style: TextStyle(
+                                      color: Colors.red,
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w600))),
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              });
         },
         onDoubleTap: widget.message!.senderId == currentUser.id
             ? null
@@ -583,8 +654,68 @@ class _MessageBubbleState extends State<MessageBubble> {
                     dragStartBehavior: DragStartBehavior.start,
                     confirmDismiss: (direction) {
                       print('=======$direction');
-                      return;
-                    } as Future<bool?> Function(DismissDirection)?,
+
+                      return showModalBottomSheet(
+                          context: context,
+                          backgroundColor: Colors.transparent,
+                          builder: (context) {
+                            return Padding(
+                              padding: const EdgeInsets.all(20),
+                              child: Container(
+                                height: 120,
+                                decoration: BoxDecoration(color: darkColor),
+                                child: Column(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: <Widget>[
+                                    GestureDetector(
+                                      onTap: () async {
+                                        print(widget.message!.id);
+                                        Navigator.pop(context);
+
+                                        await chatsRef
+                                            .doc(widget.chat!.id)
+                                            .collection('messages')
+                                            .doc(widget.message!.id)
+                                            .delete()
+                                            .then((docs) {
+                                          print('=======succesful');
+                                        });
+                                      },
+                                      child: Padding(
+                                          padding:
+                                              const EdgeInsets.only(top: 20),
+                                          child: Text('Delete',
+                                              style: TextStyle(
+                                                  color: Colors.red,
+                                                  fontSize: 16,
+                                                  fontWeight:
+                                                      FontWeight.w600))),
+                                    ),
+                                    GestureDetector(
+                                      onTap: () async {
+                                        print(widget.message!.id);
+                                        Clipboard.setData(ClipboardData(
+                                            text: widget.message!.text));
+                                        Navigator.pop(context);
+                                      },
+                                      child: Padding(
+                                          padding:
+                                              const EdgeInsets.only(bottom: 20),
+                                          child: Text('Copy',
+                                              style: TextStyle(
+                                                  color: Colors.white,
+                                                  fontSize: 16,
+                                                  fontWeight:
+                                                      FontWeight.w600))),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            );
+                          });
+                      ;
+                    },
                     background: Padding(
                       padding: const EdgeInsets.only(right: 2),
                       child: Container(
@@ -609,7 +740,7 @@ class _MessageBubbleState extends State<MessageBubble> {
                       decoration: BoxDecoration(
                         color: widget.message!.text != null ||
                                 // widget.message.videoUrl != null ||
-                                // widget.message.audioUrl != null ||
+                                widget.message!.audioUrl != null ||
                                 widget.message!.fileUrl != null
                             ? isMe
                                 ? lightColor

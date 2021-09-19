@@ -92,20 +92,20 @@ class DatabaseService {
   }
 
   static void deletePost(Post post, PostStatus postStatus) {
-    postsRef.doc(post.authorId).collection('deletedPosts').doc(post.id).set({
-      'imageUrl': post.imageUrl,
-      'caption': post.caption,
-      'likeCount': post.likeCount,
-      'commentCount': post.commentCount,
-      'authorId': post.authorId,
-      'location': post.location,
-      'timestamp': post.timestamp
-    });
-    String collection;
-    postStatus == PostStatus.feedPost
-        ? collection = 'userPosts'
-        : collection = 'archivedPosts';
-    postsRef.doc(post.authorId).collection(collection).doc(post.id).delete();
+    // postsRef.doc(post.authorId).collection('deletedPosts').doc(post.id).set({
+    //   'imageUrl': post.imageUrl,
+    //   'caption': post.caption,
+    //   'likeCount': post.likeCount,
+    //   'commentCount': post.commentCount,
+    //   'authorId': post.authorId,
+    //   'location': post.location,
+    //   'timestamp': post.timestamp
+    // });
+    // String collection;
+    // postStatus == PostStatus.feedPost
+    //     ? collection = 'userPosts'
+    //     : collection = 'archivedPosts';
+    postsRef.doc(post.authorId).collection('userPosts').doc(post.id).delete();
   }
 
   static void archivePost(Post post, PostStatus postStatus) {

@@ -57,8 +57,8 @@ class _BroadcastMessageState extends State<BroadcastMessage> {
     _selectedUsers.forEach((element) async {
       print('sent to ${element.name}');
 
-      Chat? chat =
-          await ChatService.getChatByUsers([widget.currentUser!.id, element.id]);
+      Chat? chat = await ChatService.getChatByUsers(
+          [widget.currentUser!.id, element.id]);
 
       bool isChatExist = chat != null;
       late DocumentReference res;
@@ -173,8 +173,9 @@ class _BroadcastMessageState extends State<BroadcastMessage> {
         backgroundColor: Colors.grey,
         radius: 20.0,
         backgroundImage: (user.profileImageUrl!.isEmpty
-            ? AssetImage(placeHolderImageRef)
-            : CachedNetworkImageProvider(user.profileImageUrl!)) as ImageProvider<Object>?,
+                ? AssetImage(placeHolderImageRef)
+                : CachedNetworkImageProvider(user.profileImageUrl!))
+            as ImageProvider<Object>?,
       ),
       title: Text(user.name!,
           style: TextStyle(
@@ -235,16 +236,6 @@ class _BroadcastMessageState extends State<BroadcastMessage> {
 
   @override
   Widget build(BuildContext context) {
-    String? _currentUserId = Provider.of<UserData>(context).currentUser!.id;
-    void _clearSearch() {
-      WidgetsBinding.instance!
-          .addPostFrameCallback((_) => _searchController.clear());
-      setState(() {
-        _users = null;
-        _searchText = '';
-      });
-    }
-
     return Stack(
       children: [
         Container(
@@ -262,6 +253,31 @@ class _BroadcastMessageState extends State<BroadcastMessage> {
           appBar: PreferredSize(
               preferredSize: const Size.fromHeight(50),
               child: AppBar(
+                actions: [
+                  GestureDetector(
+                    onTap: () {
+                      if (_selectAll == false) {
+                        _userFollowing.forEach((element) {
+                          setState(() {
+                            _selectedUsers.add(element);
+                            _selectAll = true;
+                          });
+                        });
+                      } else {
+                        _userFollowing.forEach((element) {
+                          setState(() {
+                            _selectedUsers.remove(element);
+                            _selectAll = false;
+                          });
+                        });
+                      }
+                    },
+                    child: Padding(
+                      padding: const EdgeInsets.only(right: 15),
+                      child: Icon(Icons.done_all, color: lightColor),
+                    ),
+                  )
+                ],
                 title: Text('Broadcast Message',
                     style: TextStyle(
                         color: Colors.white, fontFamily: 'Poppins-Regular')),
@@ -291,7 +307,7 @@ class _BroadcastMessageState extends State<BroadcastMessage> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                  padding: const EdgeInsets.symmetric(horizontal: 15.0),
                   child: TextField(
                     maxLines: 5,
                     controller: textEditingController,
@@ -315,33 +331,20 @@ class _BroadcastMessageState extends State<BroadcastMessage> {
                   ),
                 ),
                 SizedBox(height: 15),
-                GestureDetector(
-                  onTap: () {
-                    _userFollowing.forEach((element) {
-                      setState(() {
-                        _selectedUsers.add(element);
-                        _selectAll = true;
-                      });
-                    });
-                  },
-                  child: Align(
-                    alignment: Alignment.centerRight,
-                    child:
-                        Text('Select All', style: TextStyle(color: lightColor)),
-                  ),
-                ),
                 Expanded(
                   child: Container(
                     child: ListView.builder(
                       itemCount: _userFollowing.length,
                       itemBuilder: (BuildContext context, int index) {
                         AppUser follower = _userFollowing[index];
-                        AppUser? filteritem = _selectedUsers.firstWhereOrNull(
-                            (item) => item.id == follower.id);
+                        AppUser? filteritem = _selectedUsers
+                            .firstWhereOrNull((item) => item.id == follower.id);
                         return Theme(
                             data: ThemeData(unselectedWidgetColor: lightColor),
                             child: CheckboxListTile(
-                              value: (_selectAll == true) ? true : filteritem != null,
+                              value: (_selectAll == true)
+                                  ? true
+                                  : filteritem != null,
                               checkColor: darkColor,
                               activeColor: lightColor,
                               selectedTileColor: lightColor,
@@ -352,11 +355,12 @@ class _BroadcastMessageState extends State<BroadcastMessage> {
                                   child: CircleAvatar(
                                     radius: 25.0,
                                     backgroundColor: Colors.grey,
-                                    backgroundImage:
-                                        (follower.profileImageUrl!.isEmpty
+                                    backgroundImage: (follower
+                                                .profileImageUrl!.isEmpty
                                             ? AssetImage(placeHolderImageRef)
                                             : CachedNetworkImageProvider(
-                                                follower.profileImageUrl!)) as ImageProvider<Object>?,
+                                                follower.profileImageUrl!))
+                                        as ImageProvider<Object>?,
                                   ),
                                 ),
                                 SizedBox(width: 15),

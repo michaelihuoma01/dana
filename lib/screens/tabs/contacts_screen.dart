@@ -69,8 +69,8 @@ class _ContactScreenState extends State<ContactScreen> {
     setState(() {
       _isLoading = true;
     });
-    await _setupFollowers();
-    await _setupFollowing();
+    // await _setupFollowers();
+    // await _setupFollowing();
     _setupFriends();
   }
 
@@ -154,9 +154,7 @@ class _ContactScreenState extends State<ContactScreen> {
           _friends.add(user);
 
           print('friends ${user.name} $isFriends');
-          setState(() {
-            _isLoading = false;
-          });
+         
         } else if (isFollower == true && isFollowingUser != true) {
           isRequest = true;
           _requests.add(user);
@@ -168,6 +166,9 @@ class _ContactScreenState extends State<ContactScreen> {
         }
       }
     }
+     setState(() {
+            _isLoading = false;
+          });
     print(_friends.length);
   }
 

@@ -117,10 +117,13 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
 
         DatabaseService.editPost(post, widget.postStatus);
       } else {
-        //Create new Post
+        //Create new Post 
+         try {
         if (isVideo == false) {
-          String imageUrl =
-              (await StroageService.uploadPost(widget.imageFile!));
+        
+            String imageUrl =
+                (await StroageService.uploadPost(widget.imageFile!));
+          
 
           print(imageUrl);
           Post post = Post(
@@ -154,10 +157,16 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
               commentsAllowed: true);
 
           DatabaseService.createPost(post);
+          
         }
+        } catch (e) {
+            print('/////////========///////////$e');
+          }
       }
+      
       widget.backToHomeScreen!();
     }
+    
   }
 
   // void _goToHomeScreen() {

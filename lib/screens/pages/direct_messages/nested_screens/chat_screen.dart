@@ -331,14 +331,14 @@ class _ChatScreenState extends State<ChatScreen> {
                             builder: (context) {
                               return Container(
                                 color: darkColor,
-                                height: 100,
+                                height: 120,
                                 child: Row(
                                   mainAxisAlignment:
                                       MainAxisAlignment.spaceEvenly,
                                   children: <Widget>[
                                     GestureDetector(
                                       onTap: () async {
-                                        List<Media> res =
+                                        List<Media>? res =
                                             await (ImagesPicker.pick(
                                           count: 5,
                                           pickType: PickType.image,
@@ -348,10 +348,10 @@ class _ChatScreenState extends State<ChatScreen> {
                                             cropType: CropType
                                                 .rect, // currently for android
                                           ),
-                                        ) as FutureOr<List<Media>>);
+                                        ));
                                         setState(() => isSending = true);
 
-                                        res.forEach((element) async {
+                                        res?.forEach((element) async {
                                           File imageFile = File(element.path);
 
                                           if (imageFile != null) {
@@ -479,7 +479,8 @@ class _ChatScreenState extends State<ChatScreen> {
 
                                           String fileUrl = await StroageService
                                               .uploadMessageFile(
-                                                  File(result.files.first.path!),
+                                                  File(
+                                                      result.files.first.path!),
                                                   result.files.first.extension);
                                           String fileNamePath =
                                               result.files.first.name;
@@ -587,7 +588,8 @@ class _ChatScreenState extends State<ChatScreen> {
                 child: GestureDetector(
                     onTap: () async {
                       var pickedFile =
-                          await (ImagesPicker.openCamera(pickType: PickType.all) as FutureOr<List<Media>>);
+                          await (ImagesPicker.openCamera(pickType: PickType.all)
+                              as FutureOr<List<Media>>);
 
                       File imageFile = File(pickedFile.first.path);
                       if (imageFile != null) {
@@ -773,7 +775,8 @@ class _ChatScreenState extends State<ChatScreen> {
                   const EdgeInsets.symmetric(horizontal: 10.0, vertical: 20.0),
               physics: AlwaysScrollableScrollPhysics(),
               reverse: true,
-              children: _buildMessageBubbles(snapshot as AsyncSnapshot<QuerySnapshot<Object>>),
+              children: _buildMessageBubbles(
+                  snapshot as AsyncSnapshot<QuerySnapshot<Object>>),
             ),
           ),
         );
@@ -884,9 +887,10 @@ class _ChatScreenState extends State<ChatScreen> {
                               backgroundColor: Colors.grey,
                               backgroundImage:
                                   (widget.receiverUser!.profileImageUrl!.isEmpty
-                                      ? AssetImage(placeHolderImageRef)
-                                      : CachedNetworkImageProvider(
-                                          widget.receiverUser!.profileImageUrl!)) as ImageProvider<Object>?,
+                                          ? AssetImage(placeHolderImageRef)
+                                          : CachedNetworkImageProvider(widget
+                                              .receiverUser!.profileImageUrl!))
+                                      as ImageProvider<Object>?,
                             ),
                     ),
                     SizedBox(width: 15.0),

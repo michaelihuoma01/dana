@@ -124,7 +124,7 @@ class _PostViewState extends State<PostView> {
   }
 
   _showMenuDialog() {
-    return Platform.isIOS ? _iosBottomSheet() : _androidDialog();
+    return   _androidDialog();
   }
 
   _saveAndShareFile() async {

@@ -91,7 +91,7 @@ class _CreateStoryScreenState extends State<CreateStoryScreen> {
                 decoration: BoxDecoration(
               // color: Colors.white,
               image: DecorationImage(
-                fit: BoxFit.contain,
+                // fit: BoxFit.contain,
                 // alignment: FractionalOffset.topCenter,
                 image: FileImage(widget.imageFile),
               ),
@@ -109,24 +109,25 @@ class _CreateStoryScreenState extends State<CreateStoryScreen> {
       backgroundColor: Theme.of(context).accentColor,
       body: Stack(
         children: <Widget>[
-          Center(
-            child: RepaintBoundary(
-              key: _globalKey,
-              child: Container(
-                child: LiquidSwipe(
-                  pages: _filterPages,
-                  onPageChangeCallback: (value) {
-                    setState(() => _selectedFilterIndex = value);
-                    _setFilterTitle(value);
-                  },
-                  waveType: WaveType.liquidReveal,
-                  liquidController: _liquidController,
-                  ignoreUserGestureWhileAnimating: true,
-                  enableLoop: true,
-                ),
-              ),
-            ),
-          ),
+          // Center(
+          //   child: RepaintBoundary(
+          //     key: _globalKey,
+          //     child: Container(
+          //       child: LiquidSwipe(
+          //         pages: _filterPages,
+          //         onPageChangeCallback: (value) {
+          //           setState(() => _selectedFilterIndex = value);
+          //           _setFilterTitle(value);
+          //         },
+          //         waveType: WaveType.liquidReveal,
+          //         liquidController: _liquidController,
+          //         ignoreUserGestureWhileAnimating: true,
+          //         enableLoop: true,
+          //       ),
+          //     ),
+          //   ),
+          // ),
+          Center(child: Image.file(widget.imageFile)),
           if (_newFilterTitle)
             // displays filter title once filtered changed
             _displayStoryTitle(),
@@ -263,18 +264,18 @@ class _CreateStoryScreenState extends State<CreateStoryScreen> {
                 ],
               ),
             ),
-            RaisedButton(
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(15)),
-              onPressed: () => _shareImageToMessages(),
-              color: Theme.of(context).primaryColor.withOpacity(0.8),
-              child: Text(
-                'Share to..',
-                style: TextStyle(
-                  fontSize: 18,
-                ),
-              ),
-            ),
+            // RaisedButton(
+            //   shape: RoundedRectangleBorder(
+            //       borderRadius: BorderRadius.circular(15)),
+            //   onPressed: () => _shareImageToMessages(),
+            //   color: Theme.of(context).primaryColor.withOpacity(0.8),
+            //   child: Text(
+            //     'Share to..',
+            //     style: TextStyle(
+            //       fontSize: 18,
+            //     ),
+            //   ),
+            // ),
           ],
         ),
       ),
@@ -488,14 +489,14 @@ class _CreateStoryScreenState extends State<CreateStoryScreen> {
   void _createStory(String? currentUserId) async {
     if (!_isLoading && widget.imageFile != null) {
       setState(() => _isLoading = true);
-      File imageFile =
-          await FilteredImageConverter.convert(globalKey: _globalKey);
-      if (imageFile == null) {
-        ShowErrorDialog.showAlertDialog(
-            errorMessage: 'Could not convert image.', context: context);
-        return;
-      }
-      String imageUrl = await StroageService.uploadStoryImage(imageFile);
+      // File imageFile =
+      //     await FilteredImageConverter.convert(globalKey: _globalKey);
+      // if (imageFile == null) {
+      //   ShowErrorDialog.showAlertDialog(
+      //       errorMessage: 'Could not convert image.', context: context);
+      //   return;
+      // }
+      String imageUrl = await StroageService.uploadStoryImage(widget.imageFile);
       final DateTime dateNow = DateTime.now();
       final Timestamp timeStart = Timestamp.fromDate(dateNow);
       final Timestamp timeEnd = Timestamp.fromDate(DateTime(

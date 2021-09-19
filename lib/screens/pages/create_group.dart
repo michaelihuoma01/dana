@@ -34,6 +34,7 @@ class _CreateGroupState extends State<CreateGroup> {
   List<bool> _userFollowingState = [];
   int _followingCount = 0;
   bool _isLoading = false;
+  bool _selectAll = false;
 
   final TextEditingController textEditingController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
@@ -142,8 +143,9 @@ class _CreateGroupState extends State<CreateGroup> {
         backgroundColor: Colors.grey,
         radius: 20.0,
         backgroundImage: (user.profileImageUrl!.isEmpty
-            ? AssetImage(placeHolderImageRef)
-            : CachedNetworkImageProvider(user.profileImageUrl!)) as ImageProvider<Object>?,
+                ? AssetImage(placeHolderImageRef)
+                : CachedNetworkImageProvider(user.profileImageUrl!))
+            as ImageProvider<Object>?,
       ),
       title: Text(user.name!,
           style: TextStyle(
@@ -204,16 +206,6 @@ class _CreateGroupState extends State<CreateGroup> {
 
   @override
   Widget build(BuildContext context) {
-    String? _currentUserId = Provider.of<UserData>(context).currentUser!.id;
-    void _clearSearch() {
-      WidgetsBinding.instance!
-          .addPostFrameCallback((_) => _searchController.clear());
-      setState(() {
-        _users = null;
-        _searchText = '';
-      });
-    }
-
     return Stack(
       children: [
         Container(
@@ -231,6 +223,31 @@ class _CreateGroupState extends State<CreateGroup> {
           appBar: PreferredSize(
               preferredSize: const Size.fromHeight(50),
               child: AppBar(
+                actions: [
+                  GestureDetector(
+                    onTap: () {
+                      if (_selectAll == false) {
+                        _userFollowing.forEach((element) {
+                          setState(() {
+                            _selectedUsers.add(element);
+                            _selectAll = true;
+                          });
+                        });
+                      } else {
+                        _userFollowing.forEach((element) {
+                          setState(() {
+                            _selectedUsers.remove(element);
+                            _selectAll = false;
+                          });
+                        });
+                      }
+                    },
+                    child: Padding(
+                      padding: const EdgeInsets.only(right: 15),
+                      child: Icon(Icons.done_all, color: lightColor),
+                    ),
+                  )
+                ],
                 title: Text('Create Group',
                     style: TextStyle(
                         color: Colors.white, fontFamily: 'Poppins-Regular')),
@@ -319,7 +336,9 @@ class _CreateGroupState extends State<CreateGroup> {
                             child: Theme(
                           data: ThemeData(unselectedWidgetColor: lightColor),
                           child: CheckboxListTile(
-                            value: filteritem != null,
+                            value: (_selectAll == true)
+                                  ? true
+                                  : filteritem != null,
                             checkColor: darkColor,
                             activeColor: lightColor,
                             selectedTileColor: lightColor,
@@ -332,9 +351,10 @@ class _CreateGroupState extends State<CreateGroup> {
                                   backgroundColor: Colors.grey,
                                   backgroundImage:
                                       (follower.profileImageUrl!.isEmpty
-                                          ? AssetImage(placeHolderImageRef)
-                                          : CachedNetworkImageProvider(
-                                              follower.profileImageUrl!)) as ImageProvider<Object>?,
+                                              ? AssetImage(placeHolderImageRef)
+                                              : CachedNetworkImageProvider(
+                                                  follower.profileImageUrl!))
+                                          as ImageProvider<Object>?,
                                 ),
                               ),
                               SizedBox(width: 15),
@@ -364,9 +384,9 @@ class _CreateGroupState extends State<CreateGroup> {
                             },
                           ),
                         )
-                
+
                             //
-                
+
                             );
                       },
                     ),

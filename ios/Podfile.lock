@@ -356,6 +356,9 @@ PODS:
     - Firebase/Firestore (= 8.6.0)
     - firebase_core
     - Flutter
+  - connectivity_plus (0.0.1):
+    - Flutter
+    - Reachability
   - DKImagePickerController/Core (4.3.2):
     - DKImagePickerController/ImageDataManager
     - DKImagePickerController/Resource
@@ -619,6 +622,7 @@ PODS:
   - "permission_handler (5.1.0+2)":
     - Flutter
   - PromisesObjC (2.0.0)
+  - Reachability (3.2)
   - record_mp3 (0.0.1):
     - Flutter
   - SDWebImage (5.11.1):
@@ -652,6 +656,7 @@ DEPENDENCIES:
   - audioplayers (from `.symlinks/plugins/audioplayers/ios`)
   - camera (from `.symlinks/plugins/camera/ios`)
   - cloud_firestore (from `.symlinks/plugins/cloud_firestore/ios`)
+  - connectivity_plus (from `.symlinks/plugins/connectivity_plus/ios`)
   - file_picker (from `.symlinks/plugins/file_picker/ios`)
   - firebase_analytics (from `.symlinks/plugins/firebase_analytics/ios`)
   - firebase_auth (from `.symlinks/plugins/firebase_auth/ios`)
@@ -711,6 +716,7 @@ SPEC REPOS:
     - Mantle
     - nanopb
     - PromisesObjC
+    - Reachability
     - SDWebImage
     - SDWebImageWebPCoder
     - SwiftyGif
@@ -725,6 +731,8 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/camera/ios"
   cloud_firestore:
     :path: ".symlinks/plugins/cloud_firestore/ios"
+  connectivity_plus:
+    :path: ".symlinks/plugins/connectivity_plus/ios"
   file_picker:
     :path: ".symlinks/plugins/file_picker/ios"
   firebase_analytics:
@@ -788,8 +796,9 @@ SPEC CHECKSUMS:
   AgoraRtcEngine_iOS: 8aa4a8e46bd81963607857b1d46703b93e4de156
   audioplayers: 455322b54050b30ea4b1af7cd9e9d105f74efa8c
   BoringSSL-GRPC: 8edf627ee524575e2f8d19d56f068b448eea3879
-  camera: 3164201dc344383e62282964016528c4f5a9ad50
+  camera: b9eb73c055259c6f808a9da4a0d43780f6645281
   cloud_firestore: 8a2843c34901ea2bc6aafcaa1c452f5b4f1ade37
+  connectivity_plus: 5f0eb61093bec56935f21a1699dd2758bc895587
   DKImagePickerController: b5eb7f7a388e4643264105d648d01f727110fc3d
   DKPhotoGallery: fdfad5125a9fdda9cc57df834d49df790dbb4179
   file_picker: 3e6c3790de664ccf9b882732d9db5eaf6b8d4eb1
@@ -811,7 +820,7 @@ SPEC CHECKSUMS:
   FirebaseInstallations: 0ede6ffcd215b8f93c19d9b06c1c54e2d4107e98
   FirebaseMessaging: ce0a5ee974f7bfe83b6cc5acce88c2d969e37c41
   FirebaseStorage: 2765944230981e63f8bd2938d9d5819158b7c34c
-  Flutter: 434fef37c0980e73bb6479ef766c45957d4b510c
+  Flutter: 50d75fe2f02b26cc09d224853bb45737f8b3214a
   flutter_email_sender: 02d7443217d8c41483223627972bfdc09f74276b
   flutter_image_compress: fd2b476345226e1a10ea352fa306af95704642c1
   FMDB: 2ce00b547f966261cd18927a3ddb07cb6f3db82a
@@ -835,6 +844,7 @@ SPEC CHECKSUMS:
   path_provider: abfe2b5c733d04e238b0d8691db0cfd63a27a93c
   permission_handler: ccb20a9fad0ee9b1314a52b70b76b473c5f8dab0
   PromisesObjC: 68159ce6952d93e17b2dfe273b8c40907db5ba58
+  Reachability: 33e18b67625424e47b6cde6d202dce689ad7af96
   record_mp3: b842d3900f65a0707e4064d9bcfac6323dea0b4f
   SDWebImage: a7f831e1a65eb5e285e3fb046a23fcfbf08e696d
   SDWebImageWebPCoder: f93010f3f6c031e2f8fb3081ca4ee6966c539815
@@ -848,6 +858,6 @@ SPEC CHECKSUMS:
   wakelock: d0fc7c864128eac40eba1617cb5264d9c940b46f
   ZLPhotoBrowser: 809878607ea92e9411c580797ce1be23896b8d7f
 
-PODFILE CHECKSUM: 26dc4165783fc26cc8f0e4e55b42a2579d511ad0
+PODFILE CHECKSUM: 739913439cff101d4d27cd91723c6c50e4b4a905
 
-COCOAPODS: 1.10.2
+COCOAPODS: 1.11.2

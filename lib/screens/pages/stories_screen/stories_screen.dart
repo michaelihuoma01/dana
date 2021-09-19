@@ -224,11 +224,28 @@ class _StoryScreenState extends State<StoryScreen>
                                   children: [
                                     Padding(
                                       padding: const EdgeInsets.only(
-                                          top: 20, left: 15, bottom: 5),
-                                      child: Text('Viewers',
-                                          style: TextStyle(
-                                              fontWeight: FontWeight.w700,
-                                              color: Colors.white)),
+                                          top: 20,
+                                          left: 15,
+                                          right: 10,
+                                          bottom: 5),
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Text('Viewers',
+                                              style: TextStyle(
+                                                  fontWeight: FontWeight.w700,
+                                                  color: Colors.white)),
+                                          GestureDetector(
+                                              onTap: () {
+                                                StoriesService.deleteStory(
+                                                    story, context);
+                                                Navigator.pop(context);
+                                              },
+                                              child: Icon(Icons.delete,
+                                                  color: Colors.white))
+                                        ],
+                                      ),
                                     ),
                                     BrandDivider(),
                                     Expanded(
