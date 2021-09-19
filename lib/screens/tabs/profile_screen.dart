@@ -307,7 +307,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                         bgColor: Colors.green[600]!);
                                   },
                                   child: Text(
-                                      '${S.of(context)!.pin}: ${user.pin}',
+                                      'PIN: ${user.pin}',
                                       style: TextStyle(
                                           color: Colors.white, fontSize: 16)),
                                 ),

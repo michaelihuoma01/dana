@@ -360,7 +360,7 @@ class _CreateGroupState extends State<CreateGroup> {
                                     Text(follower.name!,
                                         style: TextStyle(
                                             color: Colors.white, fontSize: 18)),
-                                    Text('${S.of(context)!.pin}: ${follower.pin}',
+                                    Text('PIN: ${follower.pin}',
                                         maxLines: 3,
                                         style: TextStyle(color: Colors.grey)),
                                   ],

@@ -374,7 +374,7 @@ class _BroadcastMessageState extends State<BroadcastMessage> {
                                           style:
                                               TextStyle(color: Colors.white)),
                                       SizedBox(height: 3),
-                                      Text('${S.of(context)!.pin}: ${follower.pin}',
+                                      Text('PIN: ${follower.pin}',
                                           maxLines: 3,
                                           style: TextStyle(
                                               color: Colors.grey,

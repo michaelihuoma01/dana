@@ -185,7 +185,7 @@ class _ContactScreenState extends State<ContactScreen> {
       title: Text(user.name!,
           style: TextStyle(
               color: Colors.white, fontWeight: FontWeight.w600, fontSize: 18)),
-      subtitle: Text('${S.of(context)!.pin}: ${user.pin}',
+      subtitle: Text('PIN: ${user.pin}',
           style: TextStyle(color: Colors.grey, fontSize: 12)),
       trailing: widget.searchFrom == SearchFrom.createStoryScreen
           ? FlatButton(

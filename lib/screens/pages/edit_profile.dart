@@ -259,7 +259,7 @@ class _EditProfileState extends State<EditProfile> {
                             onChanged: (value) => _bio = value,
                             type: TextInputType.name),
                         SizedBox(height: 25),
-                        Text(S.of(context)!.pin,
+                        Text('PIN',
                             style:
                                 TextStyle(color: Colors.white, fontSize: 18)),
                         SizedBox(height: 10),

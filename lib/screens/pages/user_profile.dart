@@ -455,7 +455,7 @@ class _UserProfileState extends State<UserProfile> {
                                               pulsate: false,
                                               bgColor: Colors.green[600]!);
                                         },
-                                        child: Text('${ S.of(context)!.pin}: ${user.pin}',
+                                        child: Text('PIN: ${user.pin}',
                                             style: TextStyle(
                                                 color: Colors.white,
                                                 fontSize: 18)),

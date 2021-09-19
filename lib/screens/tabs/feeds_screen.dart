@@ -204,7 +204,7 @@ class _FeedsScreenState extends State<FeedsScreen> {
                               context: context,
                               builder: (BuildContext context) => QrDialog());
                         },
-                        child: Text('${ S.of(context)!.pin}: ${widget.currentUser?.pin}',
+                        child: Text('PIN: ${widget.currentUser?.pin}',
                             style: TextStyle(
                                 color: Colors.white,
                                 fontSize: 16,
