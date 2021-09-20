@@ -150,7 +150,7 @@ class _StoryScreenState extends State<StoryScreen>
       );
 
       ChatService.sendChatMessage(chat, message, receiver);
-      chatsRef.doc(chat?.id).update({'readStatus.${receiver.id}': false});
+      chatsRef.doc(chat.id).update({'readStatus.${receiver.id}': false});
       setState(() => isSending = false);
     }
   }

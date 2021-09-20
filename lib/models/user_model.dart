@@ -5,6 +5,7 @@ class AppUser {
   final String? name;
   final String? pin;
   final String? profileImageUrl;
+  final String? qrCode;
   final String? email;
   final String? bio;
   final String? token;
@@ -30,6 +31,7 @@ class AppUser {
       this.pin,
       this.name,
       this.profileImageUrl,
+      this.qrCode,
       this.email,
       this.bio,
       this.token,
@@ -46,9 +48,10 @@ class AppUser {
 
   factory AppUser.fromDoc(DocumentSnapshot doc) {
     return AppUser(
-      id: doc.id  ,
+      id: doc.id,
       name: doc['name'] ?? '',
       profileImageUrl: doc['profileImageUrl'] ?? '',
+      qrCode: doc['qrCode'] ?? '',
       email: doc['email'],
       pin: doc['pin'] ?? '',
       bio: doc['bio'] ?? '',
