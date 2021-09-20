@@ -1,4 +1,4 @@
-import 'package:dana/models/user_model.dart';
+import 'package:Dana/models/user_model.dart';
 import 'package:flutter/material.dart';
 
 class DurationForm extends StatefulWidget {

@@ -1,6 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:dana/utils/constants.dart';
-import 'package:dana/widgets/BrandDivider.dart';
+import 'package:Dana/utils/constants.dart';
+import 'package:Dana/widgets/BrandDivider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 

@@ -1,6 +1,6 @@
-import 'package:dana/generated/l10n.dart';
-import 'package:dana/services/core/location_service.dart';
-import 'package:dana/utils/constants.dart';
+import 'package:Dana/generated/l10n.dart';
+import 'package:Dana/services/core/location_service.dart';
+import 'package:Dana/utils/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:geocode/geocode.dart';
 import 'package:ionicons/ionicons.dart';

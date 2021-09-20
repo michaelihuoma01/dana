@@ -1,9 +1,9 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:camera/camera.dart';
-import 'package:dana/models/models.dart';
-import 'package:dana/screens/pages/camera_screen/camera_screen.dart';
-import 'package:dana/utilities/constants.dart';
-import 'package:dana/utils/constants.dart';
+import 'package:Dana/models/models.dart';
+import 'package:Dana/screens/pages/camera_screen/camera_screen.dart';
+import 'package:Dana/utilities/constants.dart';
+import 'package:Dana/utils/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 

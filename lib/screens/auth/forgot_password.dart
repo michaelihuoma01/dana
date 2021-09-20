@@ -1,14 +1,14 @@
 import 'package:another_flushbar/flushbar.dart';
-import 'package:dana/generated/l10n.dart';
-import 'package:dana/screens/auth/verification.dart';
-import 'package:dana/services/api/auth_service.dart';
-import 'package:dana/utils/constants.dart';
-import 'package:dana/utils/utility.dart';
-import 'package:dana/widgets/appbar_widget.dart';
-import 'package:dana/widgets/button_widget.dart';
-import 'package:dana/widgets/custom_modal_progress_hud.dart';
-import 'package:dana/widgets/dialog.dart';
-import 'package:dana/widgets/textformfield_widget.dart';
+import 'package:Dana/generated/l10n.dart';
+import 'package:Dana/screens/auth/verification.dart';
+import 'package:Dana/services/api/auth_service.dart';
+import 'package:Dana/utils/constants.dart';
+import 'package:Dana/utils/utility.dart';
+import 'package:Dana/widgets/appbar_widget.dart';
+import 'package:Dana/widgets/button_widget.dart';
+import 'package:Dana/widgets/custom_modal_progress_hud.dart';
+import 'package:Dana/widgets/dialog.dart';
+import 'package:Dana/widgets/textformfield_widget.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 

@@ -1,10 +1,10 @@
  
-import 'package:dana/screens/auth/login.dart';
-import 'package:dana/screens/auth/verification.dart';
-import 'package:dana/utils/constants.dart';
-import 'package:dana/widgets/appbar_widget.dart';
-import 'package:dana/widgets/button_widget.dart';
-import 'package:dana/widgets/textformfield_widget.dart';
+import 'package:Dana/screens/auth/login.dart';
+import 'package:Dana/screens/auth/verification.dart';
+import 'package:Dana/utils/constants.dart';
+import 'package:Dana/widgets/appbar_widget.dart';
+import 'package:Dana/widgets/button_widget.dart';
+import 'package:Dana/widgets/textformfield_widget.dart';
 import 'package:flutter/material.dart';
 
 class ResetPasswordScreen extends StatefulWidget {

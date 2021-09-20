@@ -1,6 +1,6 @@
-import 'package:dana/utils/constants.dart';
-import 'package:dana/widgets/contact_tile.dart';
-import 'package:dana/widgets/story_appbar.dart';
+import 'package:Dana/utils/constants.dart';
+import 'package:Dana/widgets/contact_tile.dart';
+import 'package:Dana/widgets/story_appbar.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 

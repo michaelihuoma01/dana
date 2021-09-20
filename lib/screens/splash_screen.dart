@@ -1,8 +1,8 @@
-import 'package:dana/screens/auth/login.dart';
-import 'package:dana/screens/home.dart';
-import 'package:dana/services/services.dart';
-import 'package:dana/utils/constants.dart';
-import 'package:dana/utils/shared_preferences_utils.dart';
+import 'package:Dana/screens/auth/login.dart';
+import 'package:Dana/screens/home.dart';
+import 'package:Dana/services/services.dart';
+import 'package:Dana/utils/constants.dart';
+import 'package:Dana/utils/shared_preferences_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 

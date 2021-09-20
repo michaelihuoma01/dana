@@ -1,5 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:dana/utils/utility.dart';
+import 'package:Dana/utils/utility.dart';
 
 class Post {
   final String? id;

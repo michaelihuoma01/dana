@@ -1,5 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:dana/models/user_model.dart';
+import 'package:Dana/models/user_model.dart';
 
 class Chat {
   final String? id, admin;

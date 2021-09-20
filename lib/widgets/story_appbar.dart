@@ -1,5 +1,5 @@
-import 'package:dana/utils/constants.dart';
-import 'package:dana/widgets/BrandDivider.dart';
+import 'package:Dana/utils/constants.dart';
+import 'package:Dana/widgets/BrandDivider.dart';
 import 'package:flutter/material.dart';
 
 class StoryAppbar extends StatelessWidget {

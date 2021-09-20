@@ -1,11 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:dana/models/chat_model.dart';
-import 'package:dana/models/message_model.dart';
-import 'package:dana/models/post_model.dart';
-import 'package:dana/models/user_data.dart';
-import 'package:dana/models/user_model.dart';
-import 'package:dana/services/api/database_service.dart';
-import 'package:dana/utilities/constants.dart';
+import 'package:Dana/models/chat_model.dart';
+import 'package:Dana/models/message_model.dart';
+import 'package:Dana/models/post_model.dart';
+import 'package:Dana/models/user_data.dart';
+import 'package:Dana/models/user_model.dart';
+import 'package:Dana/services/api/database_service.dart';
+import 'package:Dana/utilities/constants.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:provider/provider.dart';
 

@@ -1,4 +1,4 @@
-import 'package:dana/models/models.dart';
+import 'package:Dana/models/models.dart';
 import 'package:flutter/material.dart';
 
 class UserBadges extends StatelessWidget {

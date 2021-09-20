@@ -1,9 +1,9 @@
-import 'package:dana/generated/l10n.dart';
-import 'package:dana/screens/home.dart';
-import 'package:dana/screens/pages/camera_screen/camera_screen.dart';
-import 'package:dana/screens/pages/notifications_screen.dart';
-import 'package:dana/screens/pages/post_audience.dart';
-import 'package:dana/utils/constants.dart';
+import 'package:Dana/generated/l10n.dart';
+import 'package:Dana/screens/home.dart';
+import 'package:Dana/screens/pages/camera_screen/camera_screen.dart';
+import 'package:Dana/screens/pages/notifications_screen.dart';
+import 'package:Dana/screens/pages/post_audience.dart';
+import 'package:Dana/utils/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';

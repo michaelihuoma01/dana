@@ -1,9 +1,9 @@
-import 'package:dana/screens/auth/login.dart';
-import 'package:dana/screens/auth/register.dart';
-import 'package:dana/screens/auth/reset_password.dart';
-import 'package:dana/utils/constants.dart';
-import 'package:dana/widgets/appbar_widget.dart';
-import 'package:dana/widgets/button_widget.dart';
+import 'package:Dana/screens/auth/login.dart';
+import 'package:Dana/screens/auth/register.dart';
+import 'package:Dana/screens/auth/reset_password.dart';
+import 'package:Dana/utils/constants.dart';
+import 'package:Dana/widgets/appbar_widget.dart';
+import 'package:Dana/widgets/button_widget.dart';
 import 'package:flutter/material.dart';
 
 class VerificationScreen extends StatefulWidget {
@@ -63,7 +63,7 @@ class _VerificationScreenState extends State<VerificationScreen> {
                 children: [
                   SizedBox(height: 15),
                   Text(
-                    'Enter the 6-digit code that was sent to dana@gmail.com',
+                    'Enter the 6-digit code that was sent to Dana@gmail.com',
                     style: TextStyle(color: Colors.white, fontSize: 18),
                   ),
                   SizedBox(height: 30),

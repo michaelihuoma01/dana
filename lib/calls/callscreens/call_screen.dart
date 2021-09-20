@@ -2,16 +2,16 @@ import 'dart:async';
 
 import 'package:agora_rtc_engine/rtc_engine.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:dana/calls/call.dart';
-import 'package:dana/calls/call_methods.dart';
-import 'package:dana/calls/callscreens/pickup/cached_image.dart';
-import 'package:dana/calls/configs/agora_configs.dart';
-import 'package:dana/calls/constants/strings.dart';
-import 'package:dana/models/user_model.dart';
-import 'package:dana/screens/home.dart';
-import 'package:dana/screens/pages/direct_messages/nested_screens/chat_screen.dart';
-import 'package:dana/utils/constants.dart';
-import 'package:dana/widgets/timer_widget.dart';
+import 'package:Dana/calls/call.dart';
+import 'package:Dana/calls/call_methods.dart';
+import 'package:Dana/calls/callscreens/pickup/cached_image.dart';
+import 'package:Dana/calls/configs/agora_configs.dart';
+import 'package:Dana/calls/constants/strings.dart';
+import 'package:Dana/models/user_model.dart';
+import 'package:Dana/screens/home.dart';
+import 'package:Dana/screens/pages/direct_messages/nested_screens/chat_screen.dart';
+import 'package:Dana/utils/constants.dart';
+import 'package:Dana/widgets/timer_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -49,7 +49,6 @@ class _CallScreenState extends State<CallScreen> {
   @override
   void initState() {
     super.initState();
-    print('Caller ready');
     addPostFrameCallback();
     initializeAgora();
   }
@@ -71,6 +70,7 @@ class _CallScreenState extends State<CallScreen> {
     await _engine.setParameters(
         '''{\"che.video.lowBitRateStreamParameter\":{\"width\":320,\"height\":180,\"frameRate\":15,\"bitRate\":140}}''');
     await _engine.joinChannel(null, widget.call.channelId!, null, 0);
+
   }
 
   addPostFrameCallback() {
@@ -128,8 +128,7 @@ class _CallScreenState extends State<CallScreen> {
         });
         _infoStrings.add(info);
         _users.add(uid);
-        _remoteUid = uid;
-        print('user left + ${_users}');
+        _remoteUid = uid; 
       });
     }, userInfoUpdated: (var userInfo, i) {
       setState(() {
@@ -160,9 +159,7 @@ class _CallScreenState extends State<CallScreen> {
         _users.clear();
         callMethods.endCall(call: widget.call);
 
-        Navigator.pop(context);
-        print('user left + ${i.duration}');
-        print('user left + ${_users}');
+        Navigator.pop(context); 
       });
     }, connectionLost: () {
       setState(() {
@@ -193,6 +190,8 @@ class _CallScreenState extends State<CallScreen> {
         final info = 'firstRemoteVideo: $uid ${width}x $height';
         _infoStrings.add(info);
       });
+    print('========================/$uid');
+
     }));
   }
 
@@ -336,9 +335,7 @@ class _CallScreenState extends State<CallScreen> {
       setState(() {
         onSpeaker = false;
       });
-    }
-
-    print(onSpeaker);
+    } 
   }
 
   /// Toolbar layout
@@ -440,6 +437,8 @@ class _CallScreenState extends State<CallScreen> {
 
   @override
   Widget build(BuildContext context) {
+    print('========================//////////////////////////$_remoteUid');
+
     return SafeArea(
         child: (widget.isAudio == false)
             ? Scaffold(

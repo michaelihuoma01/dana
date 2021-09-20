@@ -1,8 +1,8 @@
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:dana/models/story_model.dart';
-import 'package:dana/models/user_model.dart';
-import 'package:dana/screens/pages/stories_screen/widgets/swipe_up.dart';
-import 'package:dana/utilities/constants.dart';
+import 'package:Dana/models/story_model.dart';
+import 'package:Dana/models/user_model.dart';
+import 'package:Dana/screens/pages/stories_screen/widgets/swipe_up.dart';
+import 'package:Dana/utilities/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:timeago/timeago.dart' as timeago;
 

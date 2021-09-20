@@ -3,20 +3,20 @@ import 'dart:math';
 import 'package:auto_direction/auto_direction.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:dana/models/models.dart';
-import 'package:dana/models/story_model.dart';
-import 'package:dana/models/user_data.dart';
-import 'package:dana/models/user_model.dart';
-import 'package:dana/screens/pages/stories_screen/widgets/animated_bar.dart';
-import 'package:dana/screens/pages/stories_screen/widgets/story_info.dart';
-import 'package:dana/services/api/chat_service.dart';
-import 'package:dana/services/api/database_service.dart';
-import 'package:dana/services/api/stories_service.dart';
-import 'package:dana/utilities/constants.dart';
-import 'package:dana/utilities/custom_navigation.dart';
-import 'package:dana/utils/constants.dart';
-import 'package:dana/utils/utility.dart';
-import 'package:dana/widgets/BrandDivider.dart';
+import 'package:Dana/models/models.dart';
+import 'package:Dana/models/story_model.dart';
+import 'package:Dana/models/user_data.dart';
+import 'package:Dana/models/user_model.dart';
+import 'package:Dana/screens/pages/stories_screen/widgets/animated_bar.dart';
+import 'package:Dana/screens/pages/stories_screen/widgets/story_info.dart';
+import 'package:Dana/services/api/chat_service.dart';
+import 'package:Dana/services/api/database_service.dart';
+import 'package:Dana/services/api/stories_service.dart';
+import 'package:Dana/utilities/constants.dart';
+import 'package:Dana/utilities/custom_navigation.dart';
+import 'package:Dana/utils/constants.dart';
+import 'package:Dana/utils/utility.dart';
+import 'package:Dana/widgets/BrandDivider.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:ionicons/ionicons.dart';
@@ -150,7 +150,7 @@ class _StoryScreenState extends State<StoryScreen>
       );
 
       ChatService.sendChatMessage(chat, message, receiver);
-      chatsRef.doc(chat.id).update({'readStatus.${receiver.id}': false});
+      chatsRef.doc(chat?.id).update({'readStatus.${receiver.id}': false});
       setState(() => isSending = false);
     }
   }

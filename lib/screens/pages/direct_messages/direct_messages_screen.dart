@@ -1,5 +1,5 @@
-import 'package:dana/screens/pages/direct_messages/widgets/direct_messages_widget.dart';
-import 'package:dana/utilities/constants.dart';
+import 'package:Dana/screens/pages/direct_messages/widgets/direct_messages_widget.dart';
+import 'package:Dana/utilities/constants.dart';
 import 'package:flutter/material.dart'; 
 class DirectMessagesScreen extends StatefulWidget {
   final Function backToHomeScreen;

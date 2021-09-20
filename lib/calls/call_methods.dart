@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:dana/calls/call.dart';
-import 'package:dana/calls/constants/strings.dart';
+import 'package:Dana/calls/call.dart';
+import 'package:Dana/calls/constants/strings.dart';
 
 class CallMethods {
   final CollectionReference callCollection =

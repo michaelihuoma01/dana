@@ -1,8 +1,8 @@
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:dana/models/user_model.dart';
-import 'package:dana/utilities/constants.dart';
-import 'package:dana/utils/constants.dart';
-import 'package:dana/widgets/BrandDivider.dart';
+import 'package:Dana/models/user_model.dart';
+import 'package:Dana/utilities/constants.dart';
+import 'package:Dana/utils/constants.dart';
+import 'package:Dana/widgets/BrandDivider.dart';
 import 'package:flutter/material.dart';
 
 class ContactTile extends StatelessWidget {

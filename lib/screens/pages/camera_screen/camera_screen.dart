@@ -1,14 +1,14 @@
 import 'dart:typed_data';
 
 import 'package:camera/camera.dart';
-import 'package:dana/generated/l10n.dart';
-import 'package:dana/screens/pages/camera_screen/nested_screens/create_post_screen.dart';
-import 'package:dana/screens/pages/camera_screen/nested_screens/create_story_screen.dart';
-import 'package:dana/screens/pages/camera_screen/nested_screens/edit_photo_screen.dart';
-import 'package:dana/screens/pages/stories_screen/widgets/circular_icon_button.dart';
-import 'package:dana/utilities/constants.dart';
-import 'package:dana/utilities/themes.dart';
-import 'package:dana/utils/constants.dart';
+import 'package:Dana/generated/l10n.dart';
+import 'package:Dana/screens/pages/camera_screen/nested_screens/create_post_screen.dart';
+import 'package:Dana/screens/pages/camera_screen/nested_screens/create_story_screen.dart';
+import 'package:Dana/screens/pages/camera_screen/nested_screens/edit_photo_screen.dart';
+import 'package:Dana/screens/pages/stories_screen/widgets/circular_icon_button.dart';
+import 'package:Dana/utilities/constants.dart';
+import 'package:Dana/utilities/themes.dart';
+import 'package:Dana/utils/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:gallery_saver/gallery_saver.dart';

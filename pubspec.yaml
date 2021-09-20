@@ -1,4 +1,4 @@
-name: dana
+name: Dana
 description: A new Flutter project.
 
 # The following line prevents the package from being accidentally published to
@@ -87,6 +87,7 @@ dependencies:
   # intl_translation1: ^0.17.10+1
   collection: ^1.15.0
   connectivity_plus: ^1.1.0
+  flutter_cache_manager: ^3.1.2
 
 dev_dependencies:
   flutter_test:

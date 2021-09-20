@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:dana/utilities/constants.dart';
+import 'package:Dana/utilities/constants.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_image_compress/flutter_image_compress.dart';

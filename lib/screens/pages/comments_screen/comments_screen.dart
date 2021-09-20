@@ -1,10 +1,10 @@
 import 'package:auto_direction/auto_direction.dart';
-import 'package:dana/models/models.dart';
-import 'package:dana/services/services.dart';
-import 'package:dana/utilities/constants.dart';
-import 'package:dana/utilities/custom_navigation.dart';
-import 'package:dana/utilities/themes.dart';
-import 'package:dana/utils/constants.dart';
+import 'package:Dana/models/models.dart';
+import 'package:Dana/services/services.dart';
+import 'package:Dana/utilities/constants.dart';
+import 'package:Dana/utilities/custom_navigation.dart';
+import 'package:Dana/utilities/themes.dart';
+import 'package:Dana/utils/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';

@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:dana/models/story_model.dart';
-import 'package:dana/utilities/constants.dart';
+import 'package:Dana/models/story_model.dart';
+import 'package:Dana/utilities/constants.dart';
 import 'package:flutter/cupertino.dart';
 
 class StoriesService {

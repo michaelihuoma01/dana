@@ -1,14 +1,14 @@
-import 'package:dana/classes/language.dart';
-import 'package:dana/generated/l10n.dart';
-import 'package:dana/localization/language_constants.dart';
-import 'package:dana/main.dart';
-import 'package:dana/models/user_model.dart';
-import 'package:dana/screens/pages/report_issue.dart';
-import 'package:dana/services/api/auth_service.dart';
-import 'package:dana/utilities/constants.dart';
-import 'package:dana/utils/constants.dart';
-import 'package:dana/widgets/BrandDivider.dart';
-import 'package:dana/widgets/add_post_appbar.dart';
+import 'package:Dana/classes/language.dart';
+import 'package:Dana/generated/l10n.dart';
+import 'package:Dana/localization/language_constants.dart';
+import 'package:Dana/main.dart';
+import 'package:Dana/models/user_model.dart';
+import 'package:Dana/screens/pages/report_issue.dart';
+import 'package:Dana/services/api/auth_service.dart';
+import 'package:Dana/utilities/constants.dart';
+import 'package:Dana/utils/constants.dart';
+import 'package:Dana/widgets/BrandDivider.dart';
+import 'package:Dana/widgets/add_post_appbar.dart';
 import 'package:flutter/material.dart';
 import 'package:switcher_button/switcher_button.dart';
 

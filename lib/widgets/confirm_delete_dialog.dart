@@ -1,6 +1,6 @@
-import 'package:dana/screens/auth/login.dart';
-import 'package:dana/utils/constants.dart';
-import 'package:dana/widgets/BrandDivider.dart';
+import 'package:Dana/screens/auth/login.dart';
+import 'package:Dana/utils/constants.dart';
+import 'package:Dana/widgets/BrandDivider.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 

@@ -1,6 +1,6 @@
-import 'package:dana/utils/constants.dart';
-import 'package:dana/widgets/appbar_widget.dart';
-import 'package:dana/widgets/friend_request_tile.dart';
+import 'package:Dana/utils/constants.dart';
+import 'package:Dana/widgets/appbar_widget.dart';
+import 'package:Dana/widgets/friend_request_tile.dart';
 import 'package:flutter/material.dart';
 
 class FriendRequest extends StatefulWidget {

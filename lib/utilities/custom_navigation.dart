@@ -1,8 +1,8 @@
 import 'package:camera/camera.dart';
-import 'package:dana/models/user_model.dart';
-import 'package:dana/screens/home.dart';
-import 'package:dana/screens/pages/user_profile.dart';
-import 'package:dana/utilities/show_error_dialog.dart';
+import 'package:Dana/models/user_model.dart';
+import 'package:Dana/screens/home.dart';
+import 'package:Dana/screens/pages/user_profile.dart';
+import 'package:Dana/utilities/show_error_dialog.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 

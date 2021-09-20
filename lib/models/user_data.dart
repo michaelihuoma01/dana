@@ -1,4 +1,4 @@
-import 'package:dana/models/user_model.dart';
+import 'package:Dana/models/user_model.dart';
 import 'package:flutter/cupertino.dart';
 
 class UserData extends ChangeNotifier {

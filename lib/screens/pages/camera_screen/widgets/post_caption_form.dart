@@ -1,8 +1,8 @@
 import 'dart:io';
 
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:dana/generated/l10n.dart';
-import 'package:dana/utils/constants.dart';
+import 'package:Dana/generated/l10n.dart';
+import 'package:Dana/utils/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:gallery_saver/files.dart';
 import 'package:video_player/video_player.dart';

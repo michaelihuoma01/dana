@@ -1,5 +1,5 @@
-import 'package:dana/screens/pages/notifications_screen.dart';
-import 'package:dana/utils/constants.dart';
+import 'package:Dana/screens/pages/notifications_screen.dart';
+import 'package:Dana/utils/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/svg.dart';

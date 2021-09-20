@@ -2,12 +2,12 @@ import 'dart:io';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:dana/models/models.dart';
-import 'package:dana/services/services.dart';
-import 'package:dana/utilities/constants.dart';
-import 'package:dana/utilities/themes.dart';
-import 'package:dana/utils/constants.dart';
-import 'package:dana/widgets/contact_tile.dart';
+import 'package:Dana/models/models.dart';
+import 'package:Dana/services/services.dart';
+import 'package:Dana/utilities/constants.dart';
+import 'package:Dana/utilities/themes.dart';
+import 'package:Dana/utils/constants.dart';
+import 'package:Dana/widgets/contact_tile.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
