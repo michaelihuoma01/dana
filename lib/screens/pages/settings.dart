@@ -3,6 +3,7 @@ import 'package:Dana/generated/l10n.dart';
 import 'package:Dana/localization/language_constants.dart';
 import 'package:Dana/main.dart';
 import 'package:Dana/models/user_model.dart';
+import 'package:Dana/screens/pages/privacy_policy.dart';
 import 'package:Dana/screens/pages/report_issue.dart';
 import 'package:Dana/services/api/auth_service.dart';
 import 'package:Dana/utilities/constants.dart';
@@ -57,13 +58,19 @@ class SettingsScreenState extends State<SettingsScreen> {
               // SizedBox(height: 10),
               // BrandDivider(),
               // SizedBox(height: 10),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(S.of(context)!.tandc,
-                      style: TextStyle(color: Colors.white, fontSize: 18)),
-                  Icon(Icons.chevron_right, color: Colors.white)
-                ],
+              GestureDetector(
+                onTap: () {
+                  Navigator.push(context,
+                      MaterialPageRoute(builder: (_) => PrivacyPolicy()));
+                },
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(S.of(context)!.tandc,
+                        style: TextStyle(color: Colors.white, fontSize: 18)),
+                    Icon(Icons.chevron_right, color: Colors.white)
+                  ],
+                ),
               ),
               SizedBox(height: 10),
               BrandDivider(),

@@ -268,9 +268,10 @@ class _GroupInfoState extends State<GroupInfo> {
                                   backgroundColor: Colors.grey,
                                   backgroundImage:
                                       (follower.profileImageUrl!.isEmpty
-                                          ? AssetImage(placeHolderImageRef)
-                                          : CachedNetworkImageProvider(
-                                              follower.profileImageUrl!)) as ImageProvider<Object>?,
+                                              ? AssetImage(placeHolderImageRef)
+                                              : CachedNetworkImageProvider(
+                                                  follower.profileImageUrl!))
+                                          as ImageProvider<Object>?,
                                 ),
                               ),
                               SizedBox(width: 15),
@@ -289,11 +290,11 @@ class _GroupInfoState extends State<GroupInfo> {
                                   ],
                                 ),
                               ),
-                              Spacer(),
-                              Spacer(),
-                              Align(
-                                  alignment: Alignment.centerRight,
-                                  child: Icon(Icons.delete, color: Colors.red))
+                              // Spacer(),
+                              // Spacer(),
+                              // Align(
+                              //     alignment: Alignment.centerRight,
+                              //     child: Icon(Icons.delete, color: Colors.red))
                             ]),
 
                             //

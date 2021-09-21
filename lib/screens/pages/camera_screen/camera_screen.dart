@@ -11,14 +11,9 @@ import 'package:Dana/utilities/themes.dart';
 import 'package:Dana/utils/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:gallery_saver/gallery_saver.dart';
-// import 'package:image_cropping/constant/enums.dart';
-// import 'package:image_cropping/image_cropping.dart';
-// import 'package:image_cropper/image_cropper.dart';
-import 'package:image_gallery_saver/image_gallery_saver.dart';
+import 'package:gallery_saver/gallery_saver.dart'; 
 import 'package:image_picker/image_picker.dart';
-import 'package:images_picker/images_picker.dart' as A;
-import 'package:images_picker/images_picker.dart';
+import 'package:images_picker/images_picker.dart' as A; 
 import 'package:ionicons/ionicons.dart';
 import 'package:mime/mime.dart';
 import 'package:path_provider/path_provider.dart';
@@ -337,9 +332,9 @@ class _CameraScreenState extends State<CameraScreen>
       language: A.Language.English,
       pickType: A.PickType.all,
       count: 1,
-      cropOpt: CropOption(
-        aspectRatio: CropAspectRatio.custom,
-        cropType: CropType.rect, // currently for android
+      cropOpt: A.CropOption(
+        aspectRatio: A.CropAspectRatio.custom,
+        cropType: A.CropType.rect, // currently for android
       ),
     );
     // .getImage(source: ImageSource.gallery);
