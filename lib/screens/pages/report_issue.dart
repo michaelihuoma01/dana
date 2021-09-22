@@ -79,12 +79,11 @@ class ReportScreenState extends State<ReportScreen> {
                           pulsate: false,
                           type: MessageTypes.error);
                     } else {
-                      FirebaseFirestore.instance
-                          .collection('issues')
-                          .doc(currentUser.id)
-                          .collection('userReports')
-                          .add({
+                      FirebaseFirestore.instance.collection('issues').add({
                         'timestamp': Timestamp.now(),
+                        'authorId': currentUser.id,
+                        'userEmail': currentUser.email,
+                        'userPin': currentUser.pin,
                         'issue': emailBody,
                       }).then((value) {
                         Utility.showMessage(context,

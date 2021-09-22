@@ -26,6 +26,8 @@ class CallsScreen extends StatefulWidget {
 
 class _CallsScreenState extends State<CallsScreen> {
   late AppUser receiverUser;
+  String? duration;
+  Timestamp? timestamp;
 
   Stream<List<Call>> getCalls() async* {
     try {
@@ -40,8 +42,10 @@ class _CallsScreenState extends State<CallsScreen> {
       await for (QuerySnapshot q in stream) {
         for (var doc in q.docs) {
           Call callFromDoc = Call.fromMap(doc);
-          print('=\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\${callFromDoc.channelId}');
+          print('=\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\${doc['duration']}');
 
+          duration = doc['duration'];
+          timestamp = doc['timestamp'];
           receiverUser =
               await DatabaseService.getUserWithId(callFromDoc.receiverId);
 
@@ -129,22 +133,20 @@ class _CallsScreenState extends State<CallsScreen> {
         subtitle: Row(
           children: [
             call.isAudio!
-                ? Icon(FontAwesomeIcons.phoneAlt, color: Colors.grey, size: 14)
-                : Icon(FontAwesomeIcons.video, size: 14, color: Colors.grey),
-            SizedBox(width: 5),
+                ? Icon(FontAwesomeIcons.phoneAlt, color: Colors.grey, size: 13)
+                : Icon(FontAwesomeIcons.video, size: 13, color: Colors.grey),
+            SizedBox(width: 10),
             Text(
               call.hasDialled!
-                  ? S.of(context)!.outgoing
-                  : S.of(context)!.incoming,
-              style: TextStyle(color: Colors.grey),
+                  ? '${S.of(context)!.outgoing} ($duration)'
+                  : '${S.of(context)!.incoming} ($duration)',
+              style: TextStyle(color: Colors.grey)
             ),
           ],
         ),
-        // trailing: Text('   timeago'),
-        // timeFormat.format(
-        //   chat.recentTimestamp.toDate(),
-        // ),
-
+        trailing: Text(
+          timeago.format(timestamp!.toDate()),  style: TextStyle(color: Colors.white)
+        ),
         onTap: () {
           if (call.isAudio!) {
             try {

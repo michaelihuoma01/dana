@@ -1,5 +1,6 @@
 import 'dart:typed_data';
 
+import 'package:Dana/utils/utility.dart';
 import 'package:camera/camera.dart';
 import 'package:Dana/generated/l10n.dart';
 import 'package:Dana/screens/pages/camera_screen/nested_screens/create_post_screen.dart';
@@ -11,9 +12,9 @@ import 'package:Dana/utilities/themes.dart';
 import 'package:Dana/utils/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:gallery_saver/gallery_saver.dart'; 
+import 'package:gallery_saver/gallery_saver.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:images_picker/images_picker.dart' as A; 
+import 'package:images_picker/images_picker.dart' as A;
 import 'package:ionicons/ionicons.dart';
 import 'package:mime/mime.dart';
 import 'package:path_provider/path_provider.dart';
@@ -39,7 +40,6 @@ class _CameraScreenState extends State<CameraScreen>
   CameraConsumer? _cameraConsumer = CameraConsumer.post;
   bool fromCamera = false;
   bool isRecording = false;
-  File? imgFile;
 
   @override
   void initState() {
@@ -127,7 +127,7 @@ class _CameraScreenState extends State<CameraScreen>
                           ? Colors.white.withOpacity(0.85)
                           : Colors.black38,
                       child: Text(
-                         S.of(context)!.post,
+                        S.of(context)!.post,
                         style: TextStyle(
                           fontSize: 18,
                           color: _cameraConsumer == CameraConsumer.post
@@ -190,9 +190,8 @@ class _CameraScreenState extends State<CameraScreen>
                             },
                             child: Column(
                               children: [
-                                Text( S.of(context)!.tap,
+                                Text(S.of(context)!.tap,
                                     style: TextStyle(color: Colors.white)),
-                                 
                                 Container(
                                     decoration: BoxDecoration(
                                         shape: BoxShape.circle,
@@ -373,12 +372,22 @@ class _CameraScreenState extends State<CameraScreen>
           );
         }
       } else {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (_) => CreateStoryScreen(File(imagePath!)),
-          ),
-        );
+        String mimeStr = lookupMimeType(imagePath!)!;
+        var fileType = mimeStr.split('/');
+        print('file type $fileType');
+
+        if (fileType.first.contains('image')) {
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (_) => CreateStoryScreen(File(imagePath!))));
+        } else {
+          Utility.showMessage(context,
+              bgColor: Colors.red,
+              message: 'Videos cannot be added to story',
+              pulsate: false,
+              type: MessageTypes.error);
+        }
       }
     } else {
       print('No image selected.');
@@ -390,7 +399,6 @@ class _CameraScreenState extends State<CameraScreen>
       String mimeStr = lookupMimeType(imagePath!)!;
       var fileType = mimeStr.split('/');
       print('file type $fileType');
-
       if (fileType.first.contains('video')) {
         Navigator.push(
           context,
@@ -399,7 +407,6 @@ class _CameraScreenState extends State<CameraScreen>
                   imageFile: File(imagePath!),
                   backToHomeScreen: widget.backToHomeScreen)),
         );
-        print('===========ITS a video');
       } else {
         var croppedImage = await _cropImage(File(imagePath!));
 
@@ -414,12 +421,21 @@ class _CameraScreenState extends State<CameraScreen>
                     backToHomeScreen: widget.backToHomeScreen)));
       }
     } else {
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (_) => CreateStoryScreen(File(imagePath!)),
-        ),
-      );
+      String mimeStr = lookupMimeType(imagePath!)!;
+      var fileType = mimeStr.split('/');
+      print('file type $fileType');
+      if (fileType.first.contains('image')) {
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (_) => CreateStoryScreen(File(imagePath!))));
+      } else {
+        Utility.showMessage(context,
+            bgColor: Colors.red,
+            message: 'Videos cannot be added to story',
+            pulsate: false,
+            type: MessageTypes.error);
+      }
     }
   }
 
@@ -477,7 +493,7 @@ class _CameraScreenState extends State<CameraScreen>
     }
   }
 
-  Future<File?> stopRecording() async {
+  Future<String?> stopRecording() async {
     if (!controller!.value.isInitialized) {
       showMessage('Error: select a camera first.');
       return null;
@@ -486,7 +502,6 @@ class _CameraScreenState extends State<CameraScreen>
     final Directory extDir = await getApplicationDocumentsDirectory();
     final String dirPath = '${extDir.path}/Dana/Videos';
     await new Directory(dirPath).create(recursive: true);
-    final String filePath = '$dirPath/${timestamp()}.mp4';
 
     if (controller!.value.isTakingPicture) {
       return null;
@@ -496,7 +511,7 @@ class _CameraScreenState extends State<CameraScreen>
       controller!.stopVideoRecording().then((value) {
         setState(() {
           isRecording = false;
-          imgFile = File(value.path);
+          imagePath = value.path;
         });
         GallerySaver.saveVideo(value.path);
         fromCamera = true;
@@ -506,7 +521,7 @@ class _CameraScreenState extends State<CameraScreen>
       showException(e);
       return null;
     }
-    return imgFile;
+    return imagePath;
   }
 
   _cropImage(var imageFile) async {

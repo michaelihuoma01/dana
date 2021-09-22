@@ -27,29 +27,35 @@ class CallMethods {
     }
   }
 
-  Future<bool> endCall({required Call call}) async {
+  Future<bool> endCall(
+      {required Call call, String? duration, Timestamp? timestamp}) async {
     try {
       await callCollection.doc(call.callerId).delete();
       await callCollection.doc(call.receiverId).delete();
 
       call.hasDialled = true;
       Map<String, dynamic> hasDialledMap = call.toMap(call);
+      hasDialledMap["duration"] = duration;
+      hasDialledMap["timestamp"] = timestamp;
 
       call.hasDialled = false;
       Map<String, dynamic> hasNotDialledMap = call.toMap(call);
+      hasNotDialledMap["duration"] = duration;
+      hasNotDialledMap["timestamp"] = timestamp;
 
-      await FirebaseFirestore.instance
-          .collection('calls')
-          .doc(call.callerId)
-          .collection('callHistory')
-          .add(hasDialledMap);
+      if (duration != null) {
+        await FirebaseFirestore.instance
+            .collection('calls')
+            .doc(call.callerId)
+            .collection('callHistory')
+            .add(hasDialledMap);
 
-      await FirebaseFirestore.instance
-          .collection('calls')
-          .doc(call.receiverId)
-          .collection('callHistory')
-          .add(hasNotDialledMap);
-
+        await FirebaseFirestore.instance
+            .collection('calls')
+            .doc(call.receiverId)
+            .collection('callHistory')
+            .add(hasNotDialledMap);
+      }
       return true;
     } catch (e) {
       print(e);

@@ -45,6 +45,7 @@ class _CallScreenState extends State<CallScreen> {
   bool start = false;
   late RtcEngine _engine;
   int? _remoteUid;
+  String? duration;
 
   @override
   void initState() {
@@ -70,7 +71,6 @@ class _CallScreenState extends State<CallScreen> {
     await _engine.setParameters(
         '''{\"che.video.lowBitRateStreamParameter\":{\"width\":320,\"height\":180,\"frameRate\":15,\"bitRate\":140}}''');
     await _engine.joinChannel(null, widget.call.channelId!, null, 0);
-
   }
 
   addPostFrameCallback() {
@@ -128,7 +128,7 @@ class _CallScreenState extends State<CallScreen> {
         });
         _infoStrings.add(info);
         _users.add(uid);
-        _remoteUid = uid; 
+        _remoteUid = uid;
       });
     }, userInfoUpdated: (var userInfo, i) {
       setState(() {
@@ -141,7 +141,6 @@ class _CallScreenState extends State<CallScreen> {
         _infoStrings.add(info);
       });
     }, userOffline: (var a, b) {
-      callMethods.endCall(call: widget.call);
       setState(() {
         final info = 'onUserOffline: a: ${a.toString()}, b: ${b.toString()}';
         _infoStrings.add(info);
@@ -157,9 +156,13 @@ class _CallScreenState extends State<CallScreen> {
         _infoStrings.add('onLeaveChannel ====> $i');
 
         _users.clear();
-        callMethods.endCall(call: widget.call);
 
-        Navigator.pop(context); 
+        int minutes = (i.duration / 60).truncate();
+        String minutesStr = (minutes % 60).toString().padLeft(2, '0');
+
+        duration = minutesStr;
+
+        Navigator.pop(context);
       });
     }, connectionLost: () {
       setState(() {
@@ -190,8 +193,7 @@ class _CallScreenState extends State<CallScreen> {
         final info = 'firstRemoteVideo: $uid ${width}x $height';
         _infoStrings.add(info);
       });
-    print('========================/$uid');
-
+      print('========================/$uid');
     }));
   }
 
@@ -335,7 +337,7 @@ class _CallScreenState extends State<CallScreen> {
       setState(() {
         onSpeaker = false;
       });
-    } 
+    }
   }
 
   /// Toolbar layout
@@ -379,7 +381,11 @@ class _CallScreenState extends State<CallScreen> {
           GestureDetector(
               onTap: () async {
                 await _engine.leaveChannel();
-                callMethods.endCall(call: widget.call);
+                  callMethods.endCall(
+                      call: widget.call,
+                      duration: duration,
+                      timestamp: Timestamp.now());
+                
               },
               child: Container(
                   decoration: BoxDecoration(
@@ -437,8 +443,6 @@ class _CallScreenState extends State<CallScreen> {
 
   @override
   Widget build(BuildContext context) {
-    print('========================//////////////////////////$_remoteUid');
-
     return SafeArea(
         child: (widget.isAudio == false)
             ? Scaffold(
