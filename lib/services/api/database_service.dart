@@ -1,3 +1,4 @@
+import 'package:Dana/notifications/helperMethods.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:Dana/models/activity_model.dart';
 import 'package:Dana/models/post_model.dart';
@@ -166,7 +167,10 @@ class DatabaseService {
   }
 
   static void followUser(
-      {String? currentUserId, String? userId, String? receiverToken}) {
+      {String? currentUserId,
+      String? userId,
+      String? receiverToken,
+      context}) async {
     // Add user to current user's following collection
     followingRef
         .doc(currentUserId)
@@ -196,6 +200,12 @@ class DatabaseService {
       isMessageEvent: false,
       recieverToken: receiverToken,
     );
+
+    AppUser user = await getUserWithId(userId);
+
+    HelperMethods.sendNotification(receiverToken, context, userId, 'Dana',
+        '${user.name} added you as a friend');
+    print('notification sent');
   }
 
   static void unfollowUser({String? currentUserId, String? userId}) {
@@ -373,7 +383,10 @@ class DatabaseService {
   }
 
   static void likePost(
-      {String? currentUserId, required Post post, String? receiverToken}) {
+      {String? currentUserId,
+      required Post post,
+      String? receiverToken,
+      context}) async {
     DocumentReference postRef =
         postsRef.doc(post.authorId).collection('userPosts').doc(post.id);
     postRef.get().then((doc) {
@@ -393,6 +406,12 @@ class DatabaseService {
       isMessageEvent: false,
       recieverToken: receiverToken,
     );
+
+    AppUser user = await getUserWithId(post.authorId);
+
+    HelperMethods.sendNotification(receiverToken, context, post.authorId,
+        'Dana', '${user.name} liked your post');
+    print('notification sent');
   }
 
   static void unlikePost({String? currentUserId, required Post post}) {
@@ -438,8 +457,9 @@ class DatabaseService {
   static void commentOnPost(
       {String? currentUserId,
       required Post post,
+      context,
       String? comment,
-      String? recieverToken}) {
+      String? recieverToken}) async {
     commentsRef.doc(post.id).collection('postComments').add({
       'content': comment,
       'authorId': currentUserId,
@@ -465,6 +485,11 @@ class DatabaseService {
       isMessageEvent: false,
       recieverToken: recieverToken,
     );
+
+    AppUser user = await getUserWithId(post.authorId);
+
+    HelperMethods.sendNotification(recieverToken, context, post.authorId,
+        'Dana', '${user.name} commented on your post');
   }
 
   static void addActivityItem({

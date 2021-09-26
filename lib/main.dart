@@ -4,6 +4,7 @@ import 'package:Dana/generated/l10n.dart';
 import 'package:Dana/localization/language_constants.dart';
 import 'package:Dana/models/theme_notifier.dart';
 import 'package:Dana/models/user_data.dart';
+import 'package:Dana/notifications/pushNotificationService.dart';
 import 'package:Dana/screens/auth/forgot_password.dart';
 import 'package:Dana/screens/auth/setup_account.dart';
 import 'package:Dana/screens/auth/login.dart';
@@ -16,33 +17,38 @@ import 'package:Dana/screens/splash_screen.dart';
 import 'package:Dana/utilities/themes.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+// Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
+//   // If you're going to use other Firebase services in the background, such as Firestore,
+//   // make sure you call `initializeApp` before using other Firebase services.
+//   await Firebase.initializeApp();
+//   print('Handling a background message ${message.messageId}');
+// }
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp();
-  SharedPreferences.getInstance().then((prefs) {
-    var darkModeOn = prefs.getBool('darkMode') ?? false;
 
-    //Set Navigation bar color
-    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
-        systemNavigationBarColor: darkModeOn ? Colors.black : Colors.white,
-        systemNavigationBarIconBrightness:
-            darkModeOn ? Brightness.light : Brightness.dark));
-    runApp(MultiProvider(
-      providers: [
-        ChangeNotifierProvider<UserData>(create: (context) => UserData()),
-        ChangeNotifierProvider<ThemeNotifier>(
-            create: (context) =>
-                ThemeNotifier(darkModeOn ? darkTheme : lightTheme))
-      ],
-      child: MyApp(),
-    ));
-  });
+  // FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+  await Firebase.initializeApp();
+
+  // await FirebaseMessaging.instance.setForegroundNotificationPresentationOptions(
+  //   alert: true,
+  //   badge: true,
+  //   sound: true,
+  // );
+
+  runApp(MultiProvider(
+    providers: [
+      ChangeNotifierProvider<UserData>(create: (context) => UserData())
+    ],
+    child: MyApp(),
+  ));
 }
 
 class MyApp extends StatefulWidget {
@@ -65,6 +71,10 @@ class _MyAppState extends State<MyApp> {
   @override
   void initState() {
     Timer(Duration(seconds: 3), () => setState(() => _isTimerDone = true));
+    PushNotificationService pushNotificationService = PushNotificationService();
+
+    pushNotificationService.initialize(context);
+    pushNotificationService.getToken();
     super.initState();
   }
 
