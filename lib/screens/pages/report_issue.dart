@@ -1,3 +1,4 @@
+import 'package:Dana/services/api/database_service.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:Dana/classes/language.dart';
 import 'package:Dana/generated/l10n.dart';
@@ -80,12 +81,17 @@ class ReportScreenState extends State<ReportScreen> {
                           type: MessageTypes.error);
                     } else {
                       FirebaseFirestore.instance.collection('issues').add({
-                        'timestamp': Timestamp.now(),
+                        'timestamp': DatabaseService.formatMyDate(
+                            DateTime.now().toString()),
                         'authorId': currentUser.id,
                         'userEmail': currentUser.email,
                         'userPin': currentUser.pin,
                         'issue': emailBody,
                       }).then((value) {
+                        FirebaseFirestore.instance
+                            .collection('issues')
+                            .doc(value.id)
+                            .update({'id': value.id});
                         Utility.showMessage(context,
                             message:
                                 'Thank you for contacting us, we\'ll get send you a follow email shortly regarding your issue.',

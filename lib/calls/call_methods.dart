@@ -48,13 +48,29 @@ class CallMethods {
             .collection('calls')
             .doc(call.callerId)
             .collection('callHistory')
-            .add(hasDialledMap);
+            .add(hasDialledMap)
+            .then((value) {
+          FirebaseFirestore.instance
+              .collection('calls')
+              .doc(call.callerId)
+              .collection('callHistory')
+              .doc(value.id)
+              .update({"id": value.id});
+        });
 
         await FirebaseFirestore.instance
             .collection('calls')
             .doc(call.receiverId)
             .collection('callHistory')
-            .add(hasNotDialledMap);
+            .add(hasNotDialledMap)
+            .then((value) {
+          FirebaseFirestore.instance
+              .collection('calls')
+              .doc(call.receiverId)
+              .collection('callHistory')
+              .doc(value.id)
+              .update({"id": value.id});
+        });
       }
       return true;
     } catch (e) {

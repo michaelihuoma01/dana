@@ -4,6 +4,7 @@ import 'package:Dana/models/post_model.dart';
 import 'package:Dana/models/user_model.dart';
 import 'package:Dana/utilities/constants.dart';
 import 'package:flutter/services.dart';
+import 'package:intl/intl.dart';
 
 class DatabaseService {
   static void updateUser(AppUser user) {
@@ -15,6 +16,14 @@ class DatabaseService {
       'dob': user.dob,
       'gender': user.gender
     });
+  }
+
+  static String formatMyDate(String datestring) {
+    DateTime thisDate = DateTime.parse(datestring);
+    String formattedDate =
+        '${DateFormat.MMMd().format(thisDate)}, ${DateFormat.y().format(thisDate)} - ${DateFormat.jm().format(thisDate)}';
+
+    return formattedDate;
   }
 
   static void updateStatusOnline(String? userID) {
@@ -56,6 +65,12 @@ class DatabaseService {
         'location': post.location,
         'commentsAllowed': post.commentsAllowed,
         'timestamp': post.timestamp
+      }).then((value) {
+        postsRef
+            .doc(post.authorId)
+            .collection('userPosts')
+            .doc(value.id)
+            .update({'id': value.id});
       });
     } catch (e) {
       print(e);
@@ -410,7 +425,8 @@ class DatabaseService {
     );
   }
 
-  static Future<bool> didLikePost({String? currentUserId, required Post post}) async {
+  static Future<bool> didLikePost(
+      {String? currentUserId, required Post post}) async {
     DocumentSnapshot userDoc = await likesRef
         .doc(post.id)
         .collection('postLikes')
@@ -420,11 +436,15 @@ class DatabaseService {
   }
 
   static void commentOnPost(
-      {String? currentUserId, required Post post, String? comment, String? recieverToken}) {
+      {String? currentUserId,
+      required Post post,
+      String? comment,
+      String? recieverToken}) {
     commentsRef.doc(post.id).collection('postComments').add({
       'content': comment,
       'authorId': currentUserId,
-      'timestamp': Timestamp.fromDate(DateTime.now())
+      // 'timestamp': Timestamp.fromDate(DateTime.now()),
+      'timestamp': DatabaseService.formatMyDate(DateTime.now().toString())
     });
     DocumentReference postRef =
         postsRef.doc(post.authorId).collection('userPosts').doc(post.id);
@@ -459,7 +479,6 @@ class DatabaseService {
     String? recieverToken,
   }) {
     if (currentUserId != post.authorId) {
-      
       activitiesRef.doc(post.authorId).collection('userActivities').add({
         'fromUserId': currentUserId,
         'postId': post.id,

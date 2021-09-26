@@ -118,56 +118,52 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
 
         DatabaseService.editPost(post, widget.postStatus);
       } else {
-        //Create new Post 
-         try {
-        if (isVideo == false) {
-        
+        //Create new Post
+        try {
+          if (isVideo == false) {
             String imageUrl =
                 (await StroageService.uploadPost(widget.imageFile!));
-          
 
-          print(imageUrl);
-          Post post = Post(
-              imageUrl: imageUrl,
-              caption: _captionController.text,
-              location: _locationController.text,
-              likeCount: 0,
-              commentCount: 0,
-              videoUrl: null,
-              authorId: _currentUserId,
-              timestamp: Timestamp.fromDate(DateTime.now()),
-              commentsAllowed: true);
+            print(imageUrl);
+            Post post = Post(
+                imageUrl: imageUrl,
+                caption: _captionController.text,
+                location: _locationController.text,
+                likeCount: 0,
+                commentCount: 0,
+                videoUrl: null,
+                authorId: _currentUserId,
+                timestamp: Timestamp.fromDate(DateTime.now()),
+                commentsAllowed: true);
 
-          DatabaseService.createPost(post);
-        } else {
-          print(widget.imageFile);
-          String videoUrl =
-              (await StroageService.uploadPostVideo(widget.imageFile!));
+            DatabaseService.createPost(post);
+          } else {
+            print(widget.imageFile);
+            String videoUrl =
+                (await StroageService.uploadPostVideo(widget.imageFile!));
 
-          print('======================== $videoUrl');
+            print('======================== $videoUrl');
 
-          Post post = Post(
-              imageUrl: null,
-              caption: _captionController.text,
-              location: _locationController.text,
-              likeCount: 0,
-              commentCount: 0,
-              videoUrl: videoUrl,
-              authorId: _currentUserId,
-              timestamp: Timestamp.fromDate(DateTime.now()),
-              commentsAllowed: true);
+            Post post = Post(
+                imageUrl: null,
+                caption: _captionController.text,
+                location: _locationController.text,
+                likeCount: 0,
+                commentCount: 0,
+                videoUrl: videoUrl,
+                authorId: _currentUserId,
+                timestamp: Timestamp.fromDate(DateTime.now()),
+                commentsAllowed: true);
 
-          DatabaseService.createPost(post);
-          
-        }
-        } catch (e) {
-            print('/////////========///////////$e');
+            DatabaseService.createPost(post);
           }
+        } catch (e) {
+          print('/////////========///////////$e');
+        }
       }
-      
+
       widget.backToHomeScreen!();
     }
-    
   }
 
   // void _goToHomeScreen() {
@@ -198,21 +194,26 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
               brightness: Brightness.dark,
               iconTheme: IconThemeData(color: Colors.white),
               centerTitle: true,
-              title: Text(widget.imageFile == null ? 'Edit Post' : S.of(context)!.newpost,
+              title: Text(
+                  widget.imageFile == null
+                      ? 'Edit Post'
+                      : S.of(context)!.newpost,
                   style: TextStyle(color: Colors.white)),
               actions: <Widget>[
                 !_isLoading
                     ? FlatButton(
                         onPressed: _submit,
                         child: Text(
-                          widget.imageFile == null ? 'Save' : S.of(context)!.share,
+                          widget.imageFile == null
+                              ? 'Save'
+                              : S.of(context)!.share,
                           style: TextStyle(
                               color: lightColor,
                               fontWeight: FontWeight.bold,
                               fontSize: 18),
                         ))
                     : Padding(
-                        padding: const EdgeInsets.only(right: 10.0, left:10),
+                        padding: const EdgeInsets.only(right: 10.0, left: 10),
                         child: Center(
                           child: SizedBox(
                             child: CircularProgressIndicator(color: lightColor),
