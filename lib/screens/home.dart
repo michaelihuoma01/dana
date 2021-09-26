@@ -109,7 +109,6 @@ class _HomeScreenState extends State<HomeScreen>
     checkUnreadMessages();
     _setupFriends();
     // _initPageView();
-    _listenToNotifications();
     AuthService.updateToken();
     tabController = TabController(length: 5, vsync: this);
     tabController!.addListener(() {
@@ -137,6 +136,8 @@ class _HomeScreenState extends State<HomeScreen>
   }
 
   _setupFriends() async {
+    await [Permission.camera, Permission.microphone].request();
+
     print('skipping current user');
 
     QuerySnapshot usersSnapshot = await usersRef.get();
@@ -226,32 +227,6 @@ class _HomeScreenState extends State<HomeScreen>
         ShowErrorDialog.showAlertDialog(
             errorMessage: 'Cant get cameras!', context: context);
       }
-    }
-  }
-
-  void _listenToNotifications() async {
-    FirebaseMessaging.onMessage.listen((message) {
-      print('On message: $message');
-    });
-
-    FirebaseMessaging.onMessageOpenedApp.listen((message) {
-      print('On messageOpenedApp: $message');
-    });
-
-    FirebaseMessaging.onBackgroundMessage((message) {
-      print('On onBackgroundMessage: $message');
-      return Future<void>.value();
-    });
-    if (Platform.isIOS) {
-      print('Initializing notifications');
-
-      _firebaseMessaging.requestPermission(
-        alert: true,
-        badge: true,
-        sound: true,
-      );
-
-      await [Permission.camera, Permission.microphone].request();
     }
   }
 
@@ -396,7 +371,7 @@ class _HomeScreenState extends State<HomeScreen>
                         child: SvgPicture.asset('assets/images/feeds.svg',
                             color: isSelected1 ? lightColor : Colors.grey),
                       ),
-                      title: Text(isSelected1 ?  S.of(context)!.feeds : '',
+                      title: Text(isSelected1 ? S.of(context)!.feeds : '',
                           style: TextStyle(
                               fontSize: 10,
                               color: isSelected1
@@ -414,7 +389,7 @@ class _HomeScreenState extends State<HomeScreen>
                                     color: Colors.red, size: 12))
                         ],
                       ),
-                      title: Text(isSelected2 ?  S.of(context)!.messages : '',
+                      title: Text(isSelected2 ? S.of(context)!.messages : '',
                           style: TextStyle(
                               fontSize: 10,
                               color: isSelected2
@@ -423,7 +398,7 @@ class _HomeScreenState extends State<HomeScreen>
                   BottomNavigationBarItem(
                       icon: SvgPicture.asset('assets/images/call.svg',
                           color: isSelected3 ? lightColor : Colors.grey),
-                      title: Text(isSelected3 ?  S.of(context)!.messages : '',
+                      title: Text(isSelected3 ? S.of(context)!.messages : '',
                           style: TextStyle(
                               fontSize: 10,
                               color: isSelected3
@@ -441,7 +416,7 @@ class _HomeScreenState extends State<HomeScreen>
                                     color: Colors.red, size: 12))
                         ],
                       ),
-                      title: Text(isSelected4 ?  S.of(context)!.friends : '',
+                      title: Text(isSelected4 ? S.of(context)!.friends : '',
                           style: TextStyle(
                               fontSize: 10,
                               color: isSelected4
@@ -462,12 +437,10 @@ class _HomeScreenState extends State<HomeScreen>
                                     _currentUser!.profileImageUrl!),
                               ),
                             ),
-                      title: Text(isSelected5 ?  S.of(context)!.profile : '',
+                      title: Text(isSelected5 ? S.of(context)!.profile : '',
                           style: TextStyle(
                               fontSize: 9,
-                              color: isSelected4
-                                  ? lightColor
-                                  : lightColor))),
+                              color: isSelected4 ? lightColor : lightColor))),
                 ],
                 backgroundColor: darkColor,
                 selectedItemColor: lightColor,

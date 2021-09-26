@@ -79,8 +79,7 @@ class _FeedsScreenState extends State<FeedsScreen> {
         // .where('memberIds', arrayContains: widget.currentUser.id)
         // .orderBy('recentTimestamp', descending: true)
         .snapshots()
-        .listen((snapshot) {
-      print('===============//////////////${snapshot.docChanges.length}');
+        .listen((snapshot) { 
       snapshot.docChanges.forEach((element) {
         setState(() {
           unreadNotifications = true;

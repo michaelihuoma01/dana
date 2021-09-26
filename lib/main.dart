@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:Dana/generated/l10n.dart';
 import 'package:Dana/localization/language_constants.dart';
@@ -24,24 +25,24 @@ import 'package:provider/provider.dart';
 import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-// Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
-//   // If you're going to use other Firebase services in the background, such as Firestore,
-//   // make sure you call `initializeApp` before using other Firebase services.
-//   await Firebase.initializeApp();
-//   print('Handling a background message ${message.messageId}');
-// }
+Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
+  // If you're going to use other Firebase services in the background, such as Firestore,
+  // make sure you call `initializeApp` before using other Firebase services.
+  // await Firebase.initializeApp();
+  print('Handling a background message ${message.messageId}');
+}
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+  FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
   await Firebase.initializeApp();
 
-  // await FirebaseMessaging.instance.setForegroundNotificationPresentationOptions(
-  //   alert: true,
-  //   badge: true,
-  //   sound: true,
-  // );
+  await FirebaseMessaging.instance.setForegroundNotificationPresentationOptions(
+    alert: true,
+    badge: true,
+    sound: true,
+  );
 
   runApp(MultiProvider(
     providers: [
@@ -75,7 +76,24 @@ class _MyAppState extends State<MyApp> {
 
     pushNotificationService.initialize(context);
     pushNotificationService.getToken();
+    _listenToNotifications();
+
     super.initState();
+  }
+
+  void _listenToNotifications() async {
+    FirebaseMessaging.onMessage.listen((message) {
+      print('On message: ${message.data}');
+    });
+
+    FirebaseMessaging.onMessageOpenedApp.listen((message) {
+      print('On messageOpenedApp: $message');
+    });
+
+    FirebaseMessaging.onBackgroundMessage((message) {
+      print('On onBackgroundMessage: $message');
+      return Future<void>.value();
+    }); 
   }
 
   Widget _getScreenId() {
@@ -119,7 +137,6 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
-    final themeNotifier = Provider.of<ThemeNotifier>(context);
     if (this._locale == null) {
       return Container(
         child: Center(
@@ -131,7 +148,6 @@ class _MyAppState extends State<MyApp> {
       return MaterialApp(
         navigatorKey: navigatorKey,
         debugShowCheckedModeBanner: false,
-        theme: themeNotifier.getTheme(),
         home: _getScreenId(),
         locale: _locale,
         supportedLocales: S.delegate.supportedLocales,

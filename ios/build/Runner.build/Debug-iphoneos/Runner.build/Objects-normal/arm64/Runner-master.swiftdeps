@@ -1,4 +1,6 @@
-version: "Apple Swift version 5.4.2 (swiftlang-1205.0.28.2 clang-1205.0.19.57)"
-options: "66bc7ffc7e369ce60671eb61a8ca96f4"
-build_time: [1632046797, 567206000]
+version: "Apple Swift version 5.5 (swiftlang-1300.0.31.1 clang-1300.0.29.1)"
+options: "7a587ab85dde419742d69afa92b184adef3284f696197807f759d682b4093128"
+build_start_time: [1632661380, 619508981]
+build_end_time: [1632661380, 686038017]
 inputs:
+  "/Users/dubaitechnologydesign/Downloads/dana-master/ios/Runner/AppDelegate.swift": !private [1632045735, 223980188]
