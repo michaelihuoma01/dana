@@ -137,16 +137,14 @@ class _CallsScreenState extends State<CallsScreen> {
                 : Icon(FontAwesomeIcons.video, size: 13, color: Colors.grey),
             SizedBox(width: 10),
             Text(
-              call.hasDialled!
-                  ? '${S.of(context)!.outgoing} ($duration)'
-                  : '${S.of(context)!.incoming} ($duration)',
-              style: TextStyle(color: Colors.grey)
-            ),
+                call.hasDialled!
+                    ? '${S.of(context)!.outgoing} ($duration)'
+                    : '${S.of(context)!.incoming} ($duration)',
+                style: TextStyle(color: Colors.grey)),
           ],
         ),
-        trailing: Text(
-          timeago.format(timestamp!.toDate()),  style: TextStyle(color: Colors.white)
-        ),
+        trailing: Text(timeago.format(timestamp!.toDate()),
+            style: TextStyle(color: Colors.white)),
         onTap: () {
           if (call.isAudio!) {
             try {
@@ -193,7 +191,7 @@ class _CallsScreenState extends State<CallsScreen> {
               title: Text(S.of(context)!.calls,
                   style: TextStyle(
                       color: Colors.white,
-                      fontSize: 30,
+                      fontSize: 25,
                       fontFamily: 'Poppins-Regular',
                       fontWeight: FontWeight.bold)),
               backgroundColor: Colors.transparent,

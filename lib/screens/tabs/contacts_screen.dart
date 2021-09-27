@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:Dana/screens/pages/qr_code_scanner.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:Dana/generated/l10n.dart';
@@ -43,17 +44,10 @@ class _ContactScreenState extends State<ContactScreen> {
   Future<QuerySnapshot>? _users;
   String _searchText = '';
 
-  List<AppUser> _userFollowers = [];
-  List<AppUser> _userFollowing = [];
   List<AppUser> _friends = [];
   List<AppUser> _requests = [];
-  List<AppUser> _friendRequests = [];
 
   bool _isLoading = false;
-  List<bool> _userFollowersState = [];
-  List<bool> _userFollowingState = [];
-  int _followingCount = 0;
-  int _followersCount = 0;
   bool isFollower = false;
   bool isFollowingUser = false;
   bool isFriends = false;
@@ -70,106 +64,51 @@ class _ContactScreenState extends State<ContactScreen> {
     setState(() {
       _isLoading = true;
     });
-    // await _setupFollowers();
-    // await _setupFollowing();
     _setupFriends();
   }
 
-  Future _setupFollowers() async {
-    int userFollowersCount =
-        await DatabaseService.numFollowers(widget.currentUser!.id);
-    if (!mounted) return;
-    setState(() {
-      _followersCount = userFollowersCount;
-    });
-
-    List<String> userFollowersIds =
-        await DatabaseService.getUserFollowersIds(widget.currentUser!.id);
-    List<AppUser> userFollowers = [];
-    List<bool> userFollowersState = [];
-    for (String userId in userFollowersIds) {
-      AppUser user = await DatabaseService.getUserWithId(userId);
-      userFollowersState.add(true);
-      userFollowers.add(user);
-    }
-
-    setState(() {
-      _userFollowersState = userFollowersState;
-      _userFollowers = userFollowers;
-      _followersCount = userFollowers.length;
-      if (_followersCount != _followersCount) {
-        setState(() => _followersCount = _followersCount);
-      }
-    });
-  }
-
-  Future _setupFollowing() async {
-    int userFollowingCount =
-        await DatabaseService.numFollowing(widget.currentUser!.id);
-    if (!mounted) return;
-    setState(() {
-      _followingCount = userFollowingCount;
-    });
-
-    List<String> userFollowingIds =
-        await DatabaseService.getUserFollowingIds(widget.currentUser!.id);
-
-    List<AppUser> userFollowing = [];
-    List<bool> userFollowingState = [];
-    for (String userId in userFollowingIds) {
-      AppUser user = await DatabaseService.getUserWithId(userId);
-      userFollowingState.add(true);
-      userFollowing.add(user);
-    }
-    setState(() {
-      _userFollowingState = userFollowingState;
-      _userFollowing = userFollowing;
-      _followingCount = userFollowing.length;
-      if (_followingCount != _followingCount) {
-        setState(() => _followingCount = _followingCount);
-      }
-    });
-  }
-
   _setupFriends() async {
-    QuerySnapshot usersSnapshot = await usersRef.get();
+    List<String?> followingUsers =
+        await DatabaseService.getUserFollowingIds(widget.currentUser?.id);
 
-    for (var userDoc in usersSnapshot.docs) {
-      AppUser user = AppUser.fromDoc(userDoc);
+    List<String?> followerUsers =
+        await DatabaseService.getUserFollowersIds(widget.currentUser?.id);
 
-      isFollower = await DatabaseService.isUserFollower(
-        currentUserId: widget.currentUser!.id,
-        userId: user.id,
-      );
+    var friendList = [...followingUsers, ...followerUsers].toSet().toList();
+
+    for (String? userId in friendList) {
+      var friends = await DatabaseService.getUserWithId(userId);
+      setState(() {
+        isFriends = true;
+        _friends.add(friends);
+      });
+    }
+
+    print(_friends.length);
+
+    for (var userDoc in followingUsers) {
+      var requests = await DatabaseService.getUserWithId(userDoc);
 
       isFollowingUser = await DatabaseService.isFollowingUser(
         currentUserId: widget.currentUser!.id,
-        userId: user.id,
+        userId: userDoc,
       );
 
-      if (widget.currentUser!.id == user.id) {
-        print('skipping current user');
+      if (!isFollowingUser == true) {
+        isRequest = true;
+        _requests.add(requests);
+
+        print('not friends ${requests.name}');
       } else {
-        if (isFollower == true && isFollowingUser == true) {
-          isFriends = true;
-          _friends.add(user);
-
-          print('friends ${user.name} $isFriends');
-        } else if (isFollower == true && isFollowingUser != true) {
-          isRequest = true;
-          _requests.add(user);
-
-          print('not friends ${user.name} $isFriends');
-        } else {
+        setState(() {
           isRequest = false;
           isFriends = false;
-        }
+        });
       }
+      setState(() {
+        _isLoading = false;
+      });
     }
-    setState(() {
-      _isLoading = false;
-    });
-    print(_friends.length);
   }
 
   Widget _buildUserTile(AppUser user) {
@@ -269,13 +208,29 @@ class _ContactScreenState extends State<ContactScreen> {
               title: Text(S.of(context)!.friends,
                   style: TextStyle(
                       color: Colors.white,
-                      fontSize: 30,
+                      fontSize: 25,
                       fontFamily: 'Poppins-Regular',
                       fontWeight: FontWeight.bold)),
               backgroundColor: Colors.transparent,
               centerTitle: false,
               automaticallyImplyLeading: false,
               elevation: 0,
+              actions: [
+                GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) =>
+                                QrCodeScanner(widget.currentUser!.id)));
+                  },
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 10),
+                    child: Icon(Icons.qr_code_scanner_rounded,
+                        color: Colors.white),
+                  ),
+                )
+              ],
               brightness: Brightness.dark,
             )),
         body: CustomModalProgressHUD(

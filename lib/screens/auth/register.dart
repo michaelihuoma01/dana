@@ -59,7 +59,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   String _dob = '';
 
   File? _profileImage;
-  late Locale myLocale;
+ Locale? myLocale;
 
   @override
   void initState() {
@@ -194,8 +194,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   @override
   Widget build(BuildContext context) {
-    myLocale = Localizations.localeOf(context);
-    print(myLocale.languageCode);
+    myLocale = Localizations.localeOf(context); 
     return Stack(
       children: [
         Container(
@@ -443,7 +442,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         Padding(
                             padding: const EdgeInsets.only(top: 5),
                             child: Align(
-                                alignment: (myLocale.languageCode == 'en')
+                                alignment: (myLocale?.languageCode == 'en')
                                     ? Alignment.centerRight
                                     : Alignment.centerLeft,
                                 child: IconButton(

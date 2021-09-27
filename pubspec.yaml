@@ -92,6 +92,8 @@ dependencies:
   syncfusion_flutter_pdfviewer: ^19.2.62-beta
   syncfusion_flutter_pdfviewer_web: ^19.2.62-beta
   flutter_local_notifications: ^8.2.0
+  qr_code_scanner: ^0.5.2
+  qr_flutter: ^4.0.0
 
 dev_dependencies:
   flutter_test:

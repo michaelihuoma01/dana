@@ -51,6 +51,7 @@ class _StoryScreenState extends State<StoryScreen>
   FocusNode focusNode = FocusNode();
   AppUser? currentUser;
   bool isSending = false;
+  Locale? myLocale;
 
   @override
   void initState() {
@@ -161,424 +162,458 @@ class _StoryScreenState extends State<StoryScreen>
 
     currentUser = Provider.of<UserData>(context).currentUser;
     bool isCurrentUser = currentUser!.id == widget.user!.id ? true : false;
+    myLocale = Localizations.localeOf(context);
 
-    return Scaffold(
-      backgroundColor: Colors.black,
-      body: GestureDetector(
-        onVerticalDragStart: (dragDetails) {
-          startVerticalDragDetails = dragDetails;
-        },
-        onVerticalDragUpdate: (dragDetails) {
-          updateVerticalDragDetails = dragDetails;
-        },
-        onVerticalDragEnd: (endDetails) {
-          double dx = updateVerticalDragDetails.globalPosition.dx -
-              startVerticalDragDetails.globalPosition.dx;
-          double dy = updateVerticalDragDetails.globalPosition.dy -
-              startVerticalDragDetails.globalPosition.dy;
-          double velocity = endDetails.primaryVelocity!;
+    return SafeArea(
+      child: Scaffold(
+        backgroundColor: Colors.black,
+        resizeToAvoidBottomInset: false,
+        body: GestureDetector(
+          onVerticalDragStart: (dragDetails) {
+            startVerticalDragDetails = dragDetails;
+          },
+          onVerticalDragUpdate: (dragDetails) {
+            updateVerticalDragDetails = dragDetails;
+          },
+          onVerticalDragEnd: (endDetails) {
+            double dx = updateVerticalDragDetails.globalPosition.dx -
+                startVerticalDragDetails.globalPosition.dx;
+            double dy = updateVerticalDragDetails.globalPosition.dy -
+                startVerticalDragDetails.globalPosition.dy;
+            double velocity = endDetails.primaryVelocity!;
 
-          //Convert values to be positive
-          if (dx < 0) dx = -dx;
-          if (dy < 0) dy = -dy;
+            //Convert values to be positive
+            if (dx < 0) dx = -dx;
+            if (dy < 0) dy = -dy;
 
-          if (velocity < 0) {
-            //swipe Up
-            _onSwipeUp();
-          } else {
-            //swipe down
-            Navigator.of(context).pop(_currentIndex);
-          }
-        },
-        onTapDown: (detailes) => _onTapDown(detailes),
-        child: PageView.builder(
-          controller: _pageController,
-          physics: NeverScrollableScrollPhysics(),
-          itemCount: widget.stories.length,
-          itemBuilder: (context, index) {
-            final Story story = widget.stories[index];
+            if (velocity < 0) {
+              //swipe Up
+              _onSwipeUp();
+            } else {
+              //swipe down
+              Navigator.of(context).pop(_currentIndex);
+            }
+          },
+          onTapDown: (detailes) => (myLocale?.languageCode == 'en')
+              ? _onTapDown(detailes)
+              : _onTapDownArabic(detailes),
+          child: PageView.builder(
+            controller: _pageController,
+            physics: NeverScrollableScrollPhysics(),
+            itemCount: widget.stories.length,
+            itemBuilder: (context, index) {
+              final Story story = widget.stories[index];
 
-            StoriesService.setNewStoryView(currentUser!.id, story);
+              StoriesService.setNewStoryView(currentUser!.id, story);
 
-            return Stack(
-              children: [
-                GestureDetector(
-                  onVerticalDragUpdate: (details) {
-                    int sensitivity = 8;
-                    if (details.delta.dy > sensitivity) {
-                      // Down Swipe
-                      print('swiped down');
-                      Navigator.pop(context);
-                    } else if (details.delta.dy < -sensitivity) {
-                      // Up Swipe
-                      print('swiped up');
-                      if (isCurrentUser)
-                        showModalBottomSheet(
-                            context: context,
-                            builder: (context) {
-                              return Container(
-                                color: darkColor,
-                                height: 500,
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Padding(
-                                      padding: const EdgeInsets.only(
-                                          top: 20,
-                                          left: 15,
-                                          right: 10,
-                                          bottom: 5),
-                                      child: Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceBetween,
-                                        children: [
-                                          Text('Viewers',
+              return Center(
+                child: Stack(
+                  children: [
+                    GestureDetector(
+                      onVerticalDragUpdate: (details) {
+                        int sensitivity = 8;
+                        if (details.delta.dy > sensitivity) {
+                          // Down Swipe
+                          print('swiped down');
+                          Navigator.pop(context);
+                        } else if (details.delta.dy < -sensitivity) {
+                          // Up Swipe
+                          print('swiped up');
+                          if (isCurrentUser)
+                            showModalBottomSheet(
+                                context: context,
+                                builder: (context) {
+                                  return Container(
+                                    color: darkColor,
+                                    height: 500,
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Padding(
+                                          padding: const EdgeInsets.only(
+                                              top: 20,
+                                              left: 15,
+                                              right: 10,
+                                              bottom: 5),
+                                          child: Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceBetween,
+                                            children: [
+                                              Text('Viewers',
+                                                  style: TextStyle(
+                                                      fontWeight:
+                                                          FontWeight.w700,
+                                                      color: Colors.white)),
+                                              GestureDetector(
+                                                  onTap: () {
+                                                    StoriesService.deleteStory(
+                                                        story, context);
+                                                    Navigator.pop(context);
+                                                  },
+                                                  child: Icon(Icons.delete,
+                                                      color: Colors.white))
+                                            ],
+                                          ),
+                                        ),
+                                        BrandDivider(),
+                                        Expanded(
+                                          child: Container(
+                                            child: ListView.builder(
+                                                itemCount: story.views!.length,
+                                                itemBuilder:
+                                                    (BuildContext context,
+                                                        int index) {
+                                                  AppUser viewers =
+                                                      viewersList[index];
+                                                  var timeSeen =
+                                                      viewersTime[index];
+
+                                                  return (viewers.id !=
+                                                          currentUser!.id)
+                                                      ? Padding(
+                                                          padding:
+                                                              const EdgeInsets
+                                                                  .all(0),
+                                                          child: ListTile(
+                                                            onTap: () {
+                                                              CustomNavigation
+                                                                  .navigateToUserProfile(
+                                                                context:
+                                                                    context,
+                                                                appUser:
+                                                                    viewers,
+                                                                userId:
+                                                                    viewers.id,
+                                                                currentUserId:
+                                                                    currentUser!
+                                                                        .id,
+                                                                isCameFromBottomNavigation:
+                                                                    false,
+                                                              );
+                                                            },
+                                                            leading: Container(
+                                                              height: 40,
+                                                              width: 40,
+                                                              child:
+                                                                  CircleAvatar(
+                                                                radius: 25.0,
+                                                                backgroundColor:
+                                                                    Colors.grey,
+                                                                backgroundImage: (viewers
+                                                                        .profileImageUrl!
+                                                                        .isEmpty
+                                                                    ? AssetImage(
+                                                                        placeHolderImageRef)
+                                                                    : CachedNetworkImageProvider(
+                                                                        viewers
+                                                                            .profileImageUrl!)) as ImageProvider<
+                                                                    Object>?,
+                                                              ),
+                                                            ),
+                                                            title: Text(
+                                                                viewers.name!,
+                                                                style: TextStyle(
+                                                                    fontSize:
+                                                                        15,
+                                                                    color: Colors
+                                                                        .white)),
+                                                            subtitle: Text(
+                                                                'PIN: ${viewers.pin}',
+                                                                maxLines: 3,
+                                                                style: TextStyle(
+                                                                    color: Colors
+                                                                        .grey,
+                                                                    fontSize:
+                                                                        13)),
+                                                            trailing: Text(
+                                                                timeago.format(
+                                                                    timeSeen
+                                                                        .toDate()),
+                                                                style: TextStyle(
+                                                                    fontSize:
+                                                                        12,
+                                                                    color: Colors
+                                                                        .white)),
+                                                          ),
+                                                        )
+                                                      : SizedBox.shrink();
+                                                }),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  );
+                                });
+                          else {
+                            setState(() {
+                              focusNode.requestFocus();
+                            });
+                          }
+                        }
+                      },
+                      child: CachedNetworkImage(
+                        imageUrl: story.imageUrl!,
+                        fit: BoxFit.cover,
+                        fadeInDuration: Duration(milliseconds: 500),
+                        progressIndicatorBuilder:
+                            (context, url, downloadProgress) {
+                          return Center(
+                            child: CircularProgressIndicator(
+                                color: lightColor,
+                                value: downloadProgress.progress),
+                          );
+                        },
+                      ),
+                    ),
+                    if (isCurrentUser)
+                      Positioned(
+                        bottom: 0,
+                        left: 0,
+                        right: 0,
+                        child: GestureDetector(
+                          onTap: () {
+                            showModalBottomSheet(
+                                context: context,
+                                builder: (context) {
+                                  return Container(
+                                    color: darkColor,
+                                    height: 500,
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Padding(
+                                          padding: const EdgeInsets.only(
+                                              top: 20, left: 15, bottom: 5),
+                                          child: Text('Viewers',
                                               style: TextStyle(
                                                   fontWeight: FontWeight.w700,
                                                   color: Colors.white)),
-                                          GestureDetector(
-                                              onTap: () {
-                                                StoriesService.deleteStory(
-                                                    story, context);
-                                                Navigator.pop(context);
-                                              },
-                                              child: Icon(Icons.delete,
-                                                  color: Colors.white))
-                                        ],
-                                      ),
-                                    ),
-                                    BrandDivider(),
-                                    Expanded(
-                                      child: Container(
-                                        child: ListView.builder(
-                                            itemCount: story.views!.length,
-                                            itemBuilder: (BuildContext context,
-                                                int index) {
-                                              AppUser viewers =
-                                                  viewersList[index];
-                                              var timeSeen = viewersTime[index];
+                                        ),
+                                        BrandDivider(),
+                                        Expanded(
+                                          child: Container(
+                                            child: ListView.builder(
+                                                itemCount: story.views!.length,
+                                                itemBuilder:
+                                                    (BuildContext context,
+                                                        int index) {
+                                                  AppUser viewers =
+                                                      viewersList[index];
+                                                  var timeSeen =
+                                                      viewersTime[index];
 
-                                              return (viewers.id !=
-                                                      currentUser!.id)
-                                                  ? Padding(
-                                                      padding:
-                                                          const EdgeInsets.all(
-                                                              0),
-                                                      child: ListTile(
-                                                        onTap: () {
-                                                          CustomNavigation
-                                                              .navigateToUserProfile(
-                                                            context: context,
-                                                            appUser: viewers,
-                                                            userId: viewers.id,
-                                                            currentUserId:
-                                                                currentUser!.id,
-                                                            isCameFromBottomNavigation:
-                                                                false,
-                                                          );
-                                                        },
-                                                        leading: Container(
-                                                          height: 40,
-                                                          width: 40,
-                                                          child: CircleAvatar(
-                                                            radius: 25.0,
-                                                            backgroundColor:
-                                                                Colors.grey,
-                                                            backgroundImage: (viewers
-                                                                    .profileImageUrl!
-                                                                    .isEmpty
-                                                                ? AssetImage(
-                                                                    placeHolderImageRef)
-                                                                : CachedNetworkImageProvider(
-                                                                    viewers
-                                                                        .profileImageUrl!)) as ImageProvider<
-                                                                Object>?,
-                                                          ),
-                                                        ),
-                                                        title: Text(
-                                                            viewers.name!,
-                                                            style: TextStyle(
-                                                                fontSize: 15,
-                                                                color: Colors
-                                                                    .white)),
-                                                        subtitle: Text(
-                                                            'PIN: ${viewers.pin}',
-                                                            maxLines: 3,
-                                                            style: TextStyle(
-                                                                color:
+                                                  return (viewers.id !=
+                                                          currentUser!.id)
+                                                      ? Padding(
+                                                          padding:
+                                                              const EdgeInsets
+                                                                  .all(0),
+                                                          child: ListTile(
+                                                            onTap: () {
+                                                              CustomNavigation
+                                                                  .navigateToUserProfile(
+                                                                context:
+                                                                    context,
+                                                                appUser:
+                                                                    viewers,
+                                                                userId:
+                                                                    viewers.id,
+                                                                currentUserId:
+                                                                    currentUser!
+                                                                        .id,
+                                                                isCameFromBottomNavigation:
+                                                                    false,
+                                                              );
+                                                            },
+                                                            leading: Container(
+                                                              height: 40,
+                                                              width: 40,
+                                                              child:
+                                                                  CircleAvatar(
+                                                                radius: 25.0,
+                                                                backgroundColor:
                                                                     Colors.grey,
-                                                                fontSize: 13)),
-                                                        trailing: Text(
-                                                            timeago.format(
-                                                                timeSeen
-                                                                    .toDate()),
-                                                            style: TextStyle(
-                                                                fontSize: 12,
-                                                                color: Colors
-                                                                    .white)),
-                                                      ),
-                                                    )
-                                                  : SizedBox.shrink();
-                                            }),
-                                      ),
+                                                                backgroundImage: (viewers
+                                                                        .profileImageUrl!
+                                                                        .isEmpty
+                                                                    ? AssetImage(
+                                                                        placeHolderImageRef)
+                                                                    : CachedNetworkImageProvider(
+                                                                        viewers
+                                                                            .profileImageUrl!)) as ImageProvider<
+                                                                    Object>?,
+                                                              ),
+                                                            ),
+                                                            title: Text(
+                                                                viewers.name!,
+                                                                style: TextStyle(
+                                                                    fontSize:
+                                                                        15,
+                                                                    color: Colors
+                                                                        .white)),
+                                                            subtitle: Text(
+                                                                'PIN: ${viewers.pin}',
+                                                                maxLines: 3,
+                                                                style: TextStyle(
+                                                                    color: Colors
+                                                                        .grey,
+                                                                    fontSize:
+                                                                        13)),
+                                                            trailing: Text(
+                                                                timeago.format(
+                                                                    timeSeen
+                                                                        .toDate()),
+                                                                style: TextStyle(
+                                                                    fontSize:
+                                                                        12,
+                                                                    color: Colors
+                                                                        .white)),
+                                                          ),
+                                                        )
+                                                      : SizedBox.shrink();
+                                                }),
+                                          ),
+                                        ),
+                                      ],
                                     ),
-                                  ],
+                                  );
+                                });
+                          },
+                          child: Container(
+                            height: 40,
+                            color: Colors.black,
+                            child: Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 10),
+                              child: Row(
+                                children: [
+                                  Icon(FontAwesomeIcons.eye,
+                                      size: 15, color: Colors.white),
+                                  SizedBox(width: 5),
+                                  Text('${story.views!.length - 1}',
+                                      style: TextStyle(
+                                          color: Colors.white, fontSize: 18))
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                      )
+                    else
+                      Positioned(
+                        bottom: 0,
+                        left: 0,
+                        right: 0,
+                        child: Container(
+                          color: Colors.black,
+                          child: Padding(
+                            padding: const EdgeInsets.all(10),
+                            child: Row(
+                              children: [
+                                Expanded(
+                                  child: AutoDirection(
+                                    text: _messageController.text,
+                                    child: TextField(
+                                      minLines: 1,
+                                      maxLines: 3,
+                                      style: TextStyle(color: Colors.white),
+                                      cursorColor: lightColor,
+                                      controller: _messageController,
+                                      focusNode: focusNode,
+                                      textInputAction: TextInputAction.done,
+                                      textCapitalization:
+                                          TextCapitalization.sentences,
+                                      onChanged: (messageText) {},
+                                      decoration: InputDecoration(
+                                          focusedBorder: InputBorder.none,
+                                          enabledBorder: InputBorder.none,
+                                          hintStyle:
+                                              TextStyle(color: Colors.grey),
+                                          hintText: 'Reply...'),
+                                    ),
+                                  ),
                                 ),
-                              );
-                            });
-                      else {
-                        setState(() {
-                          focusNode.requestFocus();
-                        });
-                      }
-                    }
-                  },
-                  child: CachedNetworkImage(
-                    imageUrl: story.imageUrl!,
-                    fit: BoxFit.cover,
-                    fadeInDuration: Duration(milliseconds: 500),
-                    progressIndicatorBuilder: (context, url, downloadProgress) {
-                      return Center(
-                        child: CircularProgressIndicator(
-                            color: lightColor,
-                            value: downloadProgress.progress),
-                      );
-                    },
-                  ),
-                ),
-                if (isCurrentUser)
-                  Positioned(
-                    bottom: 0,
-                    left: 0,
-                    right: 0,
-                    child: GestureDetector(
-                      onTap: () {
-                        showModalBottomSheet(
-                            context: context,
-                            builder: (context) {
-                              return Container(
-                                color: darkColor,
-                                height: 500,
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Padding(
-                                      padding: const EdgeInsets.only(
-                                          top: 20, left: 15, bottom: 5),
-                                      child: Text('Viewers',
-                                          style: TextStyle(
-                                              fontWeight: FontWeight.w700,
-                                              color: Colors.white)),
-                                    ),
-                                    BrandDivider(),
-                                    Expanded(
-                                      child: Container(
-                                        child: ListView.builder(
-                                            itemCount: story.views!.length,
-                                            itemBuilder: (BuildContext context,
-                                                int index) {
-                                              AppUser viewers =
-                                                  viewersList[index];
-                                              var timeSeen = viewersTime[index];
+                                GestureDetector(
+                                  onTap: () async {
+                                    AppUser receiver =
+                                        await DatabaseService.getUserWithId(
+                                            story.authorId);
 
-                                              return (viewers.id !=
-                                                      currentUser!.id)
-                                                  ? Padding(
-                                                      padding:
-                                                          const EdgeInsets.all(
-                                                              0),
-                                                      child: ListTile(
-                                                        onTap: () {
-                                                          CustomNavigation
-                                                              .navigateToUserProfile(
-                                                            context: context,
-                                                            appUser: viewers,
-                                                            userId: viewers.id,
-                                                            currentUserId:
-                                                                currentUser!.id,
-                                                            isCameFromBottomNavigation:
-                                                                false,
-                                                          );
-                                                        },
-                                                        leading: Container(
-                                                          height: 40,
-                                                          width: 40,
-                                                          child: CircleAvatar(
-                                                            radius: 25.0,
-                                                            backgroundColor:
-                                                                Colors.grey,
-                                                            backgroundImage: (viewers
-                                                                    .profileImageUrl!
-                                                                    .isEmpty
-                                                                ? AssetImage(
-                                                                    placeHolderImageRef)
-                                                                : CachedNetworkImageProvider(
-                                                                    viewers
-                                                                        .profileImageUrl!)) as ImageProvider<
-                                                                Object>?,
-                                                          ),
-                                                        ),
-                                                        title: Text(
-                                                            viewers.name!,
-                                                            style: TextStyle(
-                                                                fontSize: 15,
-                                                                color: Colors
-                                                                    .white)),
-                                                        subtitle: Text(
-                                                            'PIN: ${viewers.pin}',
-                                                            maxLines: 3,
-                                                            style: TextStyle(
-                                                                color:
-                                                                    Colors.grey,
-                                                                fontSize: 13)),
-                                                        trailing: Text(
-                                                            timeago.format(
-                                                                timeSeen
-                                                                    .toDate()),
-                                                            style: TextStyle(
-                                                                fontSize: 12,
-                                                                color: Colors
-                                                                    .white)),
-                                                      ),
-                                                    )
-                                                  : SizedBox.shrink();
-                                            }),
+                                    _sendMessage(
+                                        text: _messageController.text.trim(),
+                                        receiver: receiver,
+                                        imageUrl: null,
+                                        giphyUrl: null,
+                                        audioUrl: null,
+                                        videoUrl: null,
+                                        fileName: null,
+                                        fileUrl: null);
+                                    Utility.showMessage(context,
+                                        message: 'Reply sent',
+                                        pulsate: false,
+                                        bgColor: Colors.green[600]!);
+                                  },
+                                  child: Padding(
+                                    padding: const EdgeInsets.only(right: 8.0),
+                                    child: Container(
+                                      decoration: BoxDecoration(
+                                        shape: BoxShape.circle,
+                                        color: lightColor,
+                                      ),
+                                      child: Padding(
+                                        padding: const EdgeInsets.all(6),
+                                        child: Icon(Ionicons.send,
+                                            color: darkColor, size: 15),
                                       ),
                                     ),
-                                  ],
-                                ),
-                              );
-                            });
-                      },
-                      child: Container(
-                        height: 40,
-                        color: Colors.black,
-                        child: Padding(
-                          padding: const EdgeInsets.only(left: 10),
-                          child: Row(
-                            children: [
-                              Icon(FontAwesomeIcons.eye,
-                                  size: 15, color: Colors.white),
-                              SizedBox(width: 5),
-                              Text('${story.views!.length - 1}',
-                                  style: TextStyle(
-                                      color: Colors.white, fontSize: 18))
-                            ],
+                                  ),
+                                )
+                              ],
+                            ),
                           ),
                         ),
                       ),
-                    ),
-                  )
-                else
-                  Positioned(
-                    bottom: 0,
-                    left: 0,
-                    right: 0,
-                    child: Container(
-                      color: Colors.black,
-                      child: Padding(
-                        padding: const EdgeInsets.all(10),
-                        child: Row(
-                          children: [
-                            Expanded(
-                              child: AutoDirection(
-                                text: _messageController.text,
-                                child: TextField(
-                                  minLines: 1,
-                                  maxLines: 3,
-                                  style: TextStyle(color: Colors.white),
-                                  cursorColor: lightColor,
-                                  controller: _messageController,
-                                  focusNode: focusNode,
-                                  textInputAction: TextInputAction.done,
-                                  textCapitalization:
-                                      TextCapitalization.sentences,
-                                  onChanged: (messageText) {},
-                                  decoration: InputDecoration(
-                                      focusedBorder: InputBorder.none,
-                                      enabledBorder: InputBorder.none,
-                                      hintStyle: TextStyle(color: Colors.grey),
-                                      hintText: 'Reply...'),
-                                ),
-                              ),
+                    Positioned(
+                      top: 40.0,
+                      left: 10.0,
+                      right: 10.0,
+                      child: Column(
+                        children: [
+                          Row(
+                            children: widget.stories
+                                .asMap()
+                                .map((i, e) {
+                                  return MapEntry(
+                                      i,
+                                      AnimatedBar(
+                                        animationController: _animController,
+                                        position: i,
+                                        currentIndex: _currentIndex,
+                                      ));
+                                })
+                                .values
+                                .toList(),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 1.5, vertical: 10.0),
+                            child: StoryInfo(
+                              onSwipeUp: () => _onSwipeUp(),
+                              height: size.height - 100,
+                              user: widget.user,
+                              story: widget.stories[_currentIndex!],
                             ),
-                            GestureDetector(
-                              onTap: () async {
-                                AppUser receiver =
-                                    await DatabaseService.getUserWithId(
-                                        story.authorId);
-
-                                _sendMessage(
-                                    text: _messageController.text.trim(),
-                                    receiver: receiver,
-                                    imageUrl: null,
-                                    giphyUrl: null,
-                                    audioUrl: null,
-                                    videoUrl: null,
-                                    fileName: null,
-                                    fileUrl: null);
-                                Utility.showMessage(context,
-                                    message: 'Reply sent',
-                                    pulsate: false,
-                                    bgColor: Colors.green[600]!);
-                              },
-                              child: Padding(
-                                padding: const EdgeInsets.only(right: 8.0),
-                                child: Container(
-                                  decoration: BoxDecoration(
-                                    shape: BoxShape.circle,
-                                    color: lightColor,
-                                  ),
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(6),
-                                    child: Icon(Ionicons.send,
-                                        color: darkColor, size: 15),
-                                  ),
-                                ),
-                              ),
-                            )
-                          ],
-                        ),
+                          ),
+                        ],
                       ),
-                    ),
-                  ),
-                Positioned(
-                  top: 40.0,
-                  left: 10.0,
-                  right: 10.0,
-                  child: Column(
-                    children: [
-                      Row(
-                        children: widget.stories
-                            .asMap()
-                            .map((i, e) {
-                              return MapEntry(
-                                  i,
-                                  AnimatedBar(
-                                    animationController: _animController,
-                                    position: i,
-                                    currentIndex: _currentIndex,
-                                  ));
-                            })
-                            .values
-                            .toList(),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 1.5, vertical: 10.0),
-                        child: StoryInfo(
-                          onSwipeUp: () => _onSwipeUp(),
-                          height: size.height - 100,
-                          user: widget.user,
-                          story: widget.stories[_currentIndex!],
-                        ),
-                      ),
-                    ],
-                  ),
-                )
-              ],
-            );
-          },
+                    )
+                  ],
+                ),
+              );
+            },
+          ),
         ),
       ),
     );
@@ -601,24 +636,54 @@ class _StoryScreenState extends State<StoryScreen>
   }
 
   void _onTapDown(TapDownDetails details) {
-    print("Holdinggggg");
     final Size screenSize = MediaQuery.of(context).size;
     final double dx = details.globalPosition.dx;
 
-    if (dx < screenSize.width / 3) {
+    if (dx < 2 * screenSize.width / 5) {
       setState(() {
         if (_currentIndex! - 1 >= 0) {
+          print("tap left");
+
           _currentIndex = _currentIndex! - 1;
           _loadStory(story: widget.stories[_currentIndex!]);
         }
       });
-    } else if (dx > 2 * screenSize.width / 3) {
+    } else if (dx > 2 * screenSize.width / 5) {
       setState(() {
+        print("tap right");
+
         if (_currentIndex! + 1 < widget.stories.length) {
           _currentIndex = _currentIndex! + 1;
           _loadStory(story: widget.stories[_currentIndex!]);
         } else {
           Navigator.of(context).pop(_currentIndex);
+        }
+      });
+    } else {}
+  }
+
+  void _onTapDownArabic(TapDownDetails details) {
+    final Size screenSize = MediaQuery.of(context).size;
+    final double dx = details.globalPosition.dx;
+
+    if (dx < 2 * screenSize.width / 5) {
+      setState(() {
+        print("tap right");
+
+        if (_currentIndex! + 1 < widget.stories.length) {
+          _currentIndex = _currentIndex! + 1;
+          _loadStory(story: widget.stories[_currentIndex!]);
+        } else {
+          Navigator.of(context).pop(_currentIndex);
+        }
+      });
+    } else if (dx > 2 * screenSize.width / 5) {
+      setState(() {
+        if (_currentIndex! - 1 >= 0) {
+          print("tap left");
+
+          _currentIndex = _currentIndex! - 1;
+          _loadStory(story: widget.stories[_currentIndex!]);
         }
       });
     } else {}

@@ -43,6 +43,7 @@ class _FeedsScreenState extends State<FeedsScreen> {
   CameraConsumer _cameraConsumer = CameraConsumer.post;
   var stream;
   bool unreadNotifications = false;
+
   void _goToCameraScreen() {
     setState(() => _cameraConsumer = CameraConsumer.story);
     print('kol');
@@ -182,43 +183,44 @@ class _FeedsScreenState extends State<FeedsScreen> {
             preferredSize: const Size.fromHeight(60),
             child: AppBar(
               automaticallyImplyLeading: false,
-              title: Row(
-                children: [
-                  Container(
-                    height: 35,
-                    width: 35,
-                    child: CircleAvatar(
-                      radius: 25.0,
-                      backgroundColor: Colors.grey,
-                      backgroundImage: CachedNetworkImageProvider(
-                          widget.currentUser!.profileImageUrl!),
+              title: GestureDetector(
+                onTap: () {
+                  showDialog(
+                      context: context,
+                      builder: (BuildContext context) =>
+                          QrDialog(userID: widget.currentUser?.id));
+                },
+                child: Row(
+                  children: [
+                    Container(
+                      height: 35,
+                      width: 35,
+                      child: CircleAvatar(
+                        radius: 25.0,
+                        backgroundColor: Colors.grey,
+                        backgroundImage: CachedNetworkImageProvider(
+                            widget.currentUser!.profileImageUrl!),
+                      ),
                     ),
-                  ),
-                  SizedBox(width: 10),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      GestureDetector(
-                        onTap: () {
-                          showDialog(
-                              context: context,
-                              builder: (BuildContext context) => QrDialog());
-                        },
-                        child: Text('PIN: ${widget.currentUser?.pin}',
+                    SizedBox(width: 10),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text('PIN: ${widget.currentUser?.pin}',
                             style: TextStyle(
                                 color: Colors.white,
                                 fontSize: 16,
                                 fontFamily: 'Poppins-Regular',
                                 fontWeight: FontWeight.bold)),
-                      ),
-                      Text('${widget.currentUser?.name}',
-                          style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 16,
-                              fontFamily: 'Poppins-Regular')),
-                    ],
-                  ),
-                ],
+                        Text('${widget.currentUser?.name}',
+                            style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 16,
+                                fontFamily: 'Poppins-Regular')),
+                      ],
+                    ),
+                  ],
+                ),
               ),
               backgroundColor: Colors.transparent,
               centerTitle: false,
@@ -293,7 +295,8 @@ class _FeedsScreenState extends State<FeedsScreen> {
                         // SizedBox(height: 30),
                         // TextPost(),
                         // PostTile(),
-                        SizedBox(height: 5),
+                        SizedBox(height: 15),
+
                         ListView.builder(
                           physics: NeverScrollableScrollPhysics(),
                           shrinkWrap: true,

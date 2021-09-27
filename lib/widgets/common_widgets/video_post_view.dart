@@ -48,7 +48,8 @@ class _VideoPostViewState extends State<VideoPostView> {
   bool _isPlaying = false;
   bool _isVisible = false;
   Post? _post;
-  late VideoPlayerController _controller;
+ VideoPlayerController? _controller;
+ Locale? myLocale;
 
   @override
   void initState() {
@@ -280,6 +281,8 @@ class _VideoPostViewState extends State<VideoPostView> {
 
   @override
   Widget build(BuildContext context) {
+    myLocale = Localizations.localeOf(context);
+
     return IntrinsicWidth(
       child: GestureDetector(
         onTap: () {
@@ -315,10 +318,10 @@ class _VideoPostViewState extends State<VideoPostView> {
                             borderRadius: BorderRadius.circular(5),
                             child: Hero(
                               tag: _post!.videoUrl!,
-                              child: _controller.value.isInitialized
+                              child: _controller!.value.isInitialized
                                   ? AspectRatio(
                                       aspectRatio: 1 / 1,
-                                      child: VideoPlayer(_controller),
+                                      child: VideoPlayer(_controller!),
                                     )
                                   : Padding(
                                       padding: const EdgeInsets.symmetric(
@@ -335,14 +338,14 @@ class _VideoPostViewState extends State<VideoPostView> {
                     visible: _isVisible,
                     child: GestureDetector(
                         onTap: () {
-                          if (_controller.value.isPlaying) {
+                          if (_controller!.value.isPlaying) {
                             setState(() {
-                              _controller.pause();
+                              _controller!.pause();
                               _isPlaying = true;
                             });
                           } else {
                             setState(() {
-                              _controller.play();
+                              _controller!.play();
                               _isPlaying = false;
                             });
                           }
@@ -409,18 +412,35 @@ class _VideoPostViewState extends State<VideoPostView> {
                     ),
                   ),
                   if (widget.author!.id == widget.currentUserId)
-                    Positioned(
-                      bottom: 0,
-                      right: 0,
-                      child: Padding(
-                          padding: const EdgeInsets.only(right: 20, bottom: 10),
-                          child: GestureDetector(
-                            child: Icon(Icons.more_vert, color: Colors.white),
-                            onTap: () {
-                              _showMenuDialog();
-                            },
-                          )),
-                    )
+                    (myLocale?.languageCode == 'en')
+                      ? Positioned(
+                          bottom: 0,
+                          right: 0,
+                          child: Padding(
+                              padding:
+                                  const EdgeInsets.only(right: 20, bottom: 10),
+                              child: GestureDetector(
+                                child:
+                                    Icon(Icons.more_vert, color: Colors.white),
+                                onTap: () {
+                                  _showMenuDialog();
+                                },
+                              )),
+                        )
+                      : Positioned(
+                          bottom: 0,
+                          left: 20,
+                          child: Padding(
+                              padding:
+                                  const EdgeInsets.only(right: 20, bottom: 10),
+                              child: GestureDetector(
+                                child:
+                                    Icon(Icons.more_vert, color: Colors.white),
+                                onTap: () {
+                                  _showMenuDialog();
+                                },
+                              )),
+                        )
                 ],
               ),
             ),

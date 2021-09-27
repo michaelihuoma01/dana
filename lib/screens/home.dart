@@ -135,60 +135,49 @@ class _HomeScreenState extends State<HomeScreen>
     }
   }
 
-  _setupFriends() async {
-    // await [Permission.camera, Permission.microphone].request();
+   _setupFriends() async {
+    List<String?> followingUsers =
+        await DatabaseService.getUserFollowingIds(widget.currentUserId);
 
-    print('skipping current user');
+    List<String?> followerUsers =
+        await DatabaseService.getUserFollowersIds(widget.currentUserId);
 
-    QuerySnapshot usersSnapshot = await usersRef.get();
+    var friendList = [...followingUsers, ...followerUsers].toSet().toList();
 
-    for (var userDoc in usersSnapshot.docs) {
-      AppUser user = AppUser.fromDoc(userDoc);
+    for (String? userId in friendList) {
+      var friends = await DatabaseService.getUserWithId(userId);
+      setState(() {
+        isFriends = true;
+        _friends.add(friends);
+      });
+    }
 
-      isFollower = await DatabaseService.isUserFollower(
-        currentUserId: widget.currentUserId,
-        userId: user.id,
-      );
+    print(_friends.length);
+
+    for (var userDoc in followingUsers) {
+      var requests = await DatabaseService.getUserWithId(userDoc);
 
       isFollowingUser = await DatabaseService.isFollowingUser(
         currentUserId: widget.currentUserId,
-        userId: user.id,
+        userId: userDoc,
       );
 
-      if (widget.currentUserId == user.id) {
-        print('skipping current user');
+      if (!isFollowingUser == true) {
+        isRequest = true;
+        _requests.add(requests);
+
+        print('not friends ${requests.name}');
       } else {
-        if (isFollower == true && isFollowingUser == true) {
-          isFriends = true;
-          _friends.add(user);
-          setState(() {
-            isSeen = true;
-          });
-
-          print('friends ${user.name} $isFriends');
-        } else if (isFollower == true && isFollowingUser != true) {
-          isRequest = true;
-          _requests.add(user);
-          setState(() {
-            isSeen = false;
-          });
-
-          print('not friends ${user.name} $isFriends');
-        } else if (isFollower != true && isFollowingUser == true) {
+        setState(() {
           isRequest = false;
           isFriends = false;
-          setState(() {
-            isSeen = false;
-          });
-        }
+        });
       }
+      setState(() {
+        _isLoading = false;
+      });
     }
-    print(_friends.length);
-    setState(() {
-      _isLoading = false;
-    });
   }
-
   checkUnreadMessages() async {
     Stream<QuerySnapshot> stream = FirebaseFirestore.instance
         .collection('chats')

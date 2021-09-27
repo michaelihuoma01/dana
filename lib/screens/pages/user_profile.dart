@@ -371,16 +371,18 @@ class _UserProfileState extends State<UserProfile> {
                     automaticallyImplyLeading: true,
                     backgroundColor: darkColor,
                     brightness: Brightness.dark,
+                    centerTitle: true,
                     elevation: 5,
                     actions: [
                       Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: GestureDetector(
-                          onTap: () {
-                            showDialog(
-                                context: context,
-                                builder: (BuildContext context) => QrDialog());
-                          },
+                            onTap: () {
+                          showDialog(
+                              context: context,
+                              builder: (BuildContext context) =>
+                                  QrDialog(userID: user.id));
+                        },
                           child: Icon(Icons.qr_code,
                               color: Colors.white, size: 20),
                         ),

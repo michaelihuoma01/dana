@@ -292,7 +292,7 @@ class _MessagesScreenState extends State<MessagesScreen> {
               title: Text(S.of(context)!.messages,
                   style: TextStyle(
                       color: Colors.white,
-                      fontSize: 30,
+                      fontSize: 25,
                       fontFamily: 'Poppins-Regular',
                       fontWeight: FontWeight.bold)),
               backgroundColor: Colors.transparent,

@@ -308,6 +308,21 @@ class DatabaseService {
     return followingUsers;
   }
 
+ static Future<List<AppUser>> getUserFollowerUsers(String? userId) async {
+    List<String> followerUserIds = await getUserFollowersIds(userId);
+    List<AppUser> followerUsers = [];
+
+    for (var userId in followerUserIds) {
+      DocumentSnapshot userSnapshot = await usersRef.doc(userId).get();
+      AppUser user = AppUser.fromDoc(userSnapshot);
+      followerUsers.add(user);
+    }
+
+    return followerUsers;
+  }
+
+
+
   static Future<List<String>> getUserFollowersIds(String? userId) async {
     QuerySnapshot followersSnapshot =
         await followersRef.doc(userId).collection(usersFollowers).get();

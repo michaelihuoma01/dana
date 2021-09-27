@@ -46,6 +46,7 @@ class _PostViewState extends State<PostView> {
   bool _isLiked = false;
   bool _heartAnim = false;
   Post? _post;
+ Locale? myLocale;
 
   @override
   void initState() {
@@ -124,7 +125,7 @@ class _PostViewState extends State<PostView> {
   }
 
   _showMenuDialog() {
-    return   _androidDialog();
+    return _androidDialog();
   }
 
   _saveAndShareFile() async {
@@ -271,6 +272,8 @@ class _PostViewState extends State<PostView> {
 
   @override
   Widget build(BuildContext context) {
+    myLocale = Localizations.localeOf(context);
+
     return IntrinsicWidth(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -357,18 +360,35 @@ class _PostViewState extends State<PostView> {
                                   ],
                                 ))))),
                 if (widget.author!.id == widget.currentUserId)
-                  Positioned(
-                    bottom: 0,
-                    right: 0,
-                    child: Padding(
-                        padding: const EdgeInsets.only(right: 20, bottom: 10),
-                        child: GestureDetector(
-                          child: Icon(Icons.more_vert, color: Colors.white),
-                          onTap: () {
-                            _showMenuDialog();
-                          },
-                        )),
-                  )
+                  (myLocale?.languageCode == 'en')
+                      ? Positioned(
+                          bottom: 0,
+                          right: 0,
+                          child: Padding(
+                              padding:
+                                  const EdgeInsets.only(right: 20, bottom: 10),
+                              child: GestureDetector(
+                                child:
+                                    Icon(Icons.more_vert, color: Colors.white),
+                                onTap: () {
+                                  _showMenuDialog();
+                                },
+                              )),
+                        )
+                      : Positioned(
+                          bottom: 0,
+                          left: 20,
+                          child: Padding(
+                              padding:
+                                  const EdgeInsets.only(right: 20, bottom: 10),
+                              child: GestureDetector(
+                                child:
+                                    Icon(Icons.more_vert, color: Colors.white),
+                                onTap: () {
+                                  _showMenuDialog();
+                                },
+                              )),
+                        )
               ],
             ),
           ),

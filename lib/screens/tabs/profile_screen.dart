@@ -306,8 +306,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                         pulsate: false,
                                         bgColor: Colors.green[600]!);
                                   },
-                                  child: Text(
-                                      'PIN: ${user.pin}',
+                                  child: Text('PIN: ${user.pin}',
                                       style: TextStyle(
                                           color: Colors.white, fontSize: 16)),
                                 ),
@@ -317,7 +316,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                     showDialog(
                                         context: context,
                                         builder: (BuildContext context) =>
-                                            QrDialog());
+                                            QrDialog(userID: widget.user?.id));
                                   },
                                   child: Icon(Icons.qr_code,
                                       color: Colors.white, size: 20),
@@ -328,7 +327,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             Padding(
                               padding:
                                   const EdgeInsets.symmetric(horizontal: 10),
-                              child: Text( S.of(context)!.bio,
+                              child: Text(S.of(context)!.bio,
                                   style: TextStyle(
                                       color: Colors.white, fontSize: 16)),
                             ),
