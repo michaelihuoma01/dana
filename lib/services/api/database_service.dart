@@ -1,3 +1,4 @@
+import 'package:Dana/models/user_data.dart';
 import 'package:Dana/notifications/helperMethods.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:Dana/models/activity_model.dart';
@@ -6,6 +7,7 @@ import 'package:Dana/models/user_model.dart';
 import 'package:Dana/utilities/constants.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 
 class DatabaseService {
   static void updateUser(AppUser user) {
@@ -315,7 +317,7 @@ class DatabaseService {
     return followers;
   }
 
-  static Future<List<Post>> getFeedPosts(String userId) async {
+  static Future<List<Post>> getFeedPosts(String? userId) async {
     QuerySnapshot feedSnapshot = await feedsRef
         .doc(userId)
         .collection('userFeed')
@@ -326,12 +328,19 @@ class DatabaseService {
     return posts;
   }
 
-  static Future<List<Post>> getAllFeedPosts() async {
+  static Future<List<Post>> getAllFeedPosts(context) async {
     List<Post> allPosts = [];
 
-    QuerySnapshot usersSnapshot = await usersRef.get();
+    // QuerySnapshot usersSnapshot = await usersRef.get();
+    AppUser? currentUser =
+        Provider.of<UserData>(context, listen: false).currentUser;
 
-    for (var userDoc in usersSnapshot.docs) {
+    List<AppUser> followingUsers =
+        await DatabaseService.getUserFollowingUsers(currentUser?.id);
+
+    followingUsers.add(currentUser!);
+
+    for (var userDoc in followingUsers) {
       QuerySnapshot feedSnapshot = await postsRef
           .doc(userDoc.id)
           .collection('userPosts')
@@ -463,8 +472,8 @@ class DatabaseService {
     commentsRef.doc(post.id).collection('postComments').add({
       'content': comment,
       'authorId': currentUserId,
-      // 'timestamp': Timestamp.fromDate(DateTime.now()),
-      'timestamp': DatabaseService.formatMyDate(DateTime.now().toString())
+      'timestamp': Timestamp.fromDate(DateTime.now()),
+      // 'timestamp': DateTime.now()
     });
     DocumentReference postRef =
         postsRef.doc(post.authorId).collection('userPosts').doc(post.id);

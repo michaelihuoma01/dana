@@ -190,7 +190,7 @@ class _StoryScreenState extends State<StoryScreen>
             Navigator.of(context).pop(_currentIndex);
           }
         },
-        // onTapDown: (detailes) => _onTapDown(detailes),
+        onTapDown: (detailes) => _onTapDown(detailes),
         child: PageView.builder(
           controller: _pageController,
           physics: NeverScrollableScrollPhysics(),

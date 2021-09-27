@@ -136,7 +136,7 @@ class _HomeScreenState extends State<HomeScreen>
   }
 
   _setupFriends() async {
-    await [Permission.camera, Permission.microphone].request();
+    // await [Permission.camera, Permission.microphone].request();
 
     print('skipping current user');
 

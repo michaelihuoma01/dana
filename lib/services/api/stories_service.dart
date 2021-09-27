@@ -17,12 +17,13 @@ class StoriesService {
       'duration': story.duration,
       'linkUrl': story.linkUrl,
     }).then((value) {
-        storiesRef
-            .doc(story.authorId)
-            .collection('stories')
-            .doc(value.id)
-            .update({'id': value.id});
-      });;
+      storiesRef
+          .doc(story.authorId)
+          .collection('stories')
+          .doc(value.id)
+          .update({'id': value.id});
+    });
+    ;
   }
 
   static Future<Story> getStoryById(String storyId) async {

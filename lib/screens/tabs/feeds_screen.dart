@@ -67,7 +67,8 @@ class _FeedsScreenState extends State<FeedsScreen> {
     //   widget.currentUser.id,
     // );
 
-    List<Post> posts = await DatabaseService.getAllFeedPosts();
+    List<Post> posts = await DatabaseService.getAllFeedPosts(context);
+
     setState(() {
       _posts = posts;
       _isLoadingFeed = false;
@@ -79,7 +80,7 @@ class _FeedsScreenState extends State<FeedsScreen> {
         // .where('memberIds', arrayContains: widget.currentUser.id)
         // .orderBy('recentTimestamp', descending: true)
         .snapshots()
-        .listen((snapshot) { 
+        .listen((snapshot) {
       snapshot.docChanges.forEach((element) {
         setState(() {
           unreadNotifications = true;
@@ -303,8 +304,7 @@ class _FeedsScreenState extends State<FeedsScreen> {
                               return Container(
                                 height: MediaQuery.of(context).size.height,
                                 child: Center(
-                                  child: Text(
-                                       S.of(context)!.nopost,
+                                  child: Text(S.of(context)!.nopost,
                                       style: TextStyle(color: Colors.white)),
                                 ),
                               );
