@@ -28,50 +28,62 @@ class CallMethods {
   }
 
   Future<bool> endCall(
-      {required Call call, String? duration, Timestamp? timestamp}) async {
+      {required Call call,
+      String? duration,
+      Timestamp? timestamp,
+      bool? isMissed}) async {
     try {
       await callCollection.doc(call.callerId).delete();
       await callCollection.doc(call.receiverId).delete();
 
-      call.hasDialled = true;
+      if (isMissed == false) {
+        call.hasDialled = true;
+      } else {
+        call.hasDialled = null;
+      }
       Map<String, dynamic> hasDialledMap = call.toMap(call);
       hasDialledMap["duration"] = duration;
       hasDialledMap["timestamp"] = timestamp;
+      hasDialledMap["isMissed"] = isMissed;
 
-      call.hasDialled = false;
+      if (isMissed == false) {
+        call.hasDialled = false;
+      } else {
+        call.hasDialled = null;
+      }
       Map<String, dynamic> hasNotDialledMap = call.toMap(call);
       hasNotDialledMap["duration"] = duration;
       hasNotDialledMap["timestamp"] = timestamp;
+      hasNotDialledMap["isMissed"] = isMissed;
 
-      if (duration != null) {
-        await FirebaseFirestore.instance
+      await FirebaseFirestore.instance
+          .collection('calls')
+          .doc(call.callerId)
+          .collection('callHistory')
+          .add(hasDialledMap)
+          .then((value) {
+        FirebaseFirestore.instance
             .collection('calls')
             .doc(call.callerId)
             .collection('callHistory')
-            .add(hasDialledMap)
-            .then((value) {
-          FirebaseFirestore.instance
-              .collection('calls')
-              .doc(call.callerId)
-              .collection('callHistory')
-              .doc(value.id)
-              .update({"id": value.id});
-        });
+            .doc(value.id)
+            .update({"id": value.id});
+      });
 
-        await FirebaseFirestore.instance
+      await FirebaseFirestore.instance
+          .collection('calls')
+          .doc(call.receiverId)
+          .collection('callHistory')
+          .add(hasNotDialledMap)
+          .then((value) {
+        FirebaseFirestore.instance
             .collection('calls')
             .doc(call.receiverId)
             .collection('callHistory')
-            .add(hasNotDialledMap)
-            .then((value) {
-          FirebaseFirestore.instance
-              .collection('calls')
-              .doc(call.receiverId)
-              .collection('callHistory')
-              .doc(value.id)
-              .update({"id": value.id});
-        });
-      }
+            .doc(value.id)
+            .update({"id": value.id});
+      });
+
       return true;
     } catch (e) {
       print(e);

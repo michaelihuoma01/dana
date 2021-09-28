@@ -1,3 +1,4 @@
+import 'package:Dana/calls/callscreens/pickup/pickup_layout.dart';
 import 'package:auto_direction/auto_direction.dart';
 import 'package:Dana/models/models.dart';
 import 'package:Dana/services/services.dart';
@@ -211,70 +212,73 @@ class _CommentsScreenState extends State<CommentsScreen> {
         id: widget.post!.id,
         timestamp: widget.post!.timestamp);
 
-    return Stack(
-      children: [
-        Container(
-          height: double.infinity,
-          color: darkColor,
-          child: Image.asset(
-            'assets/images/background.png',
-            width: double.infinity,
-            height: 300,
-            fit: BoxFit.cover,
-          ),
-        ),
-        Scaffold(
-            backgroundColor: Colors.transparent,
-            appBar: AppBar(
-              iconTheme: IconThemeData(color: Colors.white),
-              backgroundColor: darkColor,
-              title: Text(
-                'Comments',
-                style: TextStyle(color: Colors.white),
-              ),
-              brightness: Brightness.dark,
+    return PickupLayout(
+      currentUser: widget.author,
+      scaffold: Stack(
+        children: [
+          Container(
+            height: double.infinity,
+            color: darkColor,
+            child: Image.asset(
+              'assets/images/background.png',
+              width: double.infinity,
+              height: 300,
+              fit: BoxFit.cover,
             ),
-            body: GestureDetector(
-              onTap: () => FocusScope.of(context).unfocus(),
-              child: Column(
-                children: <Widget>[
-                  SizedBox(height: 10.0),
-                  _buildListTile(context, widget.author!, postDescription,
-                      widget.currentUserID),
-                  Divider(color: Colors.grey),
-                  StreamBuilder(
-                    stream: commentsRef
-                        .doc(widget.post!.id)
-                        .collection('postComments')
-                        .orderBy('timestamp', descending: true)
-                        .snapshots(),
-                    builder: (BuildContext context, AsyncSnapshot snapshot) {
-                      if (!snapshot.hasData) {
-                        return Center(
-                          child: CircularProgressIndicator(color: lightColor),
-                        );
-                      }
-                      return Expanded(
-                        child: ListView.builder(
-                          itemCount: snapshot.data.docs.length,
-                          itemBuilder: (BuildContext context, int index) {
-                            Comment comment =
-                                Comment.fromDoc(snapshot.data.docs[index]);
-                            return _buildComment(comment, widget.currentUserID);
-                          },
-                        ),
-                      );
-                    },
-                  ),
-                  Divider(
-                    height: 1.0,
-                    color: Colors.grey,
-                  ),
-                  _buildCommentTF(),
-                ],
+          ),
+          Scaffold(
+              backgroundColor: Colors.transparent,
+              appBar: AppBar(
+                iconTheme: IconThemeData(color: Colors.white),
+                backgroundColor: darkColor,
+                title: Text(
+                  'Comments',
+                  style: TextStyle(color: Colors.white),
+                ),
+                brightness: Brightness.dark,
               ),
-            )),
-      ],
+              body: GestureDetector(
+                onTap: () => FocusScope.of(context).unfocus(),
+                child: Column(
+                  children: <Widget>[
+                    SizedBox(height: 10.0),
+                    _buildListTile(context, widget.author!, postDescription,
+                        widget.currentUserID),
+                    Divider(color: Colors.grey),
+                    StreamBuilder(
+                      stream: commentsRef
+                          .doc(widget.post!.id)
+                          .collection('postComments')
+                          .orderBy('timestamp', descending: true)
+                          .snapshots(),
+                      builder: (BuildContext context, AsyncSnapshot snapshot) {
+                        if (!snapshot.hasData) {
+                          return Center(
+                            child: CircularProgressIndicator(color: lightColor),
+                          );
+                        }
+                        return Expanded(
+                          child: ListView.builder(
+                            itemCount: snapshot.data.docs.length,
+                            itemBuilder: (BuildContext context, int index) {
+                              Comment comment =
+                                  Comment.fromDoc(snapshot.data.docs[index]);
+                              return _buildComment(comment, widget.currentUserID);
+                            },
+                          ),
+                        );
+                      },
+                    ),
+                    Divider(
+                      height: 1.0,
+                      color: Colors.grey,
+                    ),
+                    _buildCommentTF(),
+                  ],
+                ),
+              )),
+        ],
+      ),
     );
   }
 }

@@ -48,8 +48,8 @@ class _VideoPostViewState extends State<VideoPostView> {
   bool _isPlaying = false;
   bool _isVisible = false;
   Post? _post;
- VideoPlayerController? _controller;
- Locale? myLocale;
+  VideoPlayerController? _controller;
+  Locale? myLocale;
 
   @override
   void initState() {
@@ -224,22 +224,20 @@ class _VideoPostViewState extends State<VideoPostView> {
               //       )
               //     : SizedBox.shrink(),
 
-              // _post.authorId == widget.currentUserId
-              //     ? SimpleDialogOption(
-              //         child: Text('Edit Post'),
-              //         onPressed: () {
-              //           Navigator.push(
-              //             context,
-              //             MaterialPageRoute(
-              //               builder: (_) => CreatePostScreen(
-              //                 post: _post,
-              //                 postStatus: widget.postStatus,
-              //               ),
-              //             ),
-              //           );
-              //         },
-              //       )
-              //     : SizedBox.shrink(),
+              _post?.authorId == widget.currentUserId
+                  ? SimpleDialogOption(
+                      child: Text('Edit Post'),
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => CreatePostScreen(
+                                post: _post, postStatus: widget.postStatus),
+                          ),
+                        );
+                      },
+                    )
+                  : SizedBox.shrink(),
               _post!.authorId == widget.currentUserId &&
                       widget.postStatus == PostStatus.feedPost
                   ? SimpleDialogOption(
@@ -413,34 +411,34 @@ class _VideoPostViewState extends State<VideoPostView> {
                   ),
                   if (widget.author!.id == widget.currentUserId)
                     (myLocale?.languageCode == 'en')
-                      ? Positioned(
-                          bottom: 0,
-                          right: 0,
-                          child: Padding(
-                              padding:
-                                  const EdgeInsets.only(right: 20, bottom: 10),
-                              child: GestureDetector(
-                                child:
-                                    Icon(Icons.more_vert, color: Colors.white),
-                                onTap: () {
-                                  _showMenuDialog();
-                                },
-                              )),
-                        )
-                      : Positioned(
-                          bottom: 0,
-                          left: 20,
-                          child: Padding(
-                              padding:
-                                  const EdgeInsets.only(right: 20, bottom: 10),
-                              child: GestureDetector(
-                                child:
-                                    Icon(Icons.more_vert, color: Colors.white),
-                                onTap: () {
-                                  _showMenuDialog();
-                                },
-                              )),
-                        )
+                        ? Positioned(
+                            bottom: 0,
+                            right: 0,
+                            child: Padding(
+                                padding: const EdgeInsets.only(
+                                    right: 20, bottom: 10),
+                                child: GestureDetector(
+                                  child: Icon(Icons.more_vert,
+                                      color: Colors.white),
+                                  onTap: () {
+                                    _showMenuDialog();
+                                  },
+                                )),
+                          )
+                        : Positioned(
+                            bottom: 0,
+                            left: 20,
+                            child: Padding(
+                                padding: const EdgeInsets.only(
+                                    right: 20, bottom: 10),
+                                child: GestureDetector(
+                                  child: Icon(Icons.more_vert,
+                                      color: Colors.white),
+                                  onTap: () {
+                                    _showMenuDialog();
+                                  },
+                                )),
+                          )
                 ],
               ),
             ),

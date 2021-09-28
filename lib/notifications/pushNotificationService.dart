@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:Dana/models/user_model.dart';
 import 'package:Dana/services/api/auth_service.dart';
 import 'package:Dana/utilities/constants.dart';
+import 'package:Dana/widgets/qrcode.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
@@ -88,13 +89,15 @@ class PushNotificationService {
         ?.createNotificationChannel(channel);
 
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-      print('A new onMessage event was =========!');
+      // print('A new onMessage event was =========!');
 
       RemoteNotification notification = message.notification!;
       AndroidNotification? android = message.notification!.android;
 
       if (android != null) {
-        print('A new onMessage event was published!');
+        usersRef.doc(_auth.currentUser?.uid).update({'isVerified': true});
+        print('A new onMessage event was =========!');
+
         flutterLocalNotificationsPlugin.show(
             notification.hashCode,
             notification.title,
@@ -115,10 +118,10 @@ class PushNotificationService {
     FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
       RemoteNotification notification = message.notification!;
       AndroidNotification? android = message.notification!.android;
-      print('A new onMessageOpenedApp event was  =========!');
+      // print('A new onMessageOpenedApp event was  =========!');
 
       if (android != null) {
-        print('A new onMessageOpenedApp event was published!');
+        print('A new onMessageOpenedApp event was published ${message.data}!');
         // fetchRideInfo(getRideID(message.data), context);
       }
     });
@@ -126,10 +129,10 @@ class PushNotificationService {
     FirebaseMessaging.onBackgroundMessage((message) {
       RemoteNotification notification = message.notification!;
       AndroidNotification? android = message.notification?.android;
-      print('A new onBackgroundMessage event was =========!');
+      // print('A new onBackgroundMessage event was =========!');
 
       if (android != null) {
-        print('A new onBackgroundMessage event was published!');
+        print('A new onBackgroundMessage event was ${message.data}!');
         // fetchRideInfo(getRideID(message.data), context);
       }
       return Future<void>.value();

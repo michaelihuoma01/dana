@@ -2,8 +2,10 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:typed_data';
 
+import 'package:Dana/screens/pages/direct_messages/nested_screens/chat_camera_screen.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:camera/camera.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:Dana/calls/call_utilities.dart';
 import 'package:Dana/calls/callscreens/pickup/pickup_layout.dart';
@@ -70,12 +72,13 @@ class _ChatScreenState extends State<ChatScreen> {
   Chat? _chat;
   bool _isChatExist = false;
   AppUser? _currentUser;
-  List<dynamic>? _userIds;
-  late List<AppUser?> _memberInfo;
+  List<dynamic>? _userIds = [];
+  List<AppUser>? _memberInfo = [];
   bool _isLoading = false;
   List<AppUser?> groupMembers = [];
   bool isPlayingMsg = false, isRecording = false, isSending = false;
-  late String recordFilePath;
+  String? recordFilePath;
+  var cameras;
 
   @override
   void initState() {
@@ -92,6 +95,8 @@ class _ChatScreenState extends State<ChatScreen> {
   _setup() async {
     setState(() => _isLoading = true);
 
+    cameras = await availableCameras();
+
     AppUser currentUser =
         Provider.of<UserData>(context, listen: false).currentUser!;
 
@@ -99,9 +104,9 @@ class _ChatScreenState extends State<ChatScreen> {
     userIds.add(currentUser.id);
     userIds.add(widget.receiverUser!.id);
 
-    List<AppUser?> users = [];
+    List<AppUser>? users = [];
     users.add(currentUser);
-    users.add(widget.receiverUser);
+    users.add(widget.receiverUser!);
 
     Chat? chat = await ChatService.getChatByUsers(userIds);
 
@@ -158,7 +163,7 @@ class _ChatScreenState extends State<ChatScreen> {
     final Reference firebaseStorageRef = FirebaseStorage.instance.ref().child(
         'audio/messages/${_currentUser!.id}/audio${DateTime.now().millisecondsSinceEpoch.toString()}.mp3');
 
-    UploadTask task = firebaseStorageRef.putFile(File(recordFilePath));
+    UploadTask task = firebaseStorageRef.putFile(File(recordFilePath!));
     task.then((value) async {
       print('##############done#########');
       var audioURL = await value.ref.getDownloadURL();
@@ -205,7 +210,7 @@ class _ChatScreenState extends State<ChatScreen> {
 
     recordFilePath = await getFilePath();
 
-    RecordMp3.instance.start(recordFilePath, (type) {
+    RecordMp3.instance.start(recordFilePath!, (type) {
       setState(() {});
     });
     // } else {}
@@ -298,7 +303,7 @@ class _ChatScreenState extends State<ChatScreen> {
   }
 
   Future<void> _createChat(userIds) async {
-    Chat chat = await ChatService.createChat(_memberInfo, userIds);
+    Chat chat = await ChatService.createChat(_memberInfo!, userIds, context);
 
     setState(() {
       _chat = chat;
@@ -540,7 +545,7 @@ class _ChatScreenState extends State<ChatScreen> {
                     onTap: () async {
                       GiphyGif? gif = await GiphyGet.getGif(
                         context: context,
-                        apiKey: 'kGiphyApiKey', //YOUR API KEY HERE
+                        apiKey: 'XTqy1ONihK1xvtVZauKuaFt5zxUaoGaQ', //YOUR API KEY HERE
                         lang: GiphyLanguage.spanish,
                       );
                       if (gif != null && mounted) {
@@ -583,45 +588,45 @@ class _ChatScreenState extends State<ChatScreen> {
                 padding: const EdgeInsets.only(left: 10, right: 10),
                 child: GestureDetector(
                     onTap: () async {
-                      var pickedFile =
-                          await (ImagesPicker.openCamera(pickType: PickType.all)
-                              as FutureOr<List<Media>>);
+                      var result = await Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) =>
+                                  ChatCameraScreen(cameras: cameras)));
+                      print(
+                          '=====================================================================================$result');
 
-                      File imageFile = File(pickedFile.first.path);
-                      if (imageFile != null) {
-                        String mimeStr = lookupMimeType(pickedFile.first.path)!;
-                        var fileType = mimeStr.split('/');
-                        print('file type ${fileType}');
-                        setState(() => isSending = true);
+                      File imageFile = File(result);
+                      String mimeStr = lookupMimeType(result)!;
+                      var fileType = mimeStr.split('/');
 
-                        if (fileType.first.contains('image')) {
-                          print('file type is image');
-                          String imageUrl =
-                              await StroageService.uploadMessageImage(
-                                  imageFile);
-                          _sendMessage(
-                              text: null,
-                              imageUrl: imageUrl,
-                              giphyUrl: null,
-                              audioUrl: null,
-                              videoUrl: null,
-                              fileName: null,
-                              fileUrl: null);
-                        } else {
-                          print('file type is video');
-                          String videoUrl =
-                              await StroageService.uploadMessageVideo(
-                                  imageFile);
-                          _sendMessage(
-                              text: null,
-                              imageUrl: null,
-                              audioUrl: null,
-                              giphyUrl: null,
-                              videoUrl: videoUrl,
-                              fileName: null,
-                              fileUrl: null);
-                          setState(() => isSending = false);
-                        }
+                      setState(() => isSending = true);
+
+                      if (fileType.first.contains('image')) {
+                        print('file type is image');
+                        String imageUrl =
+                            await StroageService.uploadMessageImage(imageFile);
+                        _sendMessage(
+                            text: null,
+                            imageUrl: imageUrl,
+                            giphyUrl: null,
+                            audioUrl: null,
+                            videoUrl: null,
+                            fileName: null,
+                            fileUrl: null);
+                      } else {
+                        print('file type is video');
+                        String videoUrl =
+                            await StroageService.uploadMessageVideo(imageFile);
+                        _sendMessage(
+                            text: null,
+                            imageUrl: null,
+                            audioUrl: null,
+                            giphyUrl: null,
+                            videoUrl: videoUrl,
+                            fileName: null,
+                            fileUrl: null);
+                        setState(() => isSending = false);
                       }
                     },
                     child: Icon(Icons.camera_alt_outlined,
@@ -743,7 +748,8 @@ class _ChatScreenState extends State<ChatScreen> {
         isLiked: false,
       );
 
-      ChatService.sendChatMessage(_chat!, message, widget.receiverUser!);
+      ChatService.sendChatMessage(
+          _chat!, message, widget.receiverUser!, context);
       chatsRef
           .doc(_chat!.id)
           .update({'readStatus.${widget.receiverUser!.id}': false});

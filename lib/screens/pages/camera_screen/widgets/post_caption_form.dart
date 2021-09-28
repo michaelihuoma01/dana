@@ -34,12 +34,21 @@ class _PostCaptionFormState extends State<PostCaptionForm> {
   void initState() {
     // TODO: implement initState
     super.initState();
+    if (widget.imageUrl == null) {
     _controller = VideoPlayerController.file(widget.imageFile!)
       ..initialize().then((_) {
         // print('succesful folks');
         // Ensure the first frame is shown after the video is initialized, even before the play button has been pressed.
         setState(() {});
       });
+      } else {
+         _controller = VideoPlayerController.network(widget.imageUrl!)
+      ..initialize().then((_) {
+        // print('succesful folks');
+        // Ensure the first frame is shown after the video is initialized, even before the play button has been pressed.
+        setState(() {});
+      });
+      }
   }
 
   @override

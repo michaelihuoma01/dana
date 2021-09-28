@@ -77,7 +77,7 @@ class _MessagesScreenState extends State<MessagesScreen> {
 
         List<AppUser?> membersInfo = [];
 
-        AppUser receiverUser =
+        AppUser? receiverUser =
             await DatabaseService.getUserWithId(memberIds[receiverIndex]);
 
         if (memberIds.length > 2) {
@@ -105,6 +105,8 @@ class _MessagesScreenState extends State<MessagesScreen> {
 
         dataToReturn.add(chatWithUserInfo);
       }
+    dataToReturn.sort((a, b) => b.recentTimestamp!.compareTo(a.recentTimestamp!));
+      
       yield dataToReturn;
     }
     // } catch (err) {
@@ -341,35 +343,10 @@ class _MessagesScreenState extends State<MessagesScreen> {
                         child: ListView.builder(
                       itemBuilder: (BuildContext context, int index) {
                         Chat chat = snapshot.data[index];
+                        
                         return Dismissible(
                             key: UniqueKey(),
-                            confirmDismiss: (direction) async {
-                              // users = chat.memberInfo;
-                              // int receiverIndex = users.indexWhere(
-                              //     (user) => user.id != _currentUser.id);
-                              // setState(() {
-                              //   deleteChats(chat.memberIds[receiverIndex]);
-                              //   // users.removeAt(receiverIndex);
-                              // });
-
-                              // await chatsRef
-                              //     .doc(chat.id)
-                              //     .collection('messages')
-                              //     .get()
-                              //     .then((docs) {
-                              //   docs.docs.forEach((element) {
-                              //     element.reference.delete().then((value) {
-                              //       chatsRef
-                              //           .doc(chat.id)
-                              //           .delete()
-                              //           .then((value) {
-                              //         print('======= it is succesful');
-                              //       });
-                              //     });
-                              //   });
-                              //   print('=======succesful');
-                              //   setState(() {});
-                              // });
+                            confirmDismiss: (direction) async { 
                               return showDialog(
                                   context: context,
                                   builder: (BuildContext context) {

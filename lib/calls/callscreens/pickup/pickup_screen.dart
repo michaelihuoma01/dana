@@ -132,9 +132,9 @@ class _PickupScreenState extends State<PickupScreen> {
                       ),
                       onTap: () async {
                         audioPlayer.stop();
-                        isCallMissed = false;
-                        addToLocalStorage(callStatus: CALL_STATUS_RECEIVED);
-                        await callMethods.endCall(call: widget.call);
+                        isCallMissed = false; 
+                        await callMethods.endCall(
+                            call: widget.call, isMissed: true);
                       },
                     ),
                     GestureDetector(
@@ -158,13 +158,13 @@ class _PickupScreenState extends State<PickupScreen> {
                           isCallMissed = false;
                           addToLocalStorage(callStatus: CALL_STATUS_RECEIVED);
                           print(widget.call.isAudio);
-                        audioPlayer.stop();
+                          audioPlayer.stop();
 
                           await Navigator.push(
                             context,
                             MaterialPageRoute(
                               builder: (context) => CallScreen(
-                                currentUserId: widget.call.receiverId,
+                                  currentUserId: widget.call.receiverId,
                                   call: widget.call,
                                   isAudio: widget.call.isAudio),
                             ),

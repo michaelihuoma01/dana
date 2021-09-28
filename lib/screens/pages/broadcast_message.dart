@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:Dana/calls/callscreens/pickup/pickup_layout.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:collection/collection.dart' show IterableExtension;
@@ -100,7 +101,7 @@ class _BroadcastMessageState extends State<BroadcastMessage> {
         isLiked: false,
       );
 
-      ChatService.sendChatMessage(_chat, message, element);
+      ChatService.sendChatMessage(_chat, message, element, context);
       chatsRef.doc(_chat.id).update({
         'readStatus.${element.id}': false,
         'readStatus.${widget.currentUser!.id}': true
@@ -249,189 +250,192 @@ class _BroadcastMessageState extends State<BroadcastMessage> {
             fit: BoxFit.cover,
           ),
         ),
-        Scaffold(
-          backgroundColor: Colors.transparent,
-          appBar: PreferredSize(
-              preferredSize: const Size.fromHeight(50),
-              child: AppBar(
-                actions: [
-                  GestureDetector(
-                    onTap: () {
-                      if (_selectAll == false) {
-                        _userFollowing.forEach((element) {
-                          setState(() {
-                            _selectedUsers.add(element);
-                            _selectAll = true;
+        PickupLayout(
+             currentUser: widget.currentUser,
+          scaffold: Scaffold(
+            backgroundColor: Colors.transparent,
+            appBar: PreferredSize(
+                preferredSize: const Size.fromHeight(50),
+                child: AppBar(
+                  actions: [
+                    GestureDetector(
+                      onTap: () {
+                        if (_selectAll == false) {
+                          _userFollowing.forEach((element) {
+                            setState(() {
+                              _selectedUsers.add(element);
+                              _selectAll = true;
+                            });
                           });
-                        });
-                      } else {
-                        _userFollowing.forEach((element) {
-                          setState(() {
-                            _selectedUsers.remove(element);
-                            _selectAll = false;
+                        } else {
+                          _userFollowing.forEach((element) {
+                            setState(() {
+                              _selectedUsers.remove(element);
+                              _selectAll = false;
+                            });
                           });
-                        });
-                      }
-                    },
-                    child: Padding(
-                      padding: const EdgeInsets.only(right: 15, left: 15),
-                      child: Icon(Icons.done_all, color: lightColor),
-                    ),
-                  )
-                ],
-                title: Text(S.of(context)!.broadcast,
-                    style: TextStyle(
-                        color: Colors.white, fontFamily: 'Poppins-Regular')),
-                backgroundColor: darkColor,
-                centerTitle: true,
-                elevation: 5,
-                automaticallyImplyLeading: true,
-                iconTheme: IconThemeData(color: Colors.white),
-                brightness: Brightness.dark,
-              )),
-          floatingActionButton: new FloatingActionButton(
-            backgroundColor: lightColor,
-            child: const Icon(Icons.send_rounded, size: 19),
-            mini: true,
-            onPressed: () {
-              if (textEditingController.value != null) {
-                sendBroadcastMessage();
-                Navigator.pop(context);
-              }
-            },
-            elevation: 5,
-            isExtended: true,
-          ),
-          body: Padding(
-            padding: const EdgeInsets.all(10),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 15.0),
-                  child: TextField(
-                    maxLines: 5,
-                    controller: textEditingController,
-                    decoration: InputDecoration(
-                        hintText: S.of(context)!.entermsg,
-                        hintStyle: TextStyle(color: Colors.grey),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(5),
-                          borderSide: BorderSide(color: lightColor, width: 1),
-                        ),
-                        enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(5),
-                          borderSide: BorderSide(color: lightColor, width: 1),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(5),
-                            borderSide:
-                                BorderSide(color: lightColor, width: 1))),
-                    style: TextStyle(color: Colors.white),
-                    cursorColor: lightColor,
-                  ),
-                ),
-                SizedBox(height: 15),
-                Expanded(
-                  child: Container(
-                    child: ListView.builder(
-                      itemCount: _userFollowing.length,
-                      itemBuilder: (BuildContext context, int index) {
-                        AppUser follower = _userFollowing[index];
-                        AppUser? filteritem = _selectedUsers
-                            .firstWhereOrNull((item) => item.id == follower.id);
-                        return Theme(
-                            data: ThemeData(unselectedWidgetColor: lightColor),
-                            child: CheckboxListTile(
-                              value: (_selectAll == true)
-                                  ? true
-                                  : filteritem != null,
-                              checkColor: darkColor,
-                              activeColor: lightColor,
-                              selectedTileColor: lightColor,
-                              title: Row(children: [
-                                Container(
-                                  height: 40,
-                                  width: 40,
-                                  child: CircleAvatar(
-                                    radius: 25.0,
-                                    backgroundColor: Colors.grey,
-                                    backgroundImage: (follower
-                                                .profileImageUrl!.isEmpty
-                                            ? AssetImage(placeHolderImageRef)
-                                            : CachedNetworkImageProvider(
-                                                follower.profileImageUrl!))
-                                        as ImageProvider<Object>?,
-                                  ),
-                                ),
-                                SizedBox(width: 15),
-                                Flexible(
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text(follower.name!,
-                                          style:
-                                              TextStyle(color: Colors.white)),
-                                      SizedBox(height: 3),
-                                      Text('PIN: ${follower.pin}',
-                                          maxLines: 3,
-                                          style: TextStyle(
-                                              color: Colors.grey,
-                                              fontSize: 14)),
-                                    ],
-                                  ),
-                                )
-                              ]),
-                              onChanged: (value) {
-                                setState(() {
-                                  if (value == true) {
-                                    _selectedUsers.add(follower);
-                                  } else {
-                                    _selectedUsers.removeWhere(
-                                        (item) => item.id == follower.id);
-                                  }
-                                });
-                              },
-                            ));
+                        }
                       },
+                      child: Padding(
+                        padding: const EdgeInsets.only(right: 15, left: 15),
+                        child: Icon(Icons.done_all, color: lightColor),
+                      ),
+                    )
+                  ],
+                  title: Text(S.of(context)!.broadcast,
+                      style: TextStyle(
+                          color: Colors.white, fontFamily: 'Poppins-Regular')),
+                  backgroundColor: darkColor,
+                  centerTitle: true,
+                  elevation: 5,
+                  automaticallyImplyLeading: true,
+                  iconTheme: IconThemeData(color: Colors.white),
+                  brightness: Brightness.dark,
+                )),
+            floatingActionButton: new FloatingActionButton(
+              backgroundColor: lightColor,
+              child: const Icon(Icons.send_rounded, size: 19),
+              mini: true,
+              onPressed: () {
+                if (textEditingController.value != null) {
+                  sendBroadcastMessage();
+                  Navigator.pop(context);
+                }
+              },
+              elevation: 5,
+              isExtended: true,
+            ),
+            body: Padding(
+              padding: const EdgeInsets.all(10),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 15.0),
+                    child: TextField(
+                      maxLines: 5,
+                      controller: textEditingController,
+                      decoration: InputDecoration(
+                          hintText: S.of(context)!.entermsg,
+                          hintStyle: TextStyle(color: Colors.grey),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(5),
+                            borderSide: BorderSide(color: lightColor, width: 1),
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(5),
+                            borderSide: BorderSide(color: lightColor, width: 1),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(5),
+                              borderSide:
+                                  BorderSide(color: lightColor, width: 1))),
+                      style: TextStyle(color: Colors.white),
+                      cursorColor: lightColor,
                     ),
                   ),
-                ),
-              ],
+                  SizedBox(height: 15),
+                  Expanded(
+                    child: Container(
+                      child: ListView.builder(
+                        itemCount: _userFollowing.length,
+                        itemBuilder: (BuildContext context, int index) {
+                          AppUser follower = _userFollowing[index];
+                          AppUser? filteritem = _selectedUsers
+                              .firstWhereOrNull((item) => item.id == follower.id);
+                          return Theme(
+                              data: ThemeData(unselectedWidgetColor: lightColor),
+                              child: CheckboxListTile(
+                                value: (_selectAll == true)
+                                    ? true
+                                    : filteritem != null,
+                                checkColor: darkColor,
+                                activeColor: lightColor,
+                                selectedTileColor: lightColor,
+                                title: Row(children: [
+                                  Container(
+                                    height: 40,
+                                    width: 40,
+                                    child: CircleAvatar(
+                                      radius: 25.0,
+                                      backgroundColor: Colors.grey,
+                                      backgroundImage: (follower
+                                                  .profileImageUrl!.isEmpty
+                                              ? AssetImage(placeHolderImageRef)
+                                              : CachedNetworkImageProvider(
+                                                  follower.profileImageUrl!))
+                                          as ImageProvider<Object>?,
+                                    ),
+                                  ),
+                                  SizedBox(width: 15),
+                                  Flexible(
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(follower.name!,
+                                            style:
+                                                TextStyle(color: Colors.white)),
+                                        SizedBox(height: 3),
+                                        Text('PIN: ${follower.pin}',
+                                            maxLines: 3,
+                                            style: TextStyle(
+                                                color: Colors.grey,
+                                                fontSize: 14)),
+                                      ],
+                                    ),
+                                  )
+                                ]),
+                                onChanged: (value) {
+                                  setState(() {
+                                    if (value == true) {
+                                      _selectedUsers.add(follower);
+                                    } else {
+                                      _selectedUsers.removeWhere(
+                                          (item) => item.id == follower.id);
+                                    }
+                                  });
+                                },
+                              ));
+                        },
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
+        
+            // FutureBuilder(
+            //   future: _users,
+            //   builder: (context, snapshot) {
+            //     if (!snapshot.hasData) {
+            //       return Center(
+            //         child: CircularProgressIndicator(),
+            //       );
+            //     }
+            //     if (snapshot.data.docs.length == 0) {
+            //       return Center(
+            //         child: Text('No Users found! Please try again.',
+            //             style: TextStyle(color: Colors.white)),
+            //       );
+            //     }
+            //     return Container(
+            //       height: 500,
+            //       child: ListView.builder(
+            //           itemCount: snapshot.data.docs.length,
+            //           itemBuilder: (BuildContext context, int index) {
+            //             AppUser user = AppUser.fromDoc(snapshot.data.docs[index]);
+            //             // Prevent current user to send messages to himself
+            //             print(user.profileImageUrl);
+            //             return (widget.searchFrom != SearchFrom.homeScreen &&
+            //                     user.id == _currentUserId)
+            //                 ? SizedBox.shrink()
+            //                 : _buildUserTile(user);
+            //           }),
+            //     );
+            //   },
+            // ),
           ),
-
-          // FutureBuilder(
-          //   future: _users,
-          //   builder: (context, snapshot) {
-          //     if (!snapshot.hasData) {
-          //       return Center(
-          //         child: CircularProgressIndicator(),
-          //       );
-          //     }
-          //     if (snapshot.data.docs.length == 0) {
-          //       return Center(
-          //         child: Text('No Users found! Please try again.',
-          //             style: TextStyle(color: Colors.white)),
-          //       );
-          //     }
-          //     return Container(
-          //       height: 500,
-          //       child: ListView.builder(
-          //           itemCount: snapshot.data.docs.length,
-          //           itemBuilder: (BuildContext context, int index) {
-          //             AppUser user = AppUser.fromDoc(snapshot.data.docs[index]);
-          //             // Prevent current user to send messages to himself
-          //             print(user.profileImageUrl);
-          //             return (widget.searchFrom != SearchFrom.homeScreen &&
-          //                     user.id == _currentUserId)
-          //                 ? SizedBox.shrink()
-          //                 : _buildUserTile(user);
-          //           }),
-          //     );
-          //   },
-          // ),
         ),
       ],
     );

@@ -135,7 +135,7 @@ class _HomeScreenState extends State<HomeScreen>
     }
   }
 
-   _setupFriends() async {
+  _setupFriends() async {
     List<String?> followingUsers =
         await DatabaseService.getUserFollowingIds(widget.currentUserId);
 
@@ -145,39 +145,39 @@ class _HomeScreenState extends State<HomeScreen>
     var friendList = [...followingUsers, ...followerUsers].toSet().toList();
 
     for (String? userId in friendList) {
+      var isFollowing = await DatabaseService.isFollowingUser(
+        currentUserId: widget.currentUserId,
+        userId: userId,
+      );
+
+      var isFollower = await DatabaseService.isUserFollower(
+        currentUserId: widget.currentUserId,
+        userId: userId,
+      );
       var friends = await DatabaseService.getUserWithId(userId);
-      setState(() {
-        isFriends = true;
-        _friends.add(friends);
-      });
+
+      if (isFollower == true && isFollowing == true) {
+        setState(() {
+          isFriends = true;
+          _friends.add(friends);
+        });
+      } else {
+        setState(() {
+          isFriends = false;
+          isRequest = true;
+          _requests.add(friends);
+        });
+      }
     }
 
     print(_friends.length);
+    print(isRequest);
 
-    for (var userDoc in followingUsers) {
-      var requests = await DatabaseService.getUserWithId(userDoc);
-
-      isFollowingUser = await DatabaseService.isFollowingUser(
-        currentUserId: widget.currentUserId,
-        userId: userDoc,
-      );
-
-      if (!isFollowingUser == true) {
-        isRequest = true;
-        _requests.add(requests);
-
-        print('not friends ${requests.name}');
-      } else {
-        setState(() {
-          isRequest = false;
-          isFriends = false;
-        });
-      }
-      setState(() {
-        _isLoading = false;
-      });
-    }
+    setState(() {
+      _isLoading = false;
+    });
   }
+
   checkUnreadMessages() async {
     Stream<QuerySnapshot> stream = FirebaseFirestore.instance
         .collection('chats')
@@ -398,11 +398,11 @@ class _HomeScreenState extends State<HomeScreen>
                         children: [
                           SvgPicture.asset('assets/images/groups.svg',
                               color: isSelected4 ? lightColor : Colors.grey),
-                          if (isSeen == false)
+                          if (isRequest == true)
                             Positioned(
-                                left: 11,
+                                right: 0,
                                 child: Icon(Icons.circle,
-                                    color: Colors.red, size: 12))
+                                    color: Colors.red, size: 8))
                         ],
                       ),
                       title: Text(isSelected4 ? S.of(context)!.friends : '',

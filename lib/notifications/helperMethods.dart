@@ -20,7 +20,8 @@ class HelperMethods {
       'click_action': 'FLUTTER_NOTIFICATION_CLICK',
       'id': '1',
       'status': 'done',
-      'riderID': userID,
+      'userID': userID,
+      'body': body
     };
 
     Map bodyMap = {

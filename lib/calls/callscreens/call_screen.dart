@@ -13,6 +13,7 @@ import 'package:Dana/screens/pages/direct_messages/nested_screens/chat_screen.da
 import 'package:Dana/utils/constants.dart';
 import 'package:Dana/widgets/timer_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/painting.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -36,7 +37,7 @@ class _CallScreenState extends State<CallScreen> {
 
   // UserProvider userProvider;
   late StreamSubscription callStreamSubscription;
-  final GlobalKey<TimerViewState> _timerKey = GlobalKey();
+  // final GlobalKey<TimerViewState> _timerKey = GlobalKey();
 
   static final _users = <int>[];
   final _infoStrings = <String>[];
@@ -45,7 +46,8 @@ class _CallScreenState extends State<CallScreen> {
   bool start = false;
   late RtcEngine _engine;
   int? _remoteUid;
-  String? duration;
+  Timer? _timer;
+  int _counter = 0 * 60;
 
   @override
   void initState() {
@@ -125,6 +127,7 @@ class _CallScreenState extends State<CallScreen> {
         final info = 'onUserJoined: $uid';
         setState(() {
           start = true;
+          startTimer();
         });
         _infoStrings.add(info);
         _users.add(uid);
@@ -144,7 +147,7 @@ class _CallScreenState extends State<CallScreen> {
       setState(() {
         final info = 'onUserOffline: a: ${a.toString()}, b: ${b.toString()}';
         _infoStrings.add(info);
-        _timerKey.currentState?.cancelTimer();
+        cancelTimer();
       });
     }, localUserRegistered: (var s, i) {
       setState(() {
@@ -156,13 +159,6 @@ class _CallScreenState extends State<CallScreen> {
         _infoStrings.add('onLeaveChannel ====> $i');
 
         _users.clear();
-
-        int minutes = (i.duration / 60).truncate();
-        String minutesStr = (minutes % 60).toString().padLeft(2, '0');
-
-        duration = minutesStr;
-
-        Navigator.pop(context);
       });
     }, connectionLost: () {
       setState(() {
@@ -171,19 +167,7 @@ class _CallScreenState extends State<CallScreen> {
 
         _infoStrings.add(info);
       });
-    },
-
-        // o : (var uid,   reason) {
-        //     // if call was picked
-
-        //     setState(() {
-        //       final info = 'userOffline: $uid';
-        //       _infoStrings.add(info);
-        //       _users.remove(uid);
-        //     });
-        //   };
-
-        firstRemoteVideoFrame: (
+    }, firstRemoteVideoFrame: (
       int uid,
       int width,
       int height,
@@ -193,9 +177,40 @@ class _CallScreenState extends State<CallScreen> {
         final info = 'firstRemoteVideo: $uid ${width}x $height';
         _infoStrings.add(info);
       });
-      print('========================/$uid');
     }));
   }
+
+  void cancelTimer() {
+    _timer?.cancel();
+  }
+
+  void startTimer() {
+    if (_timer != null) {
+      _timer!.cancel();
+    }
+    if (start == true) {
+      _timer = Timer.periodic(Duration(seconds: 1), (timer) {
+        setState(() {
+          _counter++;
+        });
+        print('====================$_counter');
+      });
+    }
+  }
+
+  String getFormatDuration(Duration duration) {
+    String twoDigits(int n) => n.toString().padLeft(2, "0");
+    var twoDigitMinutes = twoDigits(duration.inMinutes.remainder(60));
+    var twoDigitSeconds = twoDigits(duration.inSeconds.remainder(60));
+    if (duration.inHours > 0) {
+      return "${twoDigits(duration.inHours)}:$twoDigitMinutes:$twoDigitSeconds ";
+    }
+    return "$twoDigitMinutes:$twoDigitSeconds";
+  }
+
+  Widget _getResendVerificationButton() =>
+      Text('${getFormatDuration(Duration(seconds: _counter))}',
+          style: TextStyle(fontSize: 18, color: Colors.white));
 
   /// Helper function to get list of native views
   List<Widget> _getRenderViews() {
@@ -380,12 +395,20 @@ class _CallScreenState extends State<CallScreen> {
 
           GestureDetector(
               onTap: () async {
-                await _engine.leaveChannel();
+                await _engine.leaveChannel().then((value) {
+                  var callDuration =
+                      getFormatDuration(Duration(seconds: _counter));
+
+                  print('++++++++++++++++++++++++$callDuration');
+
                   callMethods.endCall(
                       call: widget.call,
-                      duration: duration,
+                      duration: callDuration,
+                      isMissed: (_remoteUid == null) ? true : false,
                       timestamp: Timestamp.now());
-                
+
+                  // Navigator.pop(context);
+                });
               },
               child: Container(
                   decoration: BoxDecoration(
@@ -438,6 +461,9 @@ class _CallScreenState extends State<CallScreen> {
     _engine.leaveChannel();
     _engine.destroy();
     callStreamSubscription.cancel();
+    if (_timer != null) {
+      _timer!.cancel();
+    }
     super.dispose();
   }
 
@@ -453,22 +479,22 @@ class _CallScreenState extends State<CallScreen> {
                         ? Center(
                             child:
                                 rtc_remote_view.SurfaceView(uid: _remoteUid!))
-                        : Center(
-                            child: Text('Calling...',
-                                style: TextStyle(color: Colors.white))),
+                        : Align(
+                            alignment: Alignment.bottomCenter,
+                            child: Padding(
+                              padding: const EdgeInsets.only(bottom: 80),
+                              child: Text('Connecting...',
+                                  style: TextStyle(color: Colors.white)),
+                            ),
+                          ),
+
                     Positioned(
                       top: 0,
                       left: 0,
                       right: 0,
                       child: Container(
-                        height: 380,
-                        width: 100,
-                        child: (_remoteUid != null)
-                            ? Center(child: rtc_local_view.SurfaceView())
-                            : Center(
-                                child: Text('Calling...',
-                                    style: TextStyle(color: Colors.white))),
-                      ),
+                          height: 390,
+                          child: Center(child: rtc_local_view.SurfaceView())),
                     ),
 
                     if (start == true)
@@ -483,10 +509,7 @@ class _CallScreenState extends State<CallScreen> {
                                       fontFamily: 'Poppins-Regular',
                                       fontSize: 16,
                                       color: Colors.white)),
-                              TimerView(
-                                key: _timerKey,
-                                start: start,
-                              ),
+                              _getResendVerificationButton()
                             ],
                           )),
 
@@ -522,14 +545,30 @@ class _CallScreenState extends State<CallScreen> {
                   backgroundColor: Colors.transparent,
                   body: Stack(
                     children: [
-                      Center(
-                        child: CachedImage(
-                          (widget.call.receiverId == widget.currentUserId)
-                              ? widget.call.callerPic
-                              : widget.call.receiverPic,
-                          isRound: true,
-                          radius: 150,
-                        ),
+                      Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Center(
+                            child: CachedImage(
+                              (widget.call.receiverId == widget.currentUserId)
+                                  ? widget.call.callerPic
+                                  : widget.call.receiverPic,
+                              isRound: true,
+                              radius: 150,
+                            ),
+                          ),
+                          SizedBox(height: 20),
+                          Text(
+                            (widget.call.receiverId == widget.currentUserId)
+                                ? widget.call.callerName!
+                                : widget.call.receiverName!,
+                            style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 30,
+                                fontFamily: 'Poppins-Regular',
+                                color: Colors.white),
+                          ),
+                        ],
                       ),
                       if (start == true)
                         Positioned(
@@ -548,10 +587,7 @@ class _CallScreenState extends State<CallScreen> {
                                         fontFamily: 'Poppins-Regular',
                                         fontSize: 16,
                                         color: Colors.white)),
-                                TimerView(
-                                  key: _timerKey,
-                                  start: start,
-                                ),
+                                _getResendVerificationButton()
                               ],
                             )),
                       // _toolbar(),

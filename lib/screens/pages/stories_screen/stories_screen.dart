@@ -18,6 +18,7 @@ import 'package:Dana/utils/constants.dart';
 import 'package:Dana/utils/utility.dart';
 import 'package:Dana/widgets/BrandDivider.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:ionicons/ionicons.dart';
 import 'package:provider/provider.dart';
@@ -122,7 +123,8 @@ class _StoryScreenState extends State<StoryScreen>
       bool isChatExist = chat != null;
 
       if (!isChatExist) {
-        chat = await ChatService.createChat([currentUser, receiver], userIds);
+        chat = await ChatService.createChat(
+            [currentUser, receiver], userIds, context);
 
         setState(() {
           isChatExist = true;
@@ -150,7 +152,7 @@ class _StoryScreenState extends State<StoryScreen>
         isLiked: false,
       );
 
-      ChatService.sendChatMessage(chat, message, receiver);
+      ChatService.sendChatMessage(chat, message, receiver, context);
       chatsRef.doc(chat.id).update({'readStatus.${receiver.id}': false});
       setState(() => isSending = false);
     }
@@ -164,50 +166,60 @@ class _StoryScreenState extends State<StoryScreen>
     bool isCurrentUser = currentUser!.id == widget.user!.id ? true : false;
     myLocale = Localizations.localeOf(context);
 
-    return SafeArea(
-      child: Scaffold(
-        backgroundColor: Colors.black,
-        resizeToAvoidBottomInset: false,
-        body: GestureDetector(
-          onVerticalDragStart: (dragDetails) {
-            startVerticalDragDetails = dragDetails;
-          },
-          onVerticalDragUpdate: (dragDetails) {
-            updateVerticalDragDetails = dragDetails;
-          },
-          onVerticalDragEnd: (endDetails) {
-            double dx = updateVerticalDragDetails.globalPosition.dx -
-                startVerticalDragDetails.globalPosition.dx;
-            double dy = updateVerticalDragDetails.globalPosition.dy -
-                startVerticalDragDetails.globalPosition.dy;
-            double velocity = endDetails.primaryVelocity!;
+    return Scaffold(
+      backgroundColor: Colors.black,
+      resizeToAvoidBottomInset: false,
+      body: Stack(
+        children: [
+        
+          GestureDetector(
+            onVerticalDragStart: (dragDetails) {
+              startVerticalDragDetails = dragDetails;
+            },
+            onVerticalDragUpdate: (dragDetails) {
+              updateVerticalDragDetails = dragDetails;
+            },
+            onVerticalDragEnd: (endDetails) {
+              double dx = updateVerticalDragDetails.globalPosition.dx -
+                  startVerticalDragDetails.globalPosition.dx;
+              double dy = updateVerticalDragDetails.globalPosition.dy -
+                  startVerticalDragDetails.globalPosition.dy;
+              double velocity = endDetails.primaryVelocity!;
 
-            //Convert values to be positive
-            if (dx < 0) dx = -dx;
-            if (dy < 0) dy = -dy;
+              //Convert values to be positive
+              if (dx < 0) dx = -dx;
+              if (dy < 0) dy = -dy;
 
-            if (velocity < 0) {
-              //swipe Up
-              _onSwipeUp();
-            } else {
-              //swipe down
-              Navigator.of(context).pop(_currentIndex);
-            }
-          },
-          onTapDown: (detailes) => (myLocale?.languageCode == 'en')
-              ? _onTapDown(detailes)
-              : _onTapDownArabic(detailes),
-          child: PageView.builder(
-            controller: _pageController,
-            physics: NeverScrollableScrollPhysics(),
-            itemCount: widget.stories.length,
-            itemBuilder: (context, index) {
-              final Story story = widget.stories[index];
+              if (velocity < 0) {
+                //swipe Up
+                _onSwipeUp();
+              } else {
+                //swipe down
+                Navigator.of(context).pop(_currentIndex);
+              }
+            },
+            onLongPress: () {
+              _animController?.stop();
+              print('long press');
+            },
+            onLongPressEnd: (details) {
+              _animController?.forward();
+            },
+            onTapDown: (detailes) => (myLocale?.languageCode == 'en')
+                ? _onTapDown(detailes)
+                : _onTapDownArabic(detailes),
+            child: PageView.builder(
+              controller: _pageController,
+              physics: NeverScrollableScrollPhysics(),
+              itemCount: widget.stories.length,
+              itemBuilder: (context, index) {
+                final Story story = widget.stories[index];
 
-              StoriesService.setNewStoryView(currentUser!.id, story);
+                StoriesService.setNewStoryView(currentUser!.id, story);
 
-              return Center(
-                child: Stack(
+                return Stack(
+                  alignment: Alignment.center,
+                  fit: StackFit.loose,
                   children: [
                     GestureDetector(
                       onVerticalDragUpdate: (details) {
@@ -610,11 +622,15 @@ class _StoryScreenState extends State<StoryScreen>
                       ),
                     )
                   ],
-                ),
-              );
-            },
+                );
+              },
+            ),
           ),
-        ),
+            GestureDetector(
+              behavior: HitTestBehavior.translucent,
+              onLongPress: () => print('fuck up'),
+              child: Container(color: Colors.red)),
+        ],
       ),
     );
   }
@@ -686,7 +702,9 @@ class _StoryScreenState extends State<StoryScreen>
           _loadStory(story: widget.stories[_currentIndex!]);
         }
       });
-    } else {}
+    } else {
+      // _animController?.stop();
+    }
   }
 
   void _loadStory({required Story story, bool animateToPage = true}) {

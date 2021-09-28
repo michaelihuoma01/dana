@@ -1,5 +1,8 @@
 import 'dart:async';
 import 'dart:io';
+import 'package:Dana/calls/callscreens/pickup/pickup_layout.dart';
+import 'package:Dana/models/user_data.dart';
+import 'package:Dana/models/user_model.dart';
 import 'package:camera/camera.dart';
 import 'package:Dana/generated/l10n.dart';
 import 'package:Dana/screens/pages/camera_screen/nested_screens/create_post_screen.dart';
@@ -13,6 +16,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:liquid_swipe/liquid_swipe.dart';
+import 'package:provider/provider.dart';
 
 class EditPhotoScreen extends StatefulWidget {
   final File imageFile;
@@ -51,7 +55,8 @@ class _EditPhotoScreenState extends State<EditPhotoScreen>
   @override
   Widget build(BuildContext context) {
     final Size size = MediaQuery.of(context).size;
-
+    AppUser? currentUser =
+        Provider.of<UserData>(context, listen: false).currentUser;
     setState(() {
       final Image image =
           Image(image: FileImage(File('${widget.imageFile.path}')));
@@ -103,103 +108,107 @@ class _EditPhotoScreenState extends State<EditPhotoScreen>
             fit: BoxFit.cover,
           ),
         ),
-        Scaffold(
-          backgroundColor: Colors.transparent,
-          appBar: AppBar(
-            title: Text(
-              S.of(context)!.editphoto,
-              style: TextStyle(color: Colors.white),
+        PickupLayout(
+          currentUser: currentUser,
+          scaffold: Scaffold(
+            backgroundColor: Colors.transparent,
+            appBar: AppBar(
+              title: Text(
+                S.of(context)!.editphoto,
+                style: TextStyle(color: Colors.white),
+              ),
+              centerTitle: true,
+              backgroundColor: darkColor,
+              brightness: Brightness.dark,
+              iconTheme: IconThemeData(color: Colors.white),
+              actions: [
+                Padding(
+                    padding:
+                        const EdgeInsets.only(right: 15, top: 17, left: 15),
+                    child: GestureDetector(
+                        onTap: convertFilteredImageToImageFile,
+                        child: Text(S.of(context)!.next,
+                            style:
+                                TextStyle(color: Colors.white, fontSize: 20)))),
+              ],
             ),
-            centerTitle: true,
-            backgroundColor: darkColor,
-            brightness: Brightness.dark,
-            iconTheme: IconThemeData(color: Colors.white),
-            actions: [
-              Padding(
-                  padding: const EdgeInsets.only(right: 15, top: 17, left: 15),
-                  child: GestureDetector(
-                      onTap: convertFilteredImageToImageFile,
-                      child: Text(S.of(context)!.next,
-                          style:
-                              TextStyle(color: Colors.white, fontSize: 20)))),
-            ],
-          ),
-          body: Column(
-            children: [
-              RepaintBoundary(
-                  key: _globalKey,
-                  child: Stack(
+            body: Column(
+              children: [
+                RepaintBoundary(
+                    key: _globalKey,
+                    child: Stack(
+                      children: [
+                        Container(
+                          constraints: BoxConstraints(
+                            maxWidth: size.width,
+                            maxHeight: size.width,
+                          ),
+                          child: LiquidSwipe(
+                            pages: _filterPages,
+                            onPageChangeCallback: (value) {
+                              setState(() => _selectedIndex = value);
+                              _setFilterTitle(value);
+                            },
+                            waveType: WaveType.liquidReveal,
+                            liquidController: _liquidController,
+                            ignoreUserGestureWhileAnimating: true,
+                            enableLoop: true,
+                          ),
+                        ),
+                        if (_newFilterTitle) _displayStoryTitle(size),
+                      ],
+                    )),
+                Expanded(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
+                      Expanded(child: SizedBox()),
                       Container(
-                        constraints: BoxConstraints(
-                          maxWidth: size.width,
-                          maxHeight: size.width,
-                        ),
-                        child: LiquidSwipe(
-                          pages: _filterPages,
-                          onPageChangeCallback: (value) {
-                            setState(() => _selectedIndex = value);
-                            _setFilterTitle(value);
-                          },
-                          waveType: WaveType.liquidReveal,
-                          liquidController: _liquidController,
-                          ignoreUserGestureWhileAnimating: true,
-                          enableLoop: true,
-                        ),
-                      ),
-                      if (_newFilterTitle) _displayStoryTitle(size),
-                    ],
-                  )),
-              Expanded(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    Expanded(child: SizedBox()),
-                    Container(
-                      color: Theme.of(context).backgroundColor,
-                      alignment: Alignment.center,
-                      child: Container(
-                        height: 140,
-                        child: ListView.builder(
-                            scrollDirection: Axis.horizontal,
-                            itemCount: filters.length,
-                            shrinkWrap: true,
-                            itemBuilder: (BuildContext context, int index) {
-                              return InkWell(
-                                child: Container(
-                                  padding: EdgeInsets.all(10.0),
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.center,
-                                    children: <Widget>[
-                                      _buildFilterThumbnail(index, size),
-                                      SizedBox(
-                                        height: 5.0,
-                                      ),
-                                      Text(
-                                        filters[index].name,
-                                      )
-                                    ],
+                        color: Theme.of(context).backgroundColor,
+                        alignment: Alignment.center,
+                        child: Container(
+                          height: 140,
+                          child: ListView.builder(
+                              scrollDirection: Axis.horizontal,
+                              itemCount: filters.length,
+                              shrinkWrap: true,
+                              itemBuilder: (BuildContext context, int index) {
+                                return InkWell(
+                                  child: Container(
+                                    padding: EdgeInsets.all(10.0),
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.center,
+                                      children: <Widget>[
+                                        _buildFilterThumbnail(index, size),
+                                        SizedBox(
+                                          height: 5.0,
+                                        ),
+                                        Text(
+                                          filters[index].name,
+                                        )
+                                      ],
+                                    ),
                                   ),
-                                ),
-                                onTap: () {
-                                  setState(() => _selectedIndex = index);
-                                  _liquidController.jumpToPage(page: index);
-                                },
-                              );
-                            }),
+                                  onTap: () {
+                                    setState(() => _selectedIndex = index);
+                                    _liquidController.jumpToPage(page: index);
+                                  },
+                                );
+                              }),
+                        ),
                       ),
-                    ),
-                    // Expanded(child: SizedBox()),
-                    // Padding(
-                    //     padding: const EdgeInsets.only(bottom: 30),
-                    //     child: Text('Filters',
-                    //         style:
-                    //             TextStyle(color: Colors.white, fontSize: 20)))
-                  ],
-                ),
-              )
-            ],
+                      // Expanded(child: SizedBox()),
+                      // Padding(
+                      //     padding: const EdgeInsets.only(bottom: 30),
+                      //     child: Text('Filters',
+                      //         style:
+                      //             TextStyle(color: Colors.white, fontSize: 20)))
+                    ],
+                  ),
+                )
+              ],
+            ),
           ),
         ),
       ],

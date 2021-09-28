@@ -1,3 +1,4 @@
+import 'package:Dana/calls/callscreens/pickup/pickup_layout.dart';
 import 'package:camera/camera.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:Dana/generated/l10n.dart';
@@ -155,63 +156,66 @@ class _AddPostState extends State<AddPost> {
   Widget build(BuildContext context) {
     // Size screenSize = MediaQuery.of(context).size;
 
-    return Scaffold(
-      backgroundColor: darkColor,
-      appBar: PreferredSize(
-          preferredSize: const Size.fromHeight(50),
-          child: AddPostAppbar(
-            isTab: false,
-            title:  S.of(context)!.cam,
-            isPost: true,
-            backToHomeScreenFromCameraScreen: _backToHomeScreenFromCameraScreen,
-            cameras: _cameras,
-            cameraConsumer: _cameraConsumer,
-            bgColor:
-                (_caption != '') ? lightColor : lightColor.withOpacity(0.5),
-            onTap: (_caption != '')
-                ? () {
-                    _submit(); 
-                  }
-                : null,
-          )),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              TextField(
-                style: TextStyle(color: Colors.white, fontSize: 18),
-                maxLines: null,
-                controller: _captionController,
-                onChanged: (value) {
-                  setState(() {
-                    _caption = value;
-                  });
-                },
-                decoration: InputDecoration(
-                  border: UnderlineInputBorder(borderSide: BorderSide.none),
-                  hintText:  S.of(context)!.happening,
-                  focusedBorder:
-                      UnderlineInputBorder(borderSide: BorderSide.none),
-                  enabledBorder:
-                      UnderlineInputBorder(borderSide: BorderSide.none),
-                  hintStyle: TextStyle(color: Colors.grey),
-                  // prefixIcon: Padding(
-                  //     padding: const EdgeInsets.only(right: 20),
-                  //     child: GestureDetector(
-                  //         onTap: () {
-                  //           Navigator.push(
-                  //               context,
-                  //               MaterialPageRoute(
-                  //                   builder: (context) => PostAudience()));
-                  //         },
-                  //         child: Icon(Icons.public, color: lightColor))),
+    return PickupLayout(
+         currentUser: _currentUser,
+      scaffold: Scaffold(
+        backgroundColor: darkColor,
+        appBar: PreferredSize(
+            preferredSize: const Size.fromHeight(50),
+            child: AddPostAppbar(
+              isTab: false,
+              title:  S.of(context)!.cam,
+              isPost: true,
+              backToHomeScreenFromCameraScreen: _backToHomeScreenFromCameraScreen,
+              cameras: _cameras,
+              cameraConsumer: _cameraConsumer,
+              bgColor:
+                  (_caption != '') ? lightColor : lightColor.withOpacity(0.5),
+              onTap: (_caption != '')
+                  ? () {
+                      _submit(); 
+                    }
+                  : null,
+            )),
+        body: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                TextField(
+                  style: TextStyle(color: Colors.white, fontSize: 18),
+                  maxLines: null,
+                  controller: _captionController,
+                  onChanged: (value) {
+                    setState(() {
+                      _caption = value;
+                    });
+                  },
+                  decoration: InputDecoration(
+                    border: UnderlineInputBorder(borderSide: BorderSide.none),
+                    hintText:  S.of(context)!.happening,
+                    focusedBorder:
+                        UnderlineInputBorder(borderSide: BorderSide.none),
+                    enabledBorder:
+                        UnderlineInputBorder(borderSide: BorderSide.none),
+                    hintStyle: TextStyle(color: Colors.grey),
+                    // prefixIcon: Padding(
+                    //     padding: const EdgeInsets.only(right: 20),
+                    //     child: GestureDetector(
+                    //         onTap: () {
+                    //           Navigator.push(
+                    //               context,
+                    //               MaterialPageRoute(
+                    //                   builder: (context) => PostAudience()));
+                    //         },
+                    //         child: Icon(Icons.public, color: lightColor))),
+                  ),
+                  cursorColor: Colors.white,
                 ),
-                cursorColor: Colors.white,
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),

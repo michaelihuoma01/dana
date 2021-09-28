@@ -69,26 +69,25 @@ class _FeedsScreenState extends State<FeedsScreen> {
     // );
 
     List<Post> posts = await DatabaseService.getAllFeedPosts(context);
+    posts.sort((a, b) => b.timestamp!.compareTo(a.timestamp!));
 
     setState(() {
       _posts = posts;
       _isLoadingFeed = false;
     });
 
-    stream = activitiesRef
+    stream = usersRef
         .doc(widget.currentUser!.id)
-        .collection('userActivities')
         // .where('memberIds', arrayContains: widget.currentUser.id)
         // .orderBy('recentTimestamp', descending: true)
         .snapshots()
         .listen((snapshot) {
-      snapshot.docChanges.forEach((element) {
+      AppUser user = AppUser.fromDoc(snapshot);
+      if (user.isVerified == true) {
         setState(() {
           unreadNotifications = true;
         });
-
-        {}
-      });
+      }
     });
   }
 
@@ -238,28 +237,34 @@ class _FeedsScreenState extends State<FeedsScreen> {
                     child: Icon(Icons.post_add, color: lightColor, size: 30)),
                 SizedBox(width: 10),
                 GestureDetector(
-                  onTap: () {
+                  onTap: () async {
                     setState(() {
                       unreadNotifications = false;
                     });
 
-                    Navigator.push(
+                    var result = await Navigator.push(
                         context,
                         MaterialPageRoute(
                             builder: (context) => NotificationsScreen(
                                 currentUser: widget.currentUser)));
+
+                    if (result == 'readNotifications') {
+                      usersRef
+                          .doc(widget.currentUser?.id)
+                          .update({'isVerified': false});
+                    }
                   },
                   child: Padding(
                     padding: const EdgeInsets.only(top: 13),
                     child: Stack(
                       children: [
                         Icon(Icons.notifications, color: lightColor, size: 30),
-                        // if (unreadNotifications == true)
-                        //   Positioned(
-                        //       left: 16,
-                        //       top: 4,
-                        //       child: Icon(Icons.circle,
-                        //           color: Colors.red, size: 10))
+                        if (unreadNotifications == true)
+                          Positioned(
+                              left: 16,
+                              top: 6,
+                              child: Icon(Icons.circle,
+                                  color: Colors.red, size: 8))
                       ],
                     ),
                   ),

@@ -23,22 +23,24 @@ class _QrDialogState extends State<QrDialog> {
         ),
         elevation: 0.0,
         backgroundColor: Colors.transparent,
-        child: Padding(
-            padding: EdgeInsets.symmetric(vertical: 10),
-            child: Padding(
-              padding: const EdgeInsets.all(10),
-              // child: Image.asset('assets/images/qr-code.png'),
-              child: QrImage(
-                data: widget.userID!,
-                version: QrVersions.auto,
-                size: 300,
-                gapless: false,
-                backgroundColor: Colors.white,
-                embeddedImage: AssetImage('assets/images/icon.png'),
-                embeddedImageStyle: QrEmbeddedImageStyle(
-                  size: Size(50, 50),
+        child: Container(
+          child: Padding(
+              padding: EdgeInsets.symmetric(vertical: 10),
+              child: Padding(
+                padding: const EdgeInsets.all(10),
+                // child: Image.asset('assets/images/qr-code.png'),
+                child: QrImage(
+                  data: widget.userID!,
+                  version: QrVersions.auto,
+                  size: 300,
+                  gapless: false,
+                  backgroundColor: Colors.white,
+                  embeddedImage: AssetImage('assets/images/icon.png'),
+                  embeddedImageStyle: QrEmbeddedImageStyle(
+                    size: Size(50, 50),
+                  ),
                 ),
-              ),
-            )));
+              )),
+        ));
   }
 }

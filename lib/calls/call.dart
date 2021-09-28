@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 class Call {
   String? callerId;
   String? callerName;
@@ -6,7 +8,10 @@ class Call {
   String? receiverName;
   String? receiverPic;
   String? channelId;
+  String? duration;
+  Timestamp? timestamp;
   bool? hasDialled;
+  bool? isMissed;
   bool? isAudio;
 
   Call(
@@ -18,6 +23,9 @@ class Call {
       this.receiverPic,
       this.channelId,
       this.hasDialled,
+      this.duration,
+      this.isMissed,
+      this.timestamp,
       this.isAudio});
 
   // to map
@@ -31,6 +39,9 @@ class Call {
     callMap["receiver_pic"] = call.receiverPic;
     callMap["channel_id"] = call.channelId;
     callMap["has_dialled"] = call.hasDialled;
+    callMap["duration"] = call.duration;
+    callMap["timestamp"] = call.timestamp;
+    callMap["isMissed"] = call.isMissed;
     callMap["isAudio"] = call.isAudio;
 
     return callMap;
@@ -45,6 +56,9 @@ class Call {
     this.receiverPic = callMap["receiver_pic"];
     this.channelId = callMap["channel_id"];
     this.hasDialled = callMap["has_dialled"];
+    this.duration = callMap["duration"];
+    this.isMissed = callMap["isMissed"];
+    this.timestamp = callMap["timestamp"];
     this.isAudio = callMap["isAudio"];
   }
 }

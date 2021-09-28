@@ -1,3 +1,4 @@
+import 'package:Dana/calls/callscreens/pickup/pickup_layout.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:Dana/generated/l10n.dart';
@@ -162,43 +163,54 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Stack(children: [
-      Container(
-        height: double.infinity,
-        color: darkColor,
-        child: Image.asset(
-          'assets/images/background.png',
-          width: double.infinity,
-          height: 300,
-          fit: BoxFit.cover,
+    return WillPopScope(
+      onWillPop: () {
+        print('object');
+        Navigator.pop(context, 'readNotifications');
+        return Future.value(true);
+      },
+      child: Stack(children: [
+        Container(
+          height: double.infinity,
+          color: darkColor,
+          child: Image.asset(
+            'assets/images/background.png',
+            width: double.infinity,
+            height: 300,
+            fit: BoxFit.cover,
+          ),
         ),
-      ),
-      Scaffold(
-          backgroundColor: Colors.transparent,
-          appBar: PreferredSize(
-              preferredSize: const Size.fromHeight(70),
-              child: AppBarWidget(isTab: false, title: S.of(context)!.notif)),
-          body: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 10),
-            child: RefreshIndicator(
-              onRefresh: () => _setupActivities(),
-              child: _isLoading
-                  ? Center(
-                      child:
-                          SpinKitWanderingCubes(color: Colors.white, size: 40))
-                  : ListView.builder(
-                      itemCount: _activities.length,
-                      itemBuilder: (BuildContext context, int index) {
-                        Activity activity = _activities[index];
-                        if (activity.isMessageEvent == true ||
-                            activity.isLikeMessageEvent == true) {
-                          return SizedBox.shrink();
-                        }
-                        return _buildActivity(activity);
-                      },
-                    ),
-            ),
-          ))
-    ]);
+        PickupLayout(
+          currentUser: widget.currentUser,
+          scaffold: Scaffold(
+              backgroundColor: Colors.transparent,
+              appBar: PreferredSize(
+                  preferredSize: const Size.fromHeight(70),
+                  child:
+                      AppBarWidget(isTab: false, title: S.of(context)!.notif)),
+              body: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 10),
+                child: RefreshIndicator(
+                  onRefresh: () => _setupActivities(),
+                  child: _isLoading
+                      ? Center(
+                          child: SpinKitWanderingCubes(
+                              color: Colors.white, size: 40))
+                      : ListView.builder(
+                          itemCount: _activities.length,
+                          itemBuilder: (BuildContext context, int index) {
+                            Activity activity = _activities[index];
+                            if (activity.isMessageEvent == true ||
+                                activity.isLikeMessageEvent == true) {
+                              return SizedBox.shrink();
+                            }
+                            return _buildActivity(activity);
+                          },
+                        ),
+                ),
+              )),
+        )
+      ]),
+    );
   }
 }

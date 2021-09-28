@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:Dana/calls/callscreens/pickup/pickup_layout.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:Dana/models/story_model.dart';
 import 'package:Dana/models/user_data.dart';
@@ -105,51 +106,54 @@ class _CreateStoryScreenState extends State<CreateStoryScreen> {
       });
     });
 
-    return Scaffold(
-      backgroundColor: Theme.of(context).accentColor,
-      body: Stack(
-        children: <Widget>[
-          // Center(
-          //   child: RepaintBoundary(
-          //     key: _globalKey,
-          //     child: Container(
-          //       child: LiquidSwipe(
-          //         pages: _filterPages,
-          //         onPageChangeCallback: (value) {
-          //           setState(() => _selectedFilterIndex = value);
-          //           _setFilterTitle(value);
-          //         },
-          //         waveType: WaveType.liquidReveal,
-          //         liquidController: _liquidController,
-          //         ignoreUserGestureWhileAnimating: true,
-          //         enableLoop: true,
-          //       ),
-          //     ),
-          //   ),
-          // ),
-          Center(child: Image.file(widget.imageFile)),
-          if (_newFilterTitle)
-            // displays filter title once filtered changed
-            _displayStoryTitle(),
-          if (_storyCaption != '')
-            // desplays story caption if there is
-            _displayStoryCaption(),
-          if (_storyLocation != '')
-            // desplays story location if there is
-            _displayLocationText(),
-          if (_isLoading)
-            // desplays circular indicator if posting story
-            Align(
-              alignment: Alignment.center,
-              child: CircularProgressIndicator(color: lightColor),
-            ),
-
-          // displays row of buttons on top of the screen
-          if (!_isLoading) _displayEditStoryButtons(_currentUser),
-
-          // displays post buttons on bottom of the screen
-          if (!_isLoading) _displayBottomButtons(_currentUser!),
-        ],
+    return PickupLayout(
+      currentUser: _currentUser,
+      scaffold: Scaffold(
+        backgroundColor: Theme.of(context).accentColor,
+        body: Stack(
+          children: <Widget>[
+            // Center(
+            //   child: RepaintBoundary(
+            //     key: _globalKey,
+            //     child: Container(
+            //       child: LiquidSwipe(
+            //         pages: _filterPages,
+            //         onPageChangeCallback: (value) {
+            //           setState(() => _selectedFilterIndex = value);
+            //           _setFilterTitle(value);
+            //         },
+            //         waveType: WaveType.liquidReveal,
+            //         liquidController: _liquidController,
+            //         ignoreUserGestureWhileAnimating: true,
+            //         enableLoop: true,
+            //       ),
+            //     ),
+            //   ),
+            // ),
+            Center(child: Image.file(widget.imageFile)),
+            if (_newFilterTitle)
+              // displays filter title once filtered changed
+              _displayStoryTitle(),
+            if (_storyCaption != '')
+              // desplays story caption if there is
+              _displayStoryCaption(),
+            if (_storyLocation != '')
+              // desplays story location if there is
+              _displayLocationText(),
+            if (_isLoading)
+              // desplays circular indicator if posting story
+              Align(
+                alignment: Alignment.center,
+                child: CircularProgressIndicator(color: lightColor),
+              ),
+    
+            // displays row of buttons on top of the screen
+            if (!_isLoading) _displayEditStoryButtons(_currentUser),
+    
+            // displays post buttons on bottom of the screen
+            if (!_isLoading) _displayBottomButtons(_currentUser!),
+          ],
+        ),
       ),
     );
   }

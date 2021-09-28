@@ -46,7 +46,7 @@ class _PostViewState extends State<PostView> {
   bool _isLiked = false;
   bool _heartAnim = false;
   Post? _post;
- Locale? myLocale;
+  Locale? myLocale;
 
   @override
   void initState() {
@@ -215,22 +215,20 @@ class _PostViewState extends State<PostView> {
               //       )
               //     : SizedBox.shrink(),
 
-              // _post.authorId == widget.currentUserId
-              //     ? SimpleDialogOption(
-              //         child: Text('Edit Post'),
-              //         onPressed: () {
-              //           Navigator.push(
-              //             context,
-              //             MaterialPageRoute(
-              //               builder: (_) => CreatePostScreen(
-              //                 post: _post,
-              //                 postStatus: widget.postStatus,
-              //               ),
-              //             ),
-              //           );
-              //         },
-              //       )
-              //     : SizedBox.shrink(),
+              _post!.authorId == widget.currentUserId
+                  ? SimpleDialogOption(
+                      child: Text('Edit Post'),
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => CreatePostScreen(
+                                post: _post, postStatus: widget.postStatus),
+                          ),
+                        );
+                      },
+                    )
+                  : SizedBox.shrink(),
               _post!.authorId == widget.currentUserId &&
                       widget.postStatus == PostStatus.feedPost
                   ? SimpleDialogOption(

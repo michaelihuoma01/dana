@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:Dana/calls/callscreens/pickup/pickup_layout.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:Dana/calls/call_utilities.dart';
@@ -365,284 +366,288 @@ class _UserProfileState extends State<UserProfile> {
               );
             }
             AppUser user = AppUser.fromDoc(snapshot.data);
-            return Scaffold(
-                appBar: PreferredSize(
-                  child: AppBar(
-                    automaticallyImplyLeading: true,
-                    backgroundColor: darkColor,
-                    brightness: Brightness.dark,
-                    centerTitle: true,
-                    elevation: 5,
-                    actions: [
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: GestureDetector(
-                            onTap: () {
-                          showDialog(
-                              context: context,
-                              builder: (BuildContext context) =>
-                                  QrDialog(userID: user.id));
-                        },
-                          child: Icon(Icons.qr_code,
-                              color: Colors.white, size: 20),
-                        ),
-                      )
-                    ],
-                    // actions: [
-                    //   Padding(
-                    //     padding: const EdgeInsets.symmetric(horizontal: 15),
-                    //     child: Icon(Icons.qr_code, color: Colors.white),
-                    //   ),
-                    // ],
-                    title: Text(user.name!,
-                        style: TextStyle(color: Colors.white, fontSize: 22)),
-                    iconTheme: IconThemeData(color: Colors.white),
+            return PickupLayout(
+                 currentUser: _currentUser,
+
+              scaffold: Scaffold(
+                  appBar: PreferredSize(
+                    child: AppBar(
+                      automaticallyImplyLeading: true,
+                      backgroundColor: darkColor,
+                      brightness: Brightness.dark,
+                      centerTitle: true,
+                      elevation: 5,
+                      actions: [
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: GestureDetector(
+                              onTap: () {
+                            showDialog(
+                                context: context,
+                                builder: (BuildContext context) =>
+                                    QrDialog(userID: user.id));
+                          },
+                            child: Icon(Icons.qr_code,
+                                color: Colors.white, size: 20),
+                          ),
+                        )
+                      ],
+                      // actions: [
+                      //   Padding(
+                      //     padding: const EdgeInsets.symmetric(horizontal: 15),
+                      //     child: Icon(Icons.qr_code, color: Colors.white),
+                      //   ),
+                      // ],
+                      title: Text(user.name!,
+                          style: TextStyle(color: Colors.white, fontSize: 22)),
+                      iconTheme: IconThemeData(color: Colors.white),
+                    ),
+                    preferredSize: const Size.fromHeight(50),
                   ),
-                  preferredSize: const Size.fromHeight(50),
-                ),
-                backgroundColor: Colors.transparent,
-                body: SingleChildScrollView(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      GestureDetector(
-                        onTap: () {
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (_) =>
-                                    FullScreenImage(user.profileImageUrl),
-                              ));
-                        },
-                        child: Container(
-                          height: 300,
-                          width: double.infinity,
-                          child: CachedNetworkImage(
-                            fit: BoxFit.fitWidth,
-                            imageUrl: user.profileImageUrl!,
-                            progressIndicatorBuilder:
-                                (context, url, downloadProgress) {
-                              return Center(
-                                child: CircularProgressIndicator(
-                                    color: lightColor,
-                                    value: downloadProgress.progress),
-                              );
-                            },
-                            errorWidget: (context, url, error) => Container(
-                                height: 200,
-                                child: Image.asset(placeHolderImageRef)),
+                  backgroundColor: Colors.transparent,
+                  body: SingleChildScrollView(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        GestureDetector(
+                          onTap: () {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) =>
+                                      FullScreenImage(user.profileImageUrl),
+                                ));
+                          },
+                          child: Container(
+                            height: 300,
+                            width: double.infinity,
+                            child: CachedNetworkImage(
+                              fit: BoxFit.fitWidth,
+                              imageUrl: user.profileImageUrl!,
+                              progressIndicatorBuilder:
+                                  (context, url, downloadProgress) {
+                                return Center(
+                                  child: CircularProgressIndicator(
+                                      color: lightColor,
+                                      value: downloadProgress.progress),
+                                );
+                              },
+                              errorWidget: (context, url, error) => Container(
+                                  height: 200,
+                                  child: Image.asset(placeHolderImageRef)),
+                            ),
                           ),
                         ),
-                      ),
-                      Container(
-                        color: darkColor,
-                        width: double.infinity,
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Padding(
+                        Container(
+                          color: darkColor,
+                          width: double.infinity,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Padding(
+                                  padding:
+                                      const EdgeInsets.symmetric(horizontal: 10),
+                                  child: Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Row(children: [
+                                        GestureDetector(
+                                          onTap: () {
+                                            Clipboard.setData(
+                                                ClipboardData(text: user.pin));
+                                            Utility.showMessage(context,
+                                                message: 'Pin Copied!',
+                                                pulsate: false,
+                                                bgColor: Colors.green[600]!);
+                                          },
+                                          child: Text('PIN: ${user.pin}',
+                                              style: TextStyle(
+                                                  color: Colors.white,
+                                                  fontSize: 18)),
+                                        ),
+                                        SizedBox(width: 15),
+                                        if (!user.isPublic! && isFriends)
+                                          GestureDetector(
+                                              onTap: () {
+                                                Navigator.push(
+                                                    context,
+                                                    MaterialPageRoute(
+                                                        builder: (_) =>
+                                                            ChatScreen(
+                                                                receiverUser:
+                                                                    _profileUser,
+                                                                isGroup: false,
+                                                                imageFile: widget
+                                                                    .imageFile)));
+                                                print(_profileUser!.id);
+                                              },
+                                              child: Icon(Icons.chat_bubble,
+                                                  color: Colors.white, size: 17)),
+                                        SizedBox(width: 15),
+                                        if (!user.isPublic! && isFriends)
+                                          GestureDetector(
+                                              onTap: () {
+                                                try {
+                                                  CallUtils.dial(
+                                                      from: _currentUser,
+                                                      to: _profileUser!,
+                                                      context: context,
+                                                      isAudio: false);
+                                                } catch (e) {
+                                                  print('=============$e');
+                                                }
+                                              },
+                                              child: Icon(FontAwesomeIcons.video,
+                                                  color: Colors.white, size: 15)),
+                                        SizedBox(width: 15),
+                                        if (!user.isPublic! && isFriends)
+                                          GestureDetector(
+                                              onTap: () {
+                                                try {
+                                                  CallUtils.dial(
+                                                      from: _currentUser,
+                                                      to: _profileUser!,
+                                                      context: context,
+                                                      isAudio: true);
+                                                } catch (e) {
+                                                  print('=============$e');
+                                                }
+                                              },
+                                              child: Icon(
+                                                  FontAwesomeIcons.phoneAlt,
+                                                  color: Colors.white,
+                                                  size: 15)),
+                                      ]),
+                                      OutlinedButton(
+                                          style: ButtonStyle(
+                                              shape: MaterialStateProperty.all(
+                                                  RoundedRectangleBorder(
+                                                      borderRadius:
+                                                          new BorderRadius
+                                                              .circular(10))),
+                                              backgroundColor:
+                                                  MaterialStateProperty.all(
+                                                      (isFriends == true)
+                                                          ? Colors.red
+                                                          : (isRequest == true)
+                                                              ? Colors.green
+                                                              : (pendingFriends ==
+                                                                      true)
+                                                                  ? Colors.grey
+                                                                  : lightColor)),
+                                          onPressed: _followOrUnfollow,
+                                          child: Text(
+                                              (isFriends == true)
+                                                  ?  S.of(context)!.remove
+                                                  : (isRequest == true)
+                                                      ?  S.of(context)!.accept
+                                                      : (pendingFriends == true)
+                                                          ? 'Sent'
+                                                          :  S.of(context)!.add,
+                                              style: TextStyle(
+                                                  fontSize: 14,
+                                                  color: Colors.white,
+                                                  fontFamily:
+                                                      'Poppins-Regular'))),
+                                    ],
+                                  )),
+                              BrandDivider(),
+                              Padding(
                                 padding:
                                     const EdgeInsets.symmetric(horizontal: 10),
-                                child: Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Row(children: [
-                                      GestureDetector(
-                                        onTap: () {
-                                          Clipboard.setData(
-                                              ClipboardData(text: user.pin));
-                                          Utility.showMessage(context,
-                                              message: 'Pin Copied!',
-                                              pulsate: false,
-                                              bgColor: Colors.green[600]!);
-                                        },
-                                        child: Text('PIN: ${user.pin}',
-                                            style: TextStyle(
-                                                color: Colors.white,
-                                                fontSize: 18)),
-                                      ),
-                                      SizedBox(width: 15),
-                                      if (!user.isPublic! && isFriends)
-                                        GestureDetector(
-                                            onTap: () {
-                                              Navigator.push(
-                                                  context,
-                                                  MaterialPageRoute(
-                                                      builder: (_) =>
-                                                          ChatScreen(
-                                                              receiverUser:
-                                                                  _profileUser,
-                                                              isGroup: false,
-                                                              imageFile: widget
-                                                                  .imageFile)));
-                                              print(_profileUser!.id);
-                                            },
-                                            child: Icon(Icons.chat_bubble,
-                                                color: Colors.white, size: 17)),
-                                      SizedBox(width: 15),
-                                      if (!user.isPublic! && isFriends)
-                                        GestureDetector(
-                                            onTap: () {
-                                              try {
-                                                CallUtils.dial(
-                                                    from: _currentUser,
-                                                    to: _profileUser!,
-                                                    context: context,
-                                                    isAudio: false);
-                                              } catch (e) {
-                                                print('=============$e');
-                                              }
-                                            },
-                                            child: Icon(FontAwesomeIcons.video,
-                                                color: Colors.white, size: 15)),
-                                      SizedBox(width: 15),
-                                      if (!user.isPublic! && isFriends)
-                                        GestureDetector(
-                                            onTap: () {
-                                              try {
-                                                CallUtils.dial(
-                                                    from: _currentUser,
-                                                    to: _profileUser!,
-                                                    context: context,
-                                                    isAudio: true);
-                                              } catch (e) {
-                                                print('=============$e');
-                                              }
-                                            },
-                                            child: Icon(
-                                                FontAwesomeIcons.phoneAlt,
-                                                color: Colors.white,
-                                                size: 15)),
-                                    ]),
-                                    OutlinedButton(
-                                        style: ButtonStyle(
-                                            shape: MaterialStateProperty.all(
-                                                RoundedRectangleBorder(
-                                                    borderRadius:
-                                                        new BorderRadius
-                                                            .circular(10))),
-                                            backgroundColor:
-                                                MaterialStateProperty.all(
-                                                    (isFriends == true)
-                                                        ? Colors.red
-                                                        : (isRequest == true)
-                                                            ? Colors.green
-                                                            : (pendingFriends ==
-                                                                    true)
-                                                                ? Colors.grey
-                                                                : lightColor)),
-                                        onPressed: _followOrUnfollow,
-                                        child: Text(
-                                            (isFriends == true)
-                                                ?  S.of(context)!.remove
-                                                : (isRequest == true)
-                                                    ?  S.of(context)!.accept
-                                                    : (pendingFriends == true)
-                                                        ? 'Sent'
-                                                        :  S.of(context)!.add,
-                                            style: TextStyle(
-                                                fontSize: 14,
-                                                color: Colors.white,
-                                                fontFamily:
-                                                    'Poppins-Regular'))),
-                                  ],
-                                )),
-                            BrandDivider(),
-                            Padding(
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 10),
-                              child: Text( S.of(context)!.bio,
-                                  style: TextStyle(
-                                      color: Colors.white, fontSize: 16)),
-                            ),
-                            Padding(
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 10),
-                              child: Text(user.bio!,
-                                  style: TextStyle(
-                                      color: Colors.white70, fontSize: 14)),
-                            ),
-                            BrandDivider(),
-                          ],
-                        ),
-                      ),
-                      (!user.isPublic! && isFriends)
-                          ? ListView.builder(
-                              shrinkWrap: true,
-                              physics: NeverScrollableScrollPhysics(),
-                              itemCount: _posts.length > 0 ? _posts.length : 1,
-                              itemBuilder: (BuildContext context, int index) {
-                                if (_posts.length == 0) {
-                                  //If there is no posts
-                                  return Center(
-                                      child: Text( S.of(context)!.nopost,
-                                          style:
-                                              TextStyle(color: Colors.white)));
-                                }
-
-                                Post post = _posts[index];
-
-                                return FutureBuilder(
-                                  future: DatabaseService.getUserWithId(
-                                      post.authorId),
-                                  builder: (BuildContext context,
-                                      AsyncSnapshot snapshot) {
-                                    if (!snapshot.hasData) {
-                                      return SizedBox.shrink();
-                                    }
-
-                                    AppUser? author = snapshot.data;
-
-                                    return (post.imageUrl == null)
-                                        ? TextPost(
-                                            postStatus: PostStatus.feedPost,
-                                            currentUserId: widget.currentUserId,
-                                            author: author,
-                                            post: post,
-                                          )
-                                        : (post.videoUrl != null)
-                                            ? VideoPostView(
-                                                postStatus: PostStatus.feedPost,
-                                                currentUserId:
-                                                    widget.currentUserId,
-                                                author: author,
-                                                post: post,
-                                              )
-                                            : PostView(
-                                                postStatus: PostStatus.feedPost,
-                                                currentUserId:
-                                                    widget.currentUserId,
-                                                author: author,
-                                                post: post,
-                                              );
-                                  },
-                                );
-                              })
-                          : Center(
-                              child: Column(
-                                children: [
-                                  SizedBox(height: 40),
-                                  Container(
-                                      decoration: BoxDecoration(
-                                          shape: BoxShape.circle,
-                                          border:
-                                              Border.all(color: Colors.white)),
-                                      padding: const EdgeInsets.all(15),
-                                      child: Icon(Icons.lock,
-                                          color: Colors.white, size: 26)),
-                                  SizedBox(height: 5),
-                                  Text('This Account is Private',
-                                      style: TextStyle(
-                                          color: Colors.white,
-                                          fontSize: 18,
-                                          fontWeight: FontWeight.bold)),
-                                ],
+                                child: Text( S.of(context)!.bio,
+                                    style: TextStyle(
+                                        color: Colors.white, fontSize: 16)),
                               ),
-                            )
-                    ],
-                  ),
-                ));
+                              Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 10),
+                                child: Text(user.bio!,
+                                    style: TextStyle(
+                                        color: Colors.white70, fontSize: 14)),
+                              ),
+                              BrandDivider(),
+                            ],
+                          ),
+                        ),
+                        (!user.isPublic! && isFriends)
+                            ? ListView.builder(
+                                shrinkWrap: true,
+                                physics: NeverScrollableScrollPhysics(),
+                                itemCount: _posts.length > 0 ? _posts.length : 1,
+                                itemBuilder: (BuildContext context, int index) {
+                                  if (_posts.length == 0) {
+                                    //If there is no posts
+                                    return Center(
+                                        child: Text( S.of(context)!.nopost,
+                                            style:
+                                                TextStyle(color: Colors.white)));
+                                  }
+            
+                                  Post post = _posts[index];
+            
+                                  return FutureBuilder(
+                                    future: DatabaseService.getUserWithId(
+                                        post.authorId),
+                                    builder: (BuildContext context,
+                                        AsyncSnapshot snapshot) {
+                                      if (!snapshot.hasData) {
+                                        return SizedBox.shrink();
+                                      }
+            
+                                      AppUser? author = snapshot.data;
+            
+                                      return (post.imageUrl == null)
+                                          ? TextPost(
+                                              postStatus: PostStatus.feedPost,
+                                              currentUserId: widget.currentUserId,
+                                              author: author,
+                                              post: post,
+                                            )
+                                          : (post.videoUrl != null)
+                                              ? VideoPostView(
+                                                  postStatus: PostStatus.feedPost,
+                                                  currentUserId:
+                                                      widget.currentUserId,
+                                                  author: author,
+                                                  post: post,
+                                                )
+                                              : PostView(
+                                                  postStatus: PostStatus.feedPost,
+                                                  currentUserId:
+                                                      widget.currentUserId,
+                                                  author: author,
+                                                  post: post,
+                                                );
+                                    },
+                                  );
+                                })
+                            : Center(
+                                child: Column(
+                                  children: [
+                                    SizedBox(height: 40),
+                                    Container(
+                                        decoration: BoxDecoration(
+                                            shape: BoxShape.circle,
+                                            border:
+                                                Border.all(color: Colors.white)),
+                                        padding: const EdgeInsets.all(15),
+                                        child: Icon(Icons.lock,
+                                            color: Colors.white, size: 26)),
+                                    SizedBox(height: 5),
+                                    Text('This Account is Private',
+                                        style: TextStyle(
+                                            color: Colors.white,
+                                            fontSize: 18,
+                                            fontWeight: FontWeight.bold)),
+                                  ],
+                                ),
+                              )
+                      ],
+                    ),
+                  )),
+            );
           })
     ]);
   }

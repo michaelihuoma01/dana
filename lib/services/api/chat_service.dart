@@ -1,3 +1,4 @@
+import 'package:Dana/notifications/helperMethods.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:Dana/models/chat_model.dart';
 import 'package:Dana/models/message_model.dart';
@@ -11,7 +12,7 @@ import 'package:provider/provider.dart';
 
 class ChatService {
   static Future<Chat> createChat(
-      List<AppUser?> users, List<dynamic>? userIds) async {
+      List<AppUser?> users, List<dynamic>? userIds, context) async {
     Map<String?, dynamic> readStatus = {};
 
     for (AppUser? user in users) {
@@ -30,6 +31,15 @@ class ChatService {
       'readStatus': readStatus,
     });
 
+    for (var userId in userIds!) {
+      AppUser user = await DatabaseService.getUserWithId(userId);
+      if (userId !=
+          Provider.of<UserData>(context, listen: false).currentUser!.id) {
+        HelperMethods.sendNotification(user.token, context, userId.id, 'Dana',
+            '${user.name} sent you a message');
+      }
+    }
+
     return Chat(
       id: res.id,
       admin: '',
@@ -44,7 +54,7 @@ class ChatService {
   }
 
   static void sendChatMessage(
-      Chat chat, Message message, AppUser receiverUser) {
+      Chat chat, Message message, AppUser receiverUser, context) async {
     chatsRef.doc(chat.id).collection('messages').add({
       'senderId': message.senderId,
       'text': message.text,
@@ -78,6 +88,11 @@ class ChatService {
       post: post,
       recieverToken: receiverUser.token,
     );
+    AppUser user = await DatabaseService.getUserWithId(receiverUser.id);
+    if (receiverUser.id != message.senderId) {
+      HelperMethods.sendNotification(receiverUser.token, context,
+          receiverUser.id, 'Dana', '${user.name} sent you a message');
+    }
   }
 
   static void setChatRead(BuildContext context, Chat chat, bool read) async {

@@ -77,38 +77,36 @@ class _ContactScreenState extends State<ContactScreen> {
     var friendList = [...followingUsers, ...followerUsers].toSet().toList();
 
     for (String? userId in friendList) {
+      var isFollowing = await DatabaseService.isFollowingUser(
+        currentUserId: widget.currentUser!.id,
+        userId: userId,
+      );
+
+      var isFollower = await DatabaseService.isUserFollower(
+        currentUserId: widget.currentUser!.id,
+        userId: userId,
+      );
       var friends = await DatabaseService.getUserWithId(userId);
-      setState(() {
-        isFriends = true;
-        _friends.add(friends);
-      });
+
+      if (isFollower == true && isFollowing == true) {
+        setState(() {
+          isFriends = true;
+          _friends.add(friends);
+        });
+      } else {
+        setState(() {
+          isRequest = true;
+          _requests.add(friends);
+        });
+      }
     }
 
     print(_friends.length);
-
-    for (var userDoc in followingUsers) {
-      var requests = await DatabaseService.getUserWithId(userDoc);
-
-      isFollowingUser = await DatabaseService.isFollowingUser(
-        currentUserId: widget.currentUser!.id,
-        userId: userDoc,
-      );
-
-      if (!isFollowingUser == true) {
-        isRequest = true;
-        _requests.add(requests);
-
-        print('not friends ${requests.name}');
-      } else {
-        setState(() {
-          isRequest = false;
-          isFriends = false;
-        });
-      }
-      setState(() {
-        _isLoading = false;
-      });
-    }
+    print(_requests.length);
+ 
+    setState(() {
+      _isLoading = false;
+    });
   }
 
   Widget _buildUserTile(AppUser user) {
@@ -311,6 +309,7 @@ class _ContactScreenState extends State<ContactScreen> {
                                     ? Container(
                                         height: 80,
                                         child: ListView.builder(
+                                          
                                           itemCount: _requests.length,
                                           scrollDirection: Axis.horizontal,
                                           itemBuilder: (BuildContext context,

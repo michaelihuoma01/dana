@@ -11,6 +11,7 @@ import 'package:Dana/widgets/BrandDivider.dart';
 import 'package:Dana/widgets/appbar_widget.dart';
 import 'package:Dana/widgets/calls_tile.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:timeago/timeago.dart' as timeago;
@@ -25,9 +26,7 @@ class CallsScreen extends StatefulWidget {
 }
 
 class _CallsScreenState extends State<CallsScreen> {
-  late AppUser receiverUser;
-  String? duration;
-  Timestamp? timestamp;
+  late AppUser receiverUser; 
 
   Stream<List<Call>> getCalls() async* {
     try {
@@ -36,40 +35,17 @@ class _CallsScreenState extends State<CallsScreen> {
       Stream<QuerySnapshot> stream = FirebaseFirestore.instance
           .collection('calls')
           .doc(widget.currentUser!.id)
-          .collection('callHistory')
+          .collection('callHistory') 
           .snapshots();
 
       await for (QuerySnapshot q in stream) {
         for (var doc in q.docs) {
           Call callFromDoc = Call.fromMap(doc);
-          print('=\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\${doc['duration']}');
 
-          duration = doc['duration'];
-          timestamp = doc['timestamp'];
+          // duration = doc['duration'];
+          // timestamp = doc['timestamp'];
           receiverUser =
               await DatabaseService.getUserWithId(callFromDoc.receiverId);
-
-          // List<dynamic> memberIds = callFromDoc.receiverId;
-          // int receiverIndex;
-
-          // // Getting receiver index
-          // memberIds.forEach((userId) {
-          //   if (userId != widget.currentUser.id) {
-          //     receiverIndex = memberIds.indexOf(userId);
-          //   }
-          // });
-
-          // List<AppUser> membersInfo = [];
-
-          // if (memberIds.length > 2) {
-          //   for (String userId in memberIds) {
-          //     AppUser user = await DatabaseService.getUserWithId(userId);
-          //     membersInfo.add(user);
-          //   }
-          // } else {
-          //   membersInfo.add(widget.currentUser);
-          //   membersInfo.add(receiverUser);
-          // }
 
           Call callWithUserInfo = Call(
               callerId: callFromDoc.callerId,
@@ -80,12 +56,16 @@ class _CallsScreenState extends State<CallsScreen> {
               receiverName: callFromDoc.receiverName,
               receiverPic: callFromDoc.receiverPic,
               hasDialled: callFromDoc.hasDialled,
+              isMissed: callFromDoc.isMissed,
+              timestamp: callFromDoc.timestamp,
+              duration: callFromDoc.duration,
               isAudio: callFromDoc.isAudio);
 
           // dataToReturn.removeWhere((call) => call. == callWithUserInfo.id);
 
           dataToReturn.add(callWithUserInfo);
         }
+    dataToReturn.sort((a, b) => b.timestamp!.compareTo(a.timestamp!));
 
         yield dataToReturn;
       }
@@ -118,7 +98,9 @@ class _CallsScreenState extends State<CallsScreen> {
             radius: 28.0,
             backgroundImage: (call.receiverPic!.isEmpty
                     ? AssetImage(placeHolderImageRef)
-                    : CachedNetworkImageProvider(call.receiverPic!))
+                    : CachedNetworkImageProvider( (call.receiverName! == widget.currentUser?.name)
+                ? call.callerPic!
+                : call.receiverPic!,))
                 as ImageProvider<Object>?,
           ),
         ),
@@ -136,14 +118,17 @@ class _CallsScreenState extends State<CallsScreen> {
                 ? Icon(FontAwesomeIcons.phoneAlt, color: Colors.grey, size: 13)
                 : Icon(FontAwesomeIcons.video, size: 13, color: Colors.grey),
             SizedBox(width: 10),
-            Text(
-                call.hasDialled!
-                    ? '${S.of(context)!.outgoing} ($duration)'
-                    : '${S.of(context)!.incoming} ($duration)',
-                style: TextStyle(color: Colors.grey)),
+            if (call.isMissed == true)
+              Text('Cancelled', style: TextStyle(color: Colors.red)),
+            if (call.hasDialled == true)
+              Text('${S.of(context)!.outgoing} (${call.duration})',
+                  style: TextStyle(color: Colors.grey)),
+            if (call.hasDialled == false)
+              Text('${S.of(context)!.incoming} (${call.duration})',
+                  style: TextStyle(color: Colors.grey)),
           ],
         ),
-        trailing: Text(timeago.format(timestamp!.toDate()),
+        trailing: Text(timeago.format(call.timestamp!.toDate()),
             style: TextStyle(color: Colors.white)),
         onTap: () {
           if (call.isAudio!) {
@@ -208,22 +193,30 @@ class _CallsScreenState extends State<CallsScreen> {
                   child: SpinKitWanderingCubes(color: Colors.white, size: 40),
                 );
               }
+
               return Padding(
                 padding:
                     const EdgeInsets.symmetric(vertical: 10, horizontal: 0),
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.min,
+                  // crossAxisAlignment: CrossAxisAlignment.start,
+                  // mainAxisSize: MainAxisSize.min,
                   children: [
                     Expanded(
-                        child: ListView.builder(
-                      itemBuilder: (BuildContext context, int index) {
-                        Call call = snapshot.data[index];
-
-                        return _buildCall(call, widget.currentUser!.id);
-                      },
-                      itemCount: snapshot.data.length,
-                    )),
+                        child: Align(
+                          alignment: Alignment.topCenter,
+                          child: ListView.builder(
+                            // reverse: true,
+                            // shrinkWrap: true,
+                                              itemBuilder: (BuildContext context, int index) {
+                          Call call = snapshot.data[index];
+                          print(
+                              '=\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\${call.channelId}');
+                        
+                          return _buildCall(call, widget.currentUser!.id);
+                                              },
+                                              itemCount: snapshot.data.length,
+                                            ),
+                        )),
                   ],
                 ),
               );

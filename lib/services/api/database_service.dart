@@ -204,9 +204,10 @@ class DatabaseService {
     );
 
     AppUser user = await getUserWithId(userId);
-
-    HelperMethods.sendNotification(receiverToken, context, userId, 'Dana',
-        '${user.name} added you as a friend');
+    if (user.id != currentUserId) {
+      HelperMethods.sendNotification(receiverToken, context, userId, 'Dana',
+          '${user.name} added you as a friend');
+    }
     print('notification sent');
   }
 
@@ -308,7 +309,7 @@ class DatabaseService {
     return followingUsers;
   }
 
- static Future<List<AppUser>> getUserFollowerUsers(String? userId) async {
+  static Future<List<AppUser>> getUserFollowerUsers(String? userId) async {
     List<String> followerUserIds = await getUserFollowersIds(userId);
     List<AppUser> followerUsers = [];
 
@@ -320,8 +321,6 @@ class DatabaseService {
 
     return followerUsers;
   }
-
-
 
   static Future<List<String>> getUserFollowersIds(String? userId) async {
     QuerySnapshot followersSnapshot =
@@ -433,8 +432,11 @@ class DatabaseService {
 
     AppUser user = await getUserWithId(post.authorId);
 
-    HelperMethods.sendNotification(receiverToken, context, post.authorId,
-        'Dana', '${user.name} liked your post');
+    if (user.id != currentUserId) {
+      HelperMethods.sendNotification(receiverToken, context, post.authorId,
+          'Dana', '${user.name} liked your post');
+    }
+
     print('notification sent');
   }
 
@@ -512,8 +514,10 @@ class DatabaseService {
 
     AppUser user = await getUserWithId(post.authorId);
 
-    HelperMethods.sendNotification(recieverToken, context, post.authorId,
-        'Dana', '${user.name} commented on your post');
+    if (user.id != currentUserId) {
+      HelperMethods.sendNotification(recieverToken, context, post.authorId,
+          'Dana', '${user.name} commented on your post');
+    }
   }
 
   static void addActivityItem({

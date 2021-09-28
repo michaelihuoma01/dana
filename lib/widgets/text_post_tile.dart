@@ -208,22 +208,20 @@ class _TextPostState extends State<TextPost> {
               //       )
               //     : SizedBox.shrink(),
 
-              // _post.authorId == widget.currentUserId
-              //     ? SimpleDialogOption(
-              //         child: Text('Edit Post'),
-              //         onPressed: () {
-              //           Navigator.push(
-              //             context,
-              //             MaterialPageRoute(
-              //               builder: (_) => CreatePostScreen(
-              //                 post: _post,
-              //                 postStatus: widget.postStatus,
-              //               ),
-              //             ),
-              //           );
-              //         },
-              //       )
-              // : SizedBox.shrink(),
+              _post?.authorId == widget.currentUserId
+                  ? SimpleDialogOption(
+                      child: Text('Edit Post'),
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => CreatePostScreen(
+                                post: _post, postStatus: widget.postStatus),
+                          ),
+                        );
+                      },
+                    )
+                  : SizedBox.shrink(),
               _post!.authorId == widget.currentUserId &&
                       widget.postStatus == PostStatus.feedPost
                   ? SimpleDialogOption(

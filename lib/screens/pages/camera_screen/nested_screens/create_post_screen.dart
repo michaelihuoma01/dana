@@ -1,5 +1,8 @@
 import 'dart:io';
 
+import 'package:Dana/calls/callscreens/pickup/pickup_layout.dart';
+import 'package:Dana/models/user_model.dart';
+import 'package:Dana/screens/home.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:Dana/generated/l10n.dart';
 import 'package:Dana/models/post_model.dart';
@@ -162,7 +165,11 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
         }
       }
 
-      widget.backToHomeScreen!();
+      Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (context) =>
+                  HomeScreen(currentUserId: widget.post!.authorId)));
     }
   }
 
@@ -174,6 +181,8 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
   @override
   Widget build(BuildContext context) {
     Size screenSize = MediaQuery.of(context).size;
+    AppUser? currentUser =
+        Provider.of<UserData>(context, listen: false).currentUser;
     return Stack(
       children: [
         Container(
@@ -186,71 +195,75 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
             fit: BoxFit.cover,
           ),
         ),
-        Scaffold(
-            backgroundColor: Colors.transparent,
-            resizeToAvoidBottomInset: false,
-            appBar: AppBar(
-              backgroundColor: darkColor,
-              brightness: Brightness.dark,
-              iconTheme: IconThemeData(color: Colors.white),
-              centerTitle: true,
-              title: Text(
-                  widget.imageFile == null
-                      ? 'Edit Post'
-                      : S.of(context)!.newpost,
-                  style: TextStyle(color: Colors.white)),
-              actions: <Widget>[
-                !_isLoading
-                    ? FlatButton(
-                        onPressed: _submit,
-                        child: Text(
-                          widget.imageFile == null
-                              ? 'Save'
-                              : S.of(context)!.share,
-                          style: TextStyle(
-                              color: lightColor,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 18),
-                        ))
-                    : Padding(
-                        padding: const EdgeInsets.only(right: 10.0, left: 10),
-                        child: Center(
-                          child: SizedBox(
-                            child: CircularProgressIndicator(color: lightColor),
-                            width: 20,
-                            height: 20,
+        PickupLayout(
+          currentUser: currentUser,
+          scaffold: Scaffold(
+              backgroundColor: Colors.transparent,
+              resizeToAvoidBottomInset: false,
+              appBar: AppBar(
+                backgroundColor: darkColor,
+                brightness: Brightness.dark,
+                iconTheme: IconThemeData(color: Colors.white),
+                centerTitle: true,
+                title: Text(
+                    widget.imageFile == null
+                        ? 'Edit Post'
+                        : S.of(context)!.newpost,
+                    style: TextStyle(color: Colors.white)),
+                actions: <Widget>[
+                  !_isLoading
+                      ? FlatButton(
+                          onPressed: _submit,
+                          child: Text(
+                            widget.imageFile == null
+                                ? 'Save'
+                                : S.of(context)!.share,
+                            style: TextStyle(
+                                color: lightColor,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 18),
+                          ))
+                      : Padding(
+                          padding: const EdgeInsets.only(right: 10.0, left: 10),
+                          child: Center(
+                            child: SizedBox(
+                              child:
+                                  CircularProgressIndicator(color: lightColor),
+                              width: 20,
+                              height: 20,
+                            ),
                           ),
-                        ),
-                      )
-              ],
-            ),
-            body: GestureDetector(
-              onTap: () => FocusScope.of(context).unfocus(),
-              child: Form(
-                key: _formKey,
-                child: ListView(
-                  children: <Widget>[
-                    PostCaptionForm(
-                      screenSize: screenSize,
-                      imageUrl: _post?.imageUrl,
-                      controller: _captionController,
-                      imageFile: widget.imageFile,
-                      isVideo: isVideo,
-                      onChanged: (val) {
-                        setState(() {
-                          _caption = val;
-                        });
-                      },
-                    ),
-                    Divider(color: Colors.white),
-                    LocationForm(
-                      screenSize: screenSize,
-                      controller: _locationController,
-                    ),
-                  ],
-                ),
+                        )
+                ],
               ),
-            )),
+              body: GestureDetector(
+                onTap: () => FocusScope.of(context).unfocus(),
+                child: Form(
+                  key: _formKey,
+                  child: ListView(
+                    children: <Widget>[
+                      PostCaptionForm(
+                        screenSize: screenSize,
+                        imageUrl: _post?.imageUrl,
+                        controller: _captionController,
+                        imageFile: widget.imageFile,
+                        isVideo: isVideo,
+                        onChanged: (val) {
+                          setState(() {
+                            _caption = val;
+                          });
+                        },
+                      ),
+                      // Divider(color: Colors.white),
+                      // LocationForm(
+                      //   screenSize: screenSize,
+                      //   controller: _locationController,
+                      // ),
+                    ],
+                  ),
+                ),
+              )),
+        ),
       ],
     );
   }

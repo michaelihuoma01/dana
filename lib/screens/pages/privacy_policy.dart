@@ -1,3 +1,4 @@
+import 'package:Dana/calls/callscreens/pickup/pickup_layout.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:Dana/classes/language.dart';
 import 'package:Dana/generated/l10n.dart';
@@ -31,14 +32,17 @@ class PrivacyPolicyState extends State<PrivacyPolicy> {
   Widget build(BuildContext context) {
     AppUser? currentUser =
         Provider.of<UserData>(context, listen: false).currentUser;
-    return Scaffold(
-      backgroundColor: darkColor,
-      appBar: PreferredSize(
-          preferredSize: const Size.fromHeight(50),
-          child: AppBarWidget(isTab: false, title: S.of(context)!.tandc)),
-      body: Padding(
-        padding: const EdgeInsets.all(20),
-        child: SfPdfViewer.asset('assets/Dana Privacy Policy.pdf'),
+    return PickupLayout(
+         currentUser: currentUser,
+      scaffold: Scaffold(
+        backgroundColor: darkColor,
+        appBar: PreferredSize(
+            preferredSize: const Size.fromHeight(50),
+            child: AppBarWidget(isTab: false, title: S.of(context)!.tandc)),
+        body: Padding(
+          padding: const EdgeInsets.all(20),
+          child: SfPdfViewer.asset('assets/Dana Privacy Policy.pdf'),
+        ),
       ),
     );
   }

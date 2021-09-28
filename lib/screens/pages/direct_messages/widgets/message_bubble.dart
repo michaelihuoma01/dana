@@ -49,7 +49,7 @@ class _MessageBubbleState extends State<MessageBubble> {
   bool showTime = false;
   bool isPlayingMsg = false, isRecording = false, isSending = false;
   String? recordFilePath;
-  late VideoPlayerController _controller;
+  VideoPlayerController? _controller;
   Duration duration = new Duration();
   Duration position = new Duration();
   bool isPlaying = false;
@@ -405,10 +405,10 @@ class _MessageBubbleState extends State<MessageBubble> {
                   borderRadius: BorderRadius.circular(15),
                   child: Hero(
                     tag: widget.message!.videoUrl!,
-                    child: _controller.value.isInitialized
+                    child: _controller!.value.isInitialized
                         ? AspectRatio(
                             aspectRatio: 1 / 1,
-                            child: VideoPlayer(_controller),
+                            child: VideoPlayer(_controller!),
                           )
                         : Row(mainAxisSize: MainAxisSize.min, children: [
                             Container(
@@ -419,7 +419,7 @@ class _MessageBubbleState extends State<MessageBubble> {
                           ]),
                   ),
                 ),
-                _controller.value.isInitialized
+                _controller!.value.isInitialized
                     ? Container(
                         decoration: BoxDecoration(
                             shape: BoxShape.circle,

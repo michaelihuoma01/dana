@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:Dana/calls/callscreens/pickup/pickup_layout.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:Dana/models/models.dart';
@@ -173,172 +174,178 @@ class _GroupInfoState extends State<GroupInfo> {
             fit: BoxFit.cover,
           ),
         ),
-        Scaffold(
-          backgroundColor: Colors.transparent,
-          appBar: PreferredSize(
-              preferredSize: const Size.fromHeight(50),
-              child: AppBar(
-                title: Text('Edit Group',
-                    style: TextStyle(
-                        color: Colors.white,
-                        fontFamily: 'Poppins-Regular',
-                        fontWeight: FontWeight.bold)),
-                backgroundColor: darkColor,
-                centerTitle: true,
-                elevation: 5,
-                automaticallyImplyLeading: true,
-                iconTheme: IconThemeData(color: Colors.white),
-                brightness: Brightness.dark,
-              )),
-          floatingActionButton: new FloatingActionButton(
-            backgroundColor: lightColor,
-            child: const Icon(Icons.done),
-            onPressed: () {
-              print(textEditingController.text);
-              createGroup();
-              Navigator.pop(context);
-            },
-            elevation: 5,
-            isExtended: true,
-          ),
-          body: Padding(
-            padding: const EdgeInsets.all(10),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                  child: TextField(
-                    controller: textEditingController,
-                    decoration: InputDecoration(
-                      focusedBorder: InputBorder.none,
-                      enabledBorder: InputBorder.none,
-                      hintText: 'Group name',
-                      hintStyle: TextStyle(color: Colors.grey),
-                    ),
-                    style: TextStyle(color: Colors.white),
-                    cursorColor: lightColor,
-                  ),
-                ),
-                Divider(color: Colors.grey),
-                SizedBox(height: 10),
-                Text('Choose Friends',
-                    style: TextStyle(
-                        color: Colors.white,
-                        fontFamily: 'Poppins-Regular',
-                        fontWeight: FontWeight.bold)),
-                SizedBox(height: 10),
-                Container(
-                  height: 500,
-                  child: ListView.builder(
-                    itemCount: _userFollowing.length,
-                    itemBuilder: (BuildContext context, int index) {
-                      AppUser follower = widget.groupUsers![index]!;
-                      // AppUser filteritem = _selectedUsers.firstWhere(
-                      //     (item) => item.id == follower.id,
-                      //     orElse: () => null);
-                      return Column(
-                        children: [
-                          GestureDetector(
-                            // onTap: () => Navigator.push(
-                            //     context,
-                            //     MaterialPageRoute(
-                            //       builder: (_) => UserProfile(
-                            //         // goToCameraScreen: () =>
-                            //         //     CustomNavigation.navigateToHomeScreen(
-                            //         //         context,
-                            //         //         Provider.of<UserData>(context, listen: false)
-                            //         //             .currentUserId,
-                            //         //         initialPage: 0),
-                            //         // isCameFromBottomNavigation: false,
-                            //         userId: follower.id,
-                            //         currentUserId:
-                            //             Provider.of<UserData>(
-                            //                     context,
-                            //                     listen: false)
-                            //                 .currentUserId,
-                            //       ),
-                            //     )),
-                            child: Row(children: [
-                              Container(
-                                height: 40,
-                                width: 40,
-                                child: CircleAvatar(
-                                  radius: 25.0,
-                                  backgroundColor: Colors.grey,
-                                  backgroundImage:
-                                      (follower.profileImageUrl!.isEmpty
-                                              ? AssetImage(placeHolderImageRef)
-                                              : CachedNetworkImageProvider(
-                                                  follower.profileImageUrl!))
-                                          as ImageProvider<Object>?,
-                                ),
-                              ),
-                              SizedBox(width: 15),
-                              Flexible(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text('${follower.name} ',
-                                        style: TextStyle(
-                                            color: Colors.white, fontSize: 18)),
-                                    SizedBox(height: 2),
-                                    if (widget.admin == follower.id)
-                                      Text('Admin',
-                                          style: TextStyle(
-                                              color: lightColor, fontSize: 12)),
-                                  ],
-                                ),
-                              ),
-                              // Spacer(),
-                              // Spacer(),
-                              // Align(
-                              //     alignment: Alignment.centerRight,
-                              //     child: Icon(Icons.delete, color: Colors.red))
-                            ]),
-
-                            //
-                          ),
-                          SizedBox(height: 20),
-                        ],
-                      );
-                    },
-                  ),
-                ),
-              ],
+        PickupLayout(
+          currentUser: widget.currentUser,
+          scaffold: Scaffold(
+            backgroundColor: Colors.transparent,
+            appBar: PreferredSize(
+                preferredSize: const Size.fromHeight(50),
+                child: AppBar(
+                  title: Text('Edit Group',
+                      style: TextStyle(
+                          color: Colors.white,
+                          fontFamily: 'Poppins-Regular',
+                          fontWeight: FontWeight.bold)),
+                  backgroundColor: darkColor,
+                  centerTitle: true,
+                  elevation: 5,
+                  automaticallyImplyLeading: true,
+                  iconTheme: IconThemeData(color: Colors.white),
+                  brightness: Brightness.dark,
+                )),
+            floatingActionButton: new FloatingActionButton(
+              backgroundColor: lightColor,
+              child: const Icon(Icons.done),
+              onPressed: () {
+                print(textEditingController.text);
+                createGroup();
+                Navigator.pop(context);
+              },
+              elevation: 5,
+              isExtended: true,
             ),
-          ),
+            body: Padding(
+              padding: const EdgeInsets.all(10),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                    child: TextField(
+                      controller: textEditingController,
+                      decoration: InputDecoration(
+                        focusedBorder: InputBorder.none,
+                        enabledBorder: InputBorder.none,
+                        hintText: 'Group name',
+                        hintStyle: TextStyle(color: Colors.grey),
+                      ),
+                      style: TextStyle(color: Colors.white),
+                      cursorColor: lightColor,
+                    ),
+                  ),
+                  Divider(color: Colors.grey),
+                  SizedBox(height: 10),
+                  Text('Choose Friends',
+                      style: TextStyle(
+                          color: Colors.white,
+                          fontFamily: 'Poppins-Regular',
+                          fontWeight: FontWeight.bold)),
+                  SizedBox(height: 10),
+                  Container(
+                    height: 500,
+                    child: ListView.builder(
+                      itemCount: _userFollowing.length,
+                      itemBuilder: (BuildContext context, int index) {
+                        AppUser follower = widget.groupUsers![index]!;
+                        // AppUser filteritem = _selectedUsers.firstWhere(
+                        //     (item) => item.id == follower.id,
+                        //     orElse: () => null);
+                        return Column(
+                          children: [
+                            GestureDetector(
+                              // onTap: () => Navigator.push(
+                              //     context,
+                              //     MaterialPageRoute(
+                              //       builder: (_) => UserProfile(
+                              //         // goToCameraScreen: () =>
+                              //         //     CustomNavigation.navigateToHomeScreen(
+                              //         //         context,
+                              //         //         Provider.of<UserData>(context, listen: false)
+                              //         //             .currentUserId,
+                              //         //         initialPage: 0),
+                              //         // isCameFromBottomNavigation: false,
+                              //         userId: follower.id,
+                              //         currentUserId:
+                              //             Provider.of<UserData>(
+                              //                     context,
+                              //                     listen: false)
+                              //                 .currentUserId,
+                              //       ),
+                              //     )),
+                              child: Row(children: [
+                                Container(
+                                  height: 40,
+                                  width: 40,
+                                  child: CircleAvatar(
+                                    radius: 25.0,
+                                    backgroundColor: Colors.grey,
+                                    backgroundImage: (follower
+                                                .profileImageUrl!.isEmpty
+                                            ? AssetImage(placeHolderImageRef)
+                                            : CachedNetworkImageProvider(
+                                                follower.profileImageUrl!))
+                                        as ImageProvider<Object>?,
+                                  ),
+                                ),
+                                SizedBox(width: 15),
+                                Flexible(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text('${follower.name} ',
+                                          style: TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 18)),
+                                      SizedBox(height: 2),
+                                      if (widget.admin == follower.id)
+                                        Text('Admin',
+                                            style: TextStyle(
+                                                color: lightColor,
+                                                fontSize: 12)),
+                                    ],
+                                  ),
+                                ),
+                                // Spacer(),
+                                // Spacer(),
+                                // Align(
+                                //     alignment: Alignment.centerRight,
+                                //     child: Icon(Icons.delete, color: Colors.red))
+                              ]),
 
-          // FutureBuilder(
-          //   future: _users,
-          //   builder: (context, snapshot) {
-          //     if (!snapshot.hasData) {
-          //       return Center(
-          //         child: CircularProgressIndicator(),
-          //       );
-          //     }
-          //     if (snapshot.data.docs.length == 0) {
-          //       return Center(
-          //         child: Text('No Users found! Please try again.',
-          //             style: TextStyle(color: Colors.white)),
-          //       );
-          //     }
-          //     return Container(
-          //       height: 500,
-          //       child: ListView.builder(
-          //           itemCount: snapshot.data.docs.length,
-          //           itemBuilder: (BuildContext context, int index) {
-          //             AppUser user = AppUser.fromDoc(snapshot.data.docs[index]);
-          //             // Prevent current user to send messages to himself
-          //             print(user.profileImageUrl);
-          //             return (widget.searchFrom != SearchFrom.homeScreen &&
-          //                     user.id == _currentUserId)
-          //                 ? SizedBox.shrink()
-          //                 : _buildUserTile(user);
-          //           }),
-          //     );
-          //   },
-          // ),
+                              //
+                            ),
+                            SizedBox(height: 20),
+                          ],
+                        );
+                      },
+                    ),
+                  ),
+                ],
+              ),
+            ),
+
+            // FutureBuilder(
+            //   future: _users,
+            //   builder: (context, snapshot) {
+            //     if (!snapshot.hasData) {
+            //       return Center(
+            //         child: CircularProgressIndicator(),
+            //       );
+            //     }
+            //     if (snapshot.data.docs.length == 0) {
+            //       return Center(
+            //         child: Text('No Users found! Please try again.',
+            //             style: TextStyle(color: Colors.white)),
+            //       );
+            //     }
+            //     return Container(
+            //       height: 500,
+            //       child: ListView.builder(
+            //           itemCount: snapshot.data.docs.length,
+            //           itemBuilder: (BuildContext context, int index) {
+            //             AppUser user = AppUser.fromDoc(snapshot.data.docs[index]);
+            //             // Prevent current user to send messages to himself
+            //             print(user.profileImageUrl);
+            //             return (widget.searchFrom != SearchFrom.homeScreen &&
+            //                     user.id == _currentUserId)
+            //                 ? SizedBox.shrink()
+            //                 : _buildUserTile(user);
+            //           }),
+            //     );
+            //   },
+            // ),
+          ),
         ),
       ],
     );

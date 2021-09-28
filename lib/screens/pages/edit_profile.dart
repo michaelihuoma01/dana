@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'dart:math';
 
+import 'package:Dana/calls/callscreens/pickup/pickup_layout.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:Dana/generated/l10n.dart';
 import 'package:Dana/models/user_model.dart';
@@ -154,126 +155,129 @@ class _EditProfileState extends State<EditProfile> {
                 );
               }
               AppUser user = AppUser.fromDoc(snapshot.data);
-              return Scaffold(
-                bottomNavigationBar: Container(
-                  color: Colors.transparent,
-                  child: Padding(
-                    padding:
-                        const EdgeInsets.only(bottom: 50, left: 20, right: 20),
-                    child: ButtonWidget(
-                      title: S.of(context)!.save,
-                      onPressed: () {
-                        _pin = user.pin;
-                        updateProfile();
-                        // Navigator.push(context,
-                        //     MaterialPageRoute(builder: (context) => HomeScreen()));
-                      },
-                      iconText: false,
+              return PickupLayout(
+                   currentUser: widget.user,
+                scaffold: Scaffold(
+                  bottomNavigationBar: Container(
+                    color: Colors.transparent,
+                    child: Padding(
+                      padding:
+                          const EdgeInsets.only(bottom: 50, left: 20, right: 20),
+                      child: ButtonWidget(
+                        title: S.of(context)!.save,
+                        onPressed: () {
+                          _pin = user.pin;
+                          updateProfile();
+                          // Navigator.push(context,
+                          //     MaterialPageRoute(builder: (context) => HomeScreen()));
+                        },
+                        iconText: false,
+                      ),
                     ),
                   ),
-                ),
-                appBar: PreferredSize(
-                    preferredSize: const Size.fromHeight(50),
-                    child: AppBarWidget(
-                        title: S.of(context)!.edit,
-                        isTab: false,
-                        leading: true)),
-                backgroundColor: Colors.transparent,
-                key: _scaffoldKey,
-                body: Padding(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
-                  child: SingleChildScrollView(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Center(
-                          child: Stack(
-                            children: [
-                              Container(
-                                height: 120,
-                                width: 120,
-                                child: _profileImage == null
-                                    ? Container(
-                                        child: CircleAvatar(
-                                          radius: 25.0,
-                                          backgroundColor: Colors.grey,
-                                          backgroundImage:
-                                              CachedNetworkImageProvider(
-                                                  user.profileImageUrl!),
+                  appBar: PreferredSize(
+                      preferredSize: const Size.fromHeight(50),
+                      child: AppBarWidget(
+                          title: S.of(context)!.edit,
+                          isTab: false,
+                          leading: true)),
+                  backgroundColor: Colors.transparent,
+                  key: _scaffoldKey,
+                  body: Padding(
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+                    child: SingleChildScrollView(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Center(
+                            child: Stack(
+                              children: [
+                                Container(
+                                  height: 120,
+                                  width: 120,
+                                  child: _profileImage == null
+                                      ? Container(
+                                          child: CircleAvatar(
+                                            radius: 25.0,
+                                            backgroundColor: Colors.grey,
+                                            backgroundImage:
+                                                CachedNetworkImageProvider(
+                                                    user.profileImageUrl!),
+                                          ),
+                                        )
+                                      : Container(
+                                          child: CircleAvatar(
+                                            radius: 25.0,
+                                            backgroundColor: Colors.grey,
+                                            backgroundImage:
+                                                FileImage(_profileImage!),
+                                          ),
                                         ),
-                                      )
-                                    : Container(
-                                        child: CircleAvatar(
-                                          radius: 25.0,
-                                          backgroundColor: Colors.grey,
-                                          backgroundImage:
-                                              FileImage(_profileImage!),
+                                ),
+                                Positioned.fill(
+                                  child: Align(
+                                      alignment: Alignment.bottomRight,
+                                      child: Container(
+                                        decoration: BoxDecoration(
+                                            color: Colors.white,
+                                            borderRadius: BorderRadius.all(
+                                                Radius.circular(250))),
+                                        child: Padding(
+                                          padding: const EdgeInsets.all(8.0),
+                                          child: InkWell(
+                                              onTap: () {
+                                                pickImageFromGallery();
+                                                print(_imagePath);
+                                              },
+                                              child: Icon(
+                                                  Icons.camera_alt_outlined,
+                                                  size: 20)),
                                         ),
-                                      ),
-                              ),
-                              Positioned.fill(
-                                child: Align(
-                                    alignment: Alignment.bottomRight,
-                                    child: Container(
-                                      decoration: BoxDecoration(
-                                          color: Colors.white,
-                                          borderRadius: BorderRadius.all(
-                                              Radius.circular(250))),
-                                      child: Padding(
-                                        padding: const EdgeInsets.all(8.0),
-                                        child: InkWell(
-                                            onTap: () {
-                                              pickImageFromGallery();
-                                              print(_imagePath);
-                                            },
-                                            child: Icon(
-                                                Icons.camera_alt_outlined,
-                                                size: 20)),
-                                      ),
-                                    )),
-                              ),
-                            ],
+                                      )),
+                                ),
+                              ],
+                            ),
                           ),
-                        ),
-                        SizedBox(height: 30),
-                        Text(S.of(context)!.displayName,
-                            style:
-                                TextStyle(color: Colors.white, fontSize: 18)),
-                        SizedBox(height: 10),
-                        TextFormFieldWidget(
-                            hintText: 'Display name',
-                            fillColor: Colors.white,
-                            initialValue: user.name,
-                            onChanged: (value) => _name = value,
-                            type: TextInputType.name),
-                        SizedBox(height: 25),
-                        Text(S.of(context)!.bio,
-                            style:
-                                TextStyle(color: Colors.white, fontSize: 18)),
-                        SizedBox(height: 10),
-                        TextFormFieldWidget(
-                            hintText: 'Bio',
-                            fillColor: Colors.white,
-                            initialValue: user.bio,
-                            onChanged: (value) => _bio = value,
-                            type: TextInputType.name),
-                        SizedBox(height: 25),
-                        Text('PIN',
-                            style:
-                                TextStyle(color: Colors.white, fontSize: 18)),
-                        SizedBox(height: 10),
-                        TextFormFieldWidget(
-                            hintText: user.pin,
-                            fillColor: Colors.white,
-                            iconData: Icons.refresh,
-                            prefixIconData: Icons.pin,
-                            hintStyle: TextStyle(
-                                color: Colors.black,
-                                fontSize: 20,
-                                fontWeight: FontWeight.bold),
-                            enabled: false),
-                      ],
+                          SizedBox(height: 30),
+                          Text(S.of(context)!.displayName,
+                              style:
+                                  TextStyle(color: Colors.white, fontSize: 18)),
+                          SizedBox(height: 10),
+                          TextFormFieldWidget(
+                              hintText: 'Display name',
+                              fillColor: Colors.white,
+                              initialValue: user.name,
+                              onChanged: (value) => _name = value,
+                              type: TextInputType.name),
+                          SizedBox(height: 25),
+                          Text(S.of(context)!.bio,
+                              style:
+                                  TextStyle(color: Colors.white, fontSize: 18)),
+                          SizedBox(height: 10),
+                          TextFormFieldWidget(
+                              hintText: 'Bio',
+                              fillColor: Colors.white,
+                              initialValue: user.bio,
+                              onChanged: (value) => _bio = value,
+                              type: TextInputType.name),
+                          SizedBox(height: 25),
+                          Text('PIN',
+                              style:
+                                  TextStyle(color: Colors.white, fontSize: 18)),
+                          SizedBox(height: 10),
+                          TextFormFieldWidget(
+                              hintText: user.pin,
+                              fillColor: Colors.white,
+                              iconData: Icons.refresh,
+                              prefixIconData: Icons.pin,
+                              hintStyle: TextStyle(
+                                  color: Colors.black,
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold),
+                              enabled: false),
+                        ],
+                      ),
                     ),
                   ),
                 ),
