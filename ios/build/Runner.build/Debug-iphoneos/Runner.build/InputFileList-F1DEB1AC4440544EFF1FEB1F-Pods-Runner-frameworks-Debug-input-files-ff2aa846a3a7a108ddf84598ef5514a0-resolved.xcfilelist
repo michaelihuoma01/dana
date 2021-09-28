@@ -25,6 +25,7 @@
 /Users/dubaitechnologydesign/Downloads/dana-master/ios/build/Debug-iphoneos/GTMSessionFetcher/GTMSessionFetcher.framework
 /Users/dubaitechnologydesign/Downloads/dana-master/ios/build/Debug-iphoneos/GoogleDataTransport/GoogleDataTransport.framework
 /Users/dubaitechnologydesign/Downloads/dana-master/ios/build/Debug-iphoneos/GoogleUtilities/GoogleUtilities.framework
+/Users/dubaitechnologydesign/Downloads/dana-master/ios/build/Debug-iphoneos/MTBBarcodeScanner/MTBBarcodeScanner.framework
 /Users/dubaitechnologydesign/Downloads/dana-master/ios/build/Debug-iphoneos/Mantle/Mantle.framework
 /Users/dubaitechnologydesign/Downloads/dana-master/ios/build/Debug-iphoneos/PromisesObjC/FBLPromises.framework
 /Users/dubaitechnologydesign/Downloads/dana-master/ios/build/Debug-iphoneos/Reachability/Reachability.framework
@@ -40,6 +41,7 @@
 /Users/dubaitechnologydesign/Downloads/dana-master/ios/build/Debug-iphoneos/file_picker/file_picker.framework
 /Users/dubaitechnologydesign/Downloads/dana-master/ios/build/Debug-iphoneos/flutter_email_sender/flutter_email_sender.framework
 /Users/dubaitechnologydesign/Downloads/dana-master/ios/build/Debug-iphoneos/flutter_image_compress/flutter_image_compress.framework
+/Users/dubaitechnologydesign/Downloads/dana-master/ios/build/Debug-iphoneos/flutter_local_notifications/flutter_local_notifications.framework
 /Users/dubaitechnologydesign/Downloads/dana-master/ios/build/Debug-iphoneos/gRPC-C++/grpcpp.framework
 /Users/dubaitechnologydesign/Downloads/dana-master/ios/build/Debug-iphoneos/gRPC-Core/grpc.framework
 /Users/dubaitechnologydesign/Downloads/dana-master/ios/build/Debug-iphoneos/gallery_saver/gallery_saver.framework
@@ -51,6 +53,7 @@
 /Users/dubaitechnologydesign/Downloads/dana-master/ios/build/Debug-iphoneos/nanopb/nanopb.framework
 /Users/dubaitechnologydesign/Downloads/dana-master/ios/build/Debug-iphoneos/open_file/open_file.framework
 /Users/dubaitechnologydesign/Downloads/dana-master/ios/build/Debug-iphoneos/path_provider/path_provider.framework
+/Users/dubaitechnologydesign/Downloads/dana-master/ios/build/Debug-iphoneos/qr_code_scanner/qr_code_scanner.framework
 /Users/dubaitechnologydesign/Downloads/dana-master/ios/build/Debug-iphoneos/record_mp3/record_mp3.framework
 /Users/dubaitechnologydesign/Downloads/dana-master/ios/build/Debug-iphoneos/share/share.framework
 /Users/dubaitechnologydesign/Downloads/dana-master/ios/build/Debug-iphoneos/shared_preferences/shared_preferences.framework

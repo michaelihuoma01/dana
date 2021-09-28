@@ -24,6 +24,7 @@
 /Users/dubaitechnologydesign/Downloads/dana-master/ios/build/Debug-iphoneos/Runner.app/Frameworks/GTMSessionFetcher.framework
 /Users/dubaitechnologydesign/Downloads/dana-master/ios/build/Debug-iphoneos/Runner.app/Frameworks/GoogleDataTransport.framework
 /Users/dubaitechnologydesign/Downloads/dana-master/ios/build/Debug-iphoneos/Runner.app/Frameworks/GoogleUtilities.framework
+/Users/dubaitechnologydesign/Downloads/dana-master/ios/build/Debug-iphoneos/Runner.app/Frameworks/MTBBarcodeScanner.framework
 /Users/dubaitechnologydesign/Downloads/dana-master/ios/build/Debug-iphoneos/Runner.app/Frameworks/Mantle.framework
 /Users/dubaitechnologydesign/Downloads/dana-master/ios/build/Debug-iphoneos/Runner.app/Frameworks/FBLPromises.framework
 /Users/dubaitechnologydesign/Downloads/dana-master/ios/build/Debug-iphoneos/Runner.app/Frameworks/Reachability.framework
@@ -39,6 +40,7 @@
 /Users/dubaitechnologydesign/Downloads/dana-master/ios/build/Debug-iphoneos/Runner.app/Frameworks/file_picker.framework
 /Users/dubaitechnologydesign/Downloads/dana-master/ios/build/Debug-iphoneos/Runner.app/Frameworks/flutter_email_sender.framework
 /Users/dubaitechnologydesign/Downloads/dana-master/ios/build/Debug-iphoneos/Runner.app/Frameworks/flutter_image_compress.framework
+/Users/dubaitechnologydesign/Downloads/dana-master/ios/build/Debug-iphoneos/Runner.app/Frameworks/flutter_local_notifications.framework
 /Users/dubaitechnologydesign/Downloads/dana-master/ios/build/Debug-iphoneos/Runner.app/Frameworks/grpcpp.framework
 /Users/dubaitechnologydesign/Downloads/dana-master/ios/build/Debug-iphoneos/Runner.app/Frameworks/grpc.framework
 /Users/dubaitechnologydesign/Downloads/dana-master/ios/build/Debug-iphoneos/Runner.app/Frameworks/gallery_saver.framework
@@ -50,6 +52,7 @@
 /Users/dubaitechnologydesign/Downloads/dana-master/ios/build/Debug-iphoneos/Runner.app/Frameworks/nanopb.framework
 /Users/dubaitechnologydesign/Downloads/dana-master/ios/build/Debug-iphoneos/Runner.app/Frameworks/open_file.framework
 /Users/dubaitechnologydesign/Downloads/dana-master/ios/build/Debug-iphoneos/Runner.app/Frameworks/path_provider.framework
+/Users/dubaitechnologydesign/Downloads/dana-master/ios/build/Debug-iphoneos/Runner.app/Frameworks/qr_code_scanner.framework
 /Users/dubaitechnologydesign/Downloads/dana-master/ios/build/Debug-iphoneos/Runner.app/Frameworks/record_mp3.framework
 /Users/dubaitechnologydesign/Downloads/dana-master/ios/build/Debug-iphoneos/Runner.app/Frameworks/share.framework
 /Users/dubaitechnologydesign/Downloads/dana-master/ios/build/Debug-iphoneos/Runner.app/Frameworks/shared_preferences.framework
