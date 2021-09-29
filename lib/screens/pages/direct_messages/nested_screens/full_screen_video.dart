@@ -14,9 +14,9 @@ class FullScreenVideo extends StatefulWidget {
 }
 
 class _FullScreenVideoState extends State<FullScreenVideo> {
-  late VideoPlayerController _controller;
+   VideoPlayerController? _controller;
 
-  late ChewieController chewieController;
+   ChewieController? chewieController;
 
   @override
   void initState() {
@@ -30,7 +30,7 @@ class _FullScreenVideoState extends State<FullScreenVideo> {
       });
 
     chewieController = ChewieController(
-      videoPlayerController: _controller,
+      videoPlayerController: _controller!,
       autoPlay: false,
       looping: false,
     );
@@ -38,8 +38,8 @@ class _FullScreenVideoState extends State<FullScreenVideo> {
 
   @override
   void dispose() {
-    _controller.dispose();
-    chewieController.dispose();
+    _controller?.dispose();
+    chewieController?.dispose();
     super.dispose();
   }
 
@@ -68,8 +68,8 @@ class _FullScreenVideoState extends State<FullScreenVideo> {
               child: Center(
                 child: Hero(
                   tag: widget.videoUrl!,
-                  child: _controller.value.isInitialized
-                      ? Chewie(controller: chewieController)
+                  child: _controller!.value.isInitialized
+                      ? Chewie(controller: chewieController!)
                       : CircularProgressIndicator(color: lightColor),
                 ),
               ),

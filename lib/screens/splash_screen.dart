@@ -64,7 +64,7 @@ class _SplashScreenState extends State<SplashScreen> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Center(
-                    child: Image.asset('assets/images/logo.png', height: 150)),
+                    child: Image.asset('assets/images/icon.png', height: 150)),
                 SizedBox(height: 50),
                 SpinKitWanderingCubes(color: Colors.white, size: 40)
               ],

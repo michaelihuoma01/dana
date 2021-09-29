@@ -233,8 +233,6 @@ class _HomeScreenState extends State<HomeScreen>
   }
 
   void _getCurrentUser() async {
-    print('i have the current user now  ');
-
     // String userId = await SharedPreferencesUtil.getUserId();
 
     AppUser currentUser =
@@ -247,7 +245,8 @@ class _HomeScreenState extends State<HomeScreen>
     }
     // print('i have the current user now $userId ');
     setState(() => _currentUser = currentUser);
-    // AuthService.updateTokenWithUser(currentUser);
+    AuthService.updateTokenWithUser(currentUser);
+    print("=========||||||||||||==========${currentUser.isBanned}");
   }
 
   void _selectPage(int index) {

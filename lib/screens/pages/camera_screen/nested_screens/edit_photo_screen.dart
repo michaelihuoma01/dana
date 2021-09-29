@@ -30,7 +30,7 @@ class EditPhotoScreen extends StatefulWidget {
 class _EditPhotoScreenState extends State<EditPhotoScreen>
     with TickerProviderStateMixin {
   GlobalKey _globalKey = GlobalKey();
-  GlobalKey<CropState> cropKey = GlobalKey<CropState>();
+  // GlobalKey<CropState> cropKey = GlobalKey<CropState>();
 
   TabController? _tabController;
   LiquidController _liquidController = LiquidController();
@@ -67,7 +67,7 @@ class _EditPhotoScreenState extends State<EditPhotoScreen>
           child: ColorFiltered(
             colorFilter: ColorFilter.matrix(filter.matrixValues),
             child: Crop(
-              key: cropKey,
+              key: Key('cropKey'),
               image: FileImage(widget.imageFile),
               aspectRatio: 1.0 / 1.0,
             ),

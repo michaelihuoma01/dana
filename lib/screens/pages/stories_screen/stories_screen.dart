@@ -171,7 +171,6 @@ class _StoryScreenState extends State<StoryScreen>
       resizeToAvoidBottomInset: false,
       body: Stack(
         children: [
-        
           GestureDetector(
             onVerticalDragStart: (dragDetails) {
               startVerticalDragDetails = dragDetails;
@@ -198,14 +197,14 @@ class _StoryScreenState extends State<StoryScreen>
                 Navigator.of(context).pop(_currentIndex);
               }
             },
-            onLongPress: () {
+            onLongPressStart: (details) {
               _animController?.stop();
               print('long press');
             },
             onLongPressEnd: (details) {
               _animController?.forward();
             },
-            onTapDown: (detailes) => (myLocale?.languageCode == 'en')
+            onTapUp: (detailes) => (myLocale?.languageCode == 'en')
                 ? _onTapDown(detailes)
                 : _onTapDownArabic(detailes),
             child: PageView.builder(
@@ -626,10 +625,9 @@ class _StoryScreenState extends State<StoryScreen>
               },
             ),
           ),
-            GestureDetector(
-              behavior: HitTestBehavior.translucent,
-              onLongPress: () => print('fuck up'),
-              child: Container(color: Colors.red)),
+          // GestureDetector(
+          //     onLongPress: () => print('fuck up'),
+          //     child: Container(color: Colors.red)),
         ],
       ),
     );
@@ -651,7 +649,7 @@ class _StoryScreenState extends State<StoryScreen>
     }
   }
 
-  void _onTapDown(TapDownDetails details) {
+  void _onTapDown(TapUpDetails details) {
     final Size screenSize = MediaQuery.of(context).size;
     final double dx = details.globalPosition.dx;
 
@@ -662,6 +660,9 @@ class _StoryScreenState extends State<StoryScreen>
 
           _currentIndex = _currentIndex! - 1;
           _loadStory(story: widget.stories[_currentIndex!]);
+        } else {
+          _animController?.reset();
+          _animController?.forward();
         }
       });
     } else if (dx > 2 * screenSize.width / 5) {
@@ -678,7 +679,7 @@ class _StoryScreenState extends State<StoryScreen>
     } else {}
   }
 
-  void _onTapDownArabic(TapDownDetails details) {
+  void _onTapDownArabic(TapUpDetails details) {
     final Size screenSize = MediaQuery.of(context).size;
     final double dx = details.globalPosition.dx;
 

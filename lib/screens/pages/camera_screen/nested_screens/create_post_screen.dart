@@ -165,11 +165,21 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
         }
       }
 
-      Navigator.push(
+      if (widget.post == null) {
+         Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (context) =>
+                  HomeScreen(currentUserId: _currentUserId)));
+      } else {
+         Navigator.push(
           context,
           MaterialPageRoute(
               builder: (context) =>
                   HomeScreen(currentUserId: widget.post!.authorId)));
+      }
+
+     
     }
   }
 

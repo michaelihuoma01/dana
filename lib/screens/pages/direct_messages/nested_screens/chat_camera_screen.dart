@@ -289,7 +289,7 @@ class _ChatCameraScreenState extends State<ChatCameraScreen>
 
   void onCameraSelected(CameraDescription cameraDescription) async {
     // if (controller != null)
-    controller = CameraController(cameraDescription, ResolutionPreset.ultraHigh,
+    controller = CameraController(cameraDescription, ResolutionPreset.high,
         enableAudio: true, imageFormatGroup: ImageFormatGroup.bgra8888);
 
     controller!.addListener(() {

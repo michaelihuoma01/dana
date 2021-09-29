@@ -31,15 +31,6 @@ class ChatService {
       'readStatus': readStatus,
     });
 
-    for (var userId in userIds!) {
-      AppUser user = await DatabaseService.getUserWithId(userId);
-      if (userId !=
-          Provider.of<UserData>(context, listen: false).currentUser!.id) {
-        HelperMethods.sendNotification(user.token, context, userId.id, 'Dana',
-            '${user.name} sent you a message');
-      }
-    }
-
     return Chat(
       id: res.id,
       admin: '',
@@ -88,11 +79,9 @@ class ChatService {
       post: post,
       recieverToken: receiverUser.token,
     );
-    AppUser user = await DatabaseService.getUserWithId(receiverUser.id);
-    if (receiverUser.id != message.senderId) {
-      HelperMethods.sendNotification(receiverUser.token, context,
-          receiverUser.id, 'Dana', '${user.name} sent you a message');
-    }
+    AppUser user = await DatabaseService.getUserWithId(message.senderId);
+    HelperMethods.sendNotification(receiverUser.token, context, receiverUser.id,
+        'Dana', '${user.name} sent you a message');
   }
 
   static void setChatRead(BuildContext context, Chat chat, bool read) async {

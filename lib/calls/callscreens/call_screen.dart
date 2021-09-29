@@ -48,6 +48,8 @@ class _CallScreenState extends State<CallScreen> {
   int? _remoteUid;
   Timer? _timer;
   int _counter = 0 * 60;
+  double height = 180;
+  double width = 120;
 
   @override
   void initState() {
@@ -367,6 +369,8 @@ class _CallScreenState extends State<CallScreen> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
+          SizedBox(width: 20),
+
           GestureDetector(
               onTap: _onToggleMute,
               child: Container(
@@ -419,7 +423,9 @@ class _CallScreenState extends State<CallScreen> {
                   // width: 30.0,
                   child:
                       Icon(Icons.call_end, color: Colors.white, size: 20.0))),
-          SizedBox(width: 20),
+
+          // SizedBox(width: 20),
+
           (widget.isAudio == false)
               ? RawMaterialButton(
                   onPressed: _onSwitchCamera,
@@ -489,12 +495,28 @@ class _CallScreenState extends State<CallScreen> {
                           ),
 
                     Positioned(
-                      top: 0,
-                      left: 0,
-                      right: 0,
-                      child: Container(
-                          height: 390,
-                          child: Center(child: rtc_local_view.SurfaceView())),
+                      top: 30,
+                      right: 10,
+                      child: GestureDetector(
+                        onTap: () {
+                          if (height == 180 && width == 120) {
+                            print('tapopopop');
+                            setState(() {
+                              height = 570;
+                              width = 350;
+                            });
+                          } else {
+                            setState(() {
+                              height = 180;
+                              width = 120;
+                            });
+                          }
+                        },
+                        child: Container(
+                            height: height,
+                            width: width,
+                            child: Center(child: rtc_local_view.SurfaceView())),
+                      ),
                     ),
 
                     if (start == true)
@@ -504,7 +526,8 @@ class _CallScreenState extends State<CallScreen> {
                           right: 0,
                           child: Row(
                             children: [
-                              Text(' ${widget.call.receiverName} | ',
+                              Text(
+                                  ' ${(widget.call.receiverId != widget.currentUserId) ? widget.call.callerName! : widget.call.receiverName!} | ',
                                   style: TextStyle(
                                       fontFamily: 'Poppins-Regular',
                                       fontSize: 16,

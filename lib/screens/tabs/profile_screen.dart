@@ -370,26 +370,27 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
                               AppUser? author = snapshot.data;
 
-                              return (post.imageUrl == null)
-                                  ? TextPost(
-                                      postStatus: PostStatus.feedPost,
-                                      currentUserId: widget.user!.id,
-                                      author: author,
-                                      post: post,
-                                    )
-                                  : (post.videoUrl != null)
-                                      ? VideoPostView(
-                                          postStatus: PostStatus.feedPost,
-                                          currentUserId: widget.user!.id,
-                                          author: author,
-                                          post: post,
-                                        )
-                                      : PostView(
-                                          postStatus: PostStatus.feedPost,
-                                          currentUserId: widget.user!.id,
-                                          author: author,
-                                          post: post,
-                                        );
+                              if (post.imageUrl != null)
+                                return PostView(
+                                    postStatus: PostStatus.feedPost,
+                                    currentUserId: widget.user!.id,
+                                    author: author,
+                                    post: post);
+
+                              if (post.videoUrl != null)
+                                return VideoPostView(
+                                  postStatus: PostStatus.feedPost,
+                                  currentUserId: widget.user!.id,
+                                  author: author,
+                                  post: post,
+                                );
+                              else
+                                return TextPost(
+                                  postStatus: PostStatus.feedPost,
+                                  currentUserId: widget.user!.id,
+                                  author: author,
+                                  post: post,
+                                );
                             },
                           );
                         },

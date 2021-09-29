@@ -95,7 +95,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Image.asset('assets/images/logo.png', height: 130),
+                        Image.asset('assets/images/icon.png', height: 130),
                         SizedBox(height: 30),
                         TextFormFieldWidget(
                             hintText: S.of(context)!.formFieldEmail,
@@ -117,7 +117,8 @@ class _LoginScreenState extends State<LoginScreen> {
                                     context,
                                     MaterialPageRoute(
                                         builder: (context) =>
-                                            ForgotPasswordScreen(isPassword: false)));
+                                            ForgotPasswordScreen(
+                                                isPassword: false)));
                               },
                               child: Text(S.of(context)!.forgotPassword,
                                   style: TextStyle(
@@ -170,7 +171,8 @@ class _LoginScreenState extends State<LoginScreen> {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Text('${S.of(context)!.noAccount} ',
-                                style: TextStyle(color: Colors.white, fontSize: 16)),
+                                style: TextStyle(
+                                    color: Colors.white, fontSize: 16)),
                             GestureDetector(
                               onTap: () {
                                 Navigator.push(
@@ -185,19 +187,20 @@ class _LoginScreenState extends State<LoginScreen> {
                                       fontFamily: 'Poppins-Bold')),
                             ),
                           ],
-                        ), 
+                        ),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Text(S.of(context)!.formFieldChangeLanguage,
-                                style: TextStyle(color: Colors.white, fontSize: 16)),
+                                style: TextStyle(
+                                    color: Colors.white, fontSize: 16)),
                             Padding(
                               padding: const EdgeInsets.all(0),
                               child: DropdownButton<Language>(
                                 underline: SizedBox(),
                                 icon: Icon(
                                   Icons.language,
-                                  color: lightColor, 
+                                  color: lightColor,
                                 ),
                                 onChanged: (Language? language) {
                                   _changeLanguage(language!);

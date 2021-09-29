@@ -50,6 +50,8 @@ class _MessageBubbleState extends State<MessageBubble> {
   bool isPlayingMsg = false, isRecording = false, isSending = false;
   String? recordFilePath;
   VideoPlayerController? _controller;
+  ChewieController? chewieController;
+
   Duration duration = new Duration();
   Duration position = new Duration();
   bool isPlaying = false;
@@ -74,6 +76,11 @@ class _MessageBubbleState extends State<MessageBubble> {
             // Ensure the first frame is shown after the video is initialized, even before the play button has been pressed.
             setState(() {});
           });
+        chewieController = ChewieController(
+          videoPlayerController: _controller!,
+          autoPlay: false,
+          looping: false,
+        );
       }
     } on PlatformException catch (e) {
       print(e);
@@ -385,7 +392,6 @@ class _MessageBubbleState extends State<MessageBubble> {
                                       fontSize: 16,
                                       fontWeight: FontWeight.w600))),
                         ),
-                         
                       ],
                     ),
                   ),
@@ -395,7 +401,7 @@ class _MessageBubbleState extends State<MessageBubble> {
         onDoubleTap: widget.message!.senderId == currentUser.id
             ? null
             : () => _likeUnLikeMessage(currentUser.id),
-        onTap: () => _videoFullScreen(widget.message!.videoUrl),
+        // onTap: () => _videoFullScreen(widget.message!.videoUrl),
         child: Padding(
             padding: const EdgeInsets.all(10),
             child: Stack(
@@ -408,7 +414,7 @@ class _MessageBubbleState extends State<MessageBubble> {
                     child: _controller!.value.isInitialized
                         ? AspectRatio(
                             aspectRatio: 1 / 1,
-                            child: VideoPlayer(_controller!),
+                            child: Chewie(controller: chewieController!),
                           )
                         : Row(mainAxisSize: MainAxisSize.min, children: [
                             Container(
@@ -418,18 +424,7 @@ class _MessageBubbleState extends State<MessageBubble> {
                                     color: lightColor)),
                           ]),
                   ),
-                ),
-                _controller!.value.isInitialized
-                    ? Container(
-                        decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            color: Colors.black.withOpacity(0.4)),
-                        child: Padding(
-                          padding: const EdgeInsets.all(5),
-                          child: Icon(Icons.play_arrow,
-                              color: Colors.white, size: 40),
-                        ))
-                    : SizedBox(),
+                ), 
                 _heartAnim ? HeartAnime(80.0) : SizedBox.shrink(),
               ],
             )),

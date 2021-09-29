@@ -51,7 +51,7 @@ class _UserProfileState extends State<UserProfile> {
   List<Post> _posts = [];
   int _displayPosts = 0; // 0 - grid, 1 - column
   AppUser? _profileUser;
-  late AppUser _currentUser;
+ AppUser? _currentUser;
   List<Story>? _userStories;
   var _future;
   bool isFollower = false;
@@ -115,7 +115,7 @@ class _UserProfileState extends State<UserProfile> {
 
   _setupProfileUser() async {
     AppUser profileUser = await DatabaseService.getUserWithId(widget.userId);
-    AppUser currentUser =
+    AppUser? currentUser =
         await DatabaseService.getUserWithId(widget.currentUserId);
     if (!mounted) return;
     setState(() {
@@ -367,7 +367,7 @@ class _UserProfileState extends State<UserProfile> {
             }
             AppUser user = AppUser.fromDoc(snapshot.data);
             return PickupLayout(
-                 currentUser: _currentUser,
+                 currentUser: _currentUser!,
 
               scaffold: Scaffold(
                   appBar: PreferredSize(
@@ -490,7 +490,7 @@ class _UserProfileState extends State<UserProfile> {
                                               onTap: () {
                                                 try {
                                                   CallUtils.dial(
-                                                      from: _currentUser,
+                                                      from: _currentUser!,
                                                       to: _profileUser!,
                                                       context: context,
                                                       isAudio: false);
@@ -506,7 +506,7 @@ class _UserProfileState extends State<UserProfile> {
                                               onTap: () {
                                                 try {
                                                   CallUtils.dial(
-                                                      from: _currentUser,
+                                                      from: _currentUser!,
                                                       to: _profileUser!,
                                                       context: context,
                                                       isAudio: true);

@@ -14,6 +14,7 @@ import 'package:Dana/utilities/zoomOverlay.dart';
 import 'package:Dana/utils/constants.dart';
 import 'package:Dana/widgets/common_widgets/heart_anime.dart';
 import 'package:Dana/widgets/common_widgets/user_badges.dart';
+import 'package:chewie/chewie.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -49,6 +50,8 @@ class _VideoPostViewState extends State<VideoPostView> {
   bool _isVisible = false;
   Post? _post;
   VideoPlayerController? _controller;
+
+  ChewieController? chewieController;
   Locale? myLocale;
 
   @override
@@ -61,10 +64,15 @@ class _VideoPostViewState extends State<VideoPostView> {
 
     _controller = VideoPlayerController.network(_post!.videoUrl!)
       ..initialize().then((_) {
-        // print('succesful folks');
         // Ensure the first frame is shown after the video is initialized, even before the play button has been pressed.
         setState(() {});
       });
+
+    chewieController = ChewieController(
+      videoPlayerController: _controller!,
+      autoPlay: false,
+      looping: false,
+    );
   }
 
   @override
@@ -134,7 +142,7 @@ class _VideoPostViewState extends State<VideoPostView> {
   }
 
   _showMenuDialog() {
-    return Platform.isIOS ? _iosBottomSheet() : _androidDialog();
+    return _androidDialog();
   }
 
   _saveAndShareFile() async {
@@ -151,32 +159,32 @@ class _VideoPostViewState extends State<VideoPostView> {
         sharePositionOrigin: box.localToGlobal(Offset.zero) & box.size);
   }
 
-  _iosBottomSheet() {
-    showCupertinoModalPopup(
-        context: context,
-        builder: (BuildContext context) {
-          return CupertinoActionSheet(
-            title: Text('Add Photo'),
-            actions: <Widget>[
-              CupertinoActionSheetAction(
-                onPressed: () {},
-                child: Text('Take Photo'),
-              ),
-              CupertinoActionSheetAction(
-                onPressed: () {},
-                child: Text('Choose From Gallery'),
-              )
-            ],
-            cancelButton: CupertinoActionSheetAction(
-              child: Text(
-                'Cancel',
-                style: kFontColorRedTextStyle,
-              ),
-              onPressed: () => Navigator.pop(context),
-            ),
-          );
-        });
-  }
+  // _iosBottomSheet() {
+  //   showCupertinoModalPopup(
+  //       context: context,
+  //       builder: (BuildContext context) {
+  //         return CupertinoActionSheet(
+  //           title: Text('Add Photo'),
+  //           actions: <Widget>[
+  //             CupertinoActionSheetAction(
+  //               onPressed: () {},
+  //               child: Text('Take Photo'),
+  //             ),
+  //             CupertinoActionSheetAction(
+  //               onPressed: () {},
+  //               child: Text('Choose From Gallery'),
+  //             )
+  //           ],
+  //           cancelButton: CupertinoActionSheetAction(
+  //             child: Text(
+  //               'Cancel',
+  //               style: kFontColorRedTextStyle,
+  //             ),
+  //             onPressed: () => Navigator.pop(context),
+  //           ),
+  //         );
+  //       });
+  // }
 
   _androidDialog() {
     showDialog(
@@ -319,8 +327,8 @@ class _VideoPostViewState extends State<VideoPostView> {
                               child: _controller!.value.isInitialized
                                   ? AspectRatio(
                                       aspectRatio: 1 / 1,
-                                      child: VideoPlayer(_controller!),
-                                    )
+                                      child:
+                                          Chewie(controller: chewieController!))
                                   : Padding(
                                       padding: const EdgeInsets.symmetric(
                                           vertical: 50, horizontal: 20),
@@ -332,27 +340,27 @@ class _VideoPostViewState extends State<VideoPostView> {
                     ),
                   ),
                   _heartAnim ? HeartAnime(100.0) : SizedBox.shrink(),
-                  Visibility(
-                    visible: _isVisible,
-                    child: GestureDetector(
-                        onTap: () {
-                          if (_controller!.value.isPlaying) {
-                            setState(() {
-                              _controller!.pause();
-                              _isPlaying = true;
-                            });
-                          } else {
-                            setState(() {
-                              _controller!.play();
-                              _isPlaying = false;
-                            });
-                          }
-                        },
-                        child: Icon(
-                            (_isPlaying) ? Icons.play_arrow : Icons.pause,
-                            color: Colors.white,
-                            size: 45)),
-                  ),
+                  // Visibility(
+                  //   visible: _isVisible,
+                  //   child: GestureDetector(
+                  //       onTap: () {
+                  //         if (_controller!.value.isPlaying) {
+                  //           setState(() {
+                  //             _controller!.pause();
+                  //             _isPlaying = true;
+                  //           });
+                  //         } else {
+                  //           setState(() {
+                  //             _controller!.play();
+                  //             _isPlaying = false;
+                  //           });
+                  //         }
+                  //       },
+                  //       child: Icon(
+                  //           (_isPlaying) ? Icons.play_arrow : Icons.pause,
+                  //           color: Colors.white,
+                  //           size: 45)),
+                  // ),
                   Positioned(
                     bottom: 0,
                     right: 0,

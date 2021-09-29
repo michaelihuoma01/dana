@@ -203,11 +203,10 @@ class DatabaseService {
       recieverToken: receiverToken,
     );
 
-    AppUser user = await getUserWithId(userId);
-    if (user.id != currentUserId) {
+    AppUser user = await getUserWithId(currentUserId); 
       HelperMethods.sendNotification(receiverToken, context, userId, 'Dana',
           '${user.name} added you as a friend');
-    }
+    
     print('notification sent');
   }
 
@@ -430,12 +429,10 @@ class DatabaseService {
       recieverToken: receiverToken,
     );
 
-    AppUser user = await getUserWithId(post.authorId);
+    AppUser user = await getUserWithId(currentUserId);
 
-    if (user.id != currentUserId) {
-      HelperMethods.sendNotification(receiverToken, context, post.authorId,
-          'Dana', '${user.name} liked your post');
-    }
+    HelperMethods.sendNotification(receiverToken, context, post.authorId,
+        'Dana', '${user.name} liked your post');
 
     print('notification sent');
   }
@@ -512,12 +509,10 @@ class DatabaseService {
       recieverToken: recieverToken,
     );
 
-    AppUser user = await getUserWithId(post.authorId);
+    AppUser user = await getUserWithId(currentUserId);
 
-    if (user.id != currentUserId) {
-      HelperMethods.sendNotification(recieverToken, context, post.authorId,
-          'Dana', '${user.name} commented on your post');
-    }
+    HelperMethods.sendNotification(recieverToken, context, post.authorId,
+        'Dana', '${user.name} commented on your post');
   }
 
   static void addActivityItem({
