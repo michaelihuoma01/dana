@@ -115,12 +115,12 @@ class _UserProfileState extends State<UserProfile> {
 
   _setupProfileUser() async {
     AppUser profileUser = await DatabaseService.getUserWithId(widget.userId);
-    AppUser? currentUser =
+   _currentUser =
         await DatabaseService.getUserWithId(widget.currentUserId);
     if (!mounted) return;
     setState(() {
       _profileUser = profileUser;
-      _currentUser = currentUser;
+      // _currentUser = currentUser;
     });
     if (profileUser.id ==
         Provider.of<UserData>(context, listen: false).currentUser!.id) {
@@ -367,7 +367,7 @@ class _UserProfileState extends State<UserProfile> {
             }
             AppUser user = AppUser.fromDoc(snapshot.data);
             return PickupLayout(
-                 currentUser: _currentUser!,
+                 currentUser: _currentUser,
 
               scaffold: Scaffold(
                   appBar: PreferredSize(

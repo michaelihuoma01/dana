@@ -3,21 +3,21 @@
 <plist version="1.0">
 <dict>
 	<key>CLIENT_ID</key>
-	<string>53038916069-f3j18c178la6qgrnsvmlcrdp4pub5bma.apps.googleusercontent.com</string>
+	<string>598487625194-8pkbj1vkil6e0ei3s1hdfov2pbftipqm.apps.googleusercontent.com</string>
 	<key>REVERSED_CLIENT_ID</key>
-	<string>com.googleusercontent.apps.53038916069-f3j18c178la6qgrnsvmlcrdp4pub5bma</string>
+	<string>com.googleusercontent.apps.598487625194-8pkbj1vkil6e0ei3s1hdfov2pbftipqm</string>
 	<key>API_KEY</key>
-	<string>AIzaSyDrMypiTfkujSdCFYEE_x3ZP8A5T1oNNpc</string>
+	<string>AIzaSyA0WGyr0_d4ivtudaP6ux8rAsW0azsBYJ8</string>
 	<key>GCM_SENDER_ID</key>
-	<string>53038916069</string>
+	<string>598487625194</string>
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
 	<string>com.michaelihuoma.dana</string>
 	<key>PROJECT_ID</key>
-	<string>dana-1f506</string>
+	<string>dana-d2485</string>
 	<key>STORAGE_BUCKET</key>
-	<string>dana-1f506.appspot.com</string>
+	<string>dana-d2485.appspot.com</string>
 	<key>IS_ADS_ENABLED</key>
 	<false></false>
 	<key>IS_ANALYTICS_ENABLED</key>
@@ -29,6 +29,6 @@
 	<key>IS_SIGNIN_ENABLED</key>
 	<true></true>
 	<key>GOOGLE_APP_ID</key>
-	<string>1:53038916069:ios:fd30c1d583522c866bcf0c</string>
+	<string>1:598487625194:ios:859d73040768bfb0469693</string>
 </dict>
 </plist>

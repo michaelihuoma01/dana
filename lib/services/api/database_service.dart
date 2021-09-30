@@ -513,6 +513,8 @@ class DatabaseService {
 
     HelperMethods.sendNotification(recieverToken, context, post.authorId,
         'Dana', '${user.name} commented on your post');
+
+      
   }
 
   static void addActivityItem({

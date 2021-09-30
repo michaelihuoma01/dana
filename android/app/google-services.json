@@ -1,33 +1,33 @@
 {
   "project_info": {
-    "project_number": "53038916069",
-    "project_id": "dana-1f506",
-    "storage_bucket": "dana-1f506.appspot.com"
+    "project_number": "598487625194",
+    "project_id": "dana-d2485",
+    "storage_bucket": "dana-d2485.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:53038916069:android:9cea0ac0a72ff0a16bcf0c",
+        "mobilesdk_app_id": "1:598487625194:android:3aec5013e81fae8c469693",
         "android_client_info": {
           "package_name": "com.michaelihuoma.dana"
         }
       },
       "oauth_client": [
         {
-          "client_id": "53038916069-c69thj67fu7c64v8k6mgiddtbrbatqll.apps.googleusercontent.com",
+          "client_id": "598487625194-m6jsfll3mp84ho466ohorsp5v3lshpt8.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyCe2h2GHVbmxoP48eL4lLc9W5EnnA0TjSI"
+          "current_key": "AIzaSyA5Rseo2C-4qSVACIyXlF_NUXwI9EYByJg"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "53038916069-c69thj67fu7c64v8k6mgiddtbrbatqll.apps.googleusercontent.com",
+              "client_id": "598487625194-m6jsfll3mp84ho466ohorsp5v3lshpt8.apps.googleusercontent.com",
               "client_type": 3
             }
           ]
