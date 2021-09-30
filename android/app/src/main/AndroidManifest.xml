@@ -2,9 +2,17 @@
 xmlns:tools="http://schemas.android.com/tools"
     package="com.michaelihuoma.dana">
 
-     <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.RECORD_AUDIO" /> 
+    <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+
+    <!-- The Agora SDK requires Bluetooth permissions in case users are using Bluetooth devices.-->
+    <uses-permission android:name="android.permission.BLUETOOTH" />
 
  <queries>
     <intent>
@@ -24,8 +32,11 @@ xmlns:tools="http://schemas.android.com/tools"
               
         <meta-data
           android:name="com.google.firebase.messaging.default_notification_channel_icon"
-          android:resource="@drawable/icon"
+          android:resource="@drawable/logo"
           />
+          <meta-data
+    android:name="com.google.firebase.messaging.default_notification_color"
+    android:resource="@color/appColor" />
 
         <activity
             android:name=".MainActivity"

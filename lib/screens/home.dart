@@ -386,7 +386,7 @@ class _HomeScreenState extends State<HomeScreen>
                   BottomNavigationBarItem(
                       icon: SvgPicture.asset('assets/images/call.svg',
                           color: isSelected3 ? lightColor : Colors.grey),
-                      title: Text(isSelected3 ? S.of(context)!.messages : '',
+                      title: Text(isSelected3 ? S.of(context)!.calls : '',
                           style: TextStyle(
                               fontSize: 10,
                               color: isSelected3

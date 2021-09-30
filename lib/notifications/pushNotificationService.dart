@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:Dana/models/user_model.dart';
 import 'package:Dana/services/api/auth_service.dart';
 import 'package:Dana/utilities/constants.dart';
+import 'package:Dana/utils/constants.dart';
 import 'package:Dana/widgets/qrcode.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -104,12 +105,11 @@ class PushNotificationService {
             notification.body,
             NotificationDetails(
               android: AndroidNotificationDetails(
-                channel.id,
-                channel.name,
-                channel.description,
-                // icon: android.smallIcon,
-                // other properties...
-              ),
+                  channel.id, channel.name, channel.description,
+                  color: lightColor
+                  // icon: android.smallIcon,
+                  // other properties...
+                  ),
             ));
         // fetchRideInfo(getRideID(message.data), context);
       }

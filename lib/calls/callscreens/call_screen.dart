@@ -59,6 +59,16 @@ class _CallScreenState extends State<CallScreen> {
   }
 
   Future<void> initializeAgora() async {
+    // Permission.camera.request();
+
+    if (await Permission.camera.isGranted) {
+      print('""""""""""""""""""""""False""""""""""""""""""""""');
+    } else {
+      Permission.camera.request();
+      Permission.microphone.request();
+      print('""""""""""""""""""""""True""""""""""""""""""""""');
+    }
+
     if (APP_ID.isEmpty) {
       setState(() {
         _infoStrings.add(
