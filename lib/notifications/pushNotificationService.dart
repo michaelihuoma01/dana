@@ -136,20 +136,7 @@ class PushNotificationService {
         // fetchRideInfo(getRideID(message.data), context);
       }
       return Future<void>.value();
-    });
-
-    // fcm.configure(
-    //     onMessage: (Map<String, dynamic> message) async {
-    //       fetchRideInfo(getRideID(message), context);
-    //     },
-    //     onLaunch: (Map<String, dynamic> message) async {
-    //       fetchRideInfo(getRideID(message), context);
-    //     },
-    //     onResume: (Map<String, dynamic> message) async {
-    //       fetchRideInfo(getRideID(message), context);
-    //     },
-    //     onBackgroundMessage:
-    //         Platform.isIOS ? null : onBackgroundMessageHandler);
+    }); 
   }
 
   Future<String?> getToken() async {
@@ -171,90 +158,18 @@ class PushNotificationService {
     fcm.subscribeToTopic('allusers');
   }
 
-  static String getRideID(Map<String, dynamic> message) {
-    String rideID = '';
+  static String getuserID(Map<String, dynamic> message) {
+    String userID = '';
 
     if (Platform.isAndroid) {
-      rideID = message['rideID'];
-      print('rideID: $rideID');
+      userID = message['rideID'];
+      print('userID: $userID');
     } else {
-      rideID = message['rideID'];
-      print('rideID: $rideID');
+      userID = message['rideID'];
+      print('userID: $userID');
     }
 
-    return rideID;
+    return userID;
   }
-
-  // static void fetchRideInfo(String rideID, context) {
-  //   showDialog(
-  //     barrierDismissible: false,
-  //     context: context,
-  //     builder: (BuildContext context) =>
-  //         Loading(status: 'Getting ride details...'),
-  //   );
-
-  //   DatabaseReference rideRef =
-  //       FirebaseDatabase.instance.reference().child('rideRequest/$rideID');
-  //   print('getting notification here');
-
-  //   rideRef.once().then((DataSnapshot snapshot) {
-  //     Navigator.pop(context);
-  //     if (snapshot.value != null) {
-  //       // assetsAudioPlayer.open(Audio('sounds/alert.mp3'));
-  //       // assetsAudioPlayer.play();
-
-  //       double pickupLat = double.parse(
-  //           snapshot.value['pickuplocation']['latitude'].toString());
-  //       double pickupLng = double.parse(
-  //           snapshot.value['pickuplocation']['longitude'].toString());
-  //       String pickupAddress = snapshot.value['pickupAddress'].toString();
-
-  //       double destinationLat =
-  //           double.parse(snapshot.value['destination']['latitude'].toString());
-  //       double destinationLng =
-  //           double.parse(snapshot.value['destination']['longitude'].toString());
-  //       String destinationAddress =
-  //           snapshot.value['destinationAddress'].toString();
-
-  //       String paymentMethod = snapshot.value['paymentMethod'].toString();
-  //       String riderName = snapshot.value['riderName'];
-  //       String riderPhone = snapshot.value['riderPhone'];
-  //       String riderID = snapshot.value['riderID'];
-  //       String deliveryMethod = snapshot.value['deliveryMethod'];
-  //       String receiverName = snapshot.value['receiverName'].toString();
-  //       String receiverPhone = snapshot.value['receiverPhone'].toString();
-
-  //       TripDetails tripDetails = TripDetails();
-
-  //       tripDetails.rideID = rideID;
-  //       tripDetails.pickupAddress = pickupAddress;
-  //       tripDetails.destinationAddress = destinationAddress;
-  //       tripDetails.pickup = LatLng(pickupLat, pickupLng);
-  //       tripDetails.destination = LatLng(destinationLat, destinationLng);
-  //       tripDetails.paymentMethod = paymentMethod;
-  //       tripDetails.riderName = riderName;
-  //       tripDetails.riderPhone = riderPhone;
-  //       tripDetails.riderID = riderID;
-  //       tripDetails.deliveryMethod = deliveryMethod;
-  //       tripDetails.receiverName = receiverName;
-  //       tripDetails.receiverPhone = receiverPhone;
-
-  //       print(tripDetails.rideID);
-  //       print(tripDetails.pickupAddress);
-  //       print(tripDetails.destinationAddress);
-  //       print(tripDetails.pickup);
-  //       print(tripDetails.destination);
-  //       print(tripDetails.paymentMethod);
-
-  //       showDialog(
-  //         barrierDismissible: false,
-  //         context: context,
-  //         builder: (BuildContext context) =>
-  //             NotificationDialog(tripDetails: tripDetails),
-  //       );
-  //     }
-  //   }).onError((error, stackTrace) {
-  //     print('-------------$error /////////// $stackTrace');
-  //   });
-  // }
+ 
 }

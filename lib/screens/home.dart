@@ -145,15 +145,21 @@ class _HomeScreenState extends State<HomeScreen>
     var friendList = [...followingUsers, ...followerUsers].toSet().toList();
 
     for (String? userId in friendList) {
-      var isFollowing = await DatabaseService.isFollowingUser(
+      // var isFollowing = await DatabaseService.isFollowingUser(
+      //   currentUserId: widget.currentUser!.id,
+      //   userId: userId,
+      // );
+
+      var isFollowing = await DatabaseService.isUserFollower(
         currentUserId: widget.currentUserId,
         userId: userId,
       );
 
       var isFollower = await DatabaseService.isUserFollower(
-        currentUserId: widget.currentUserId,
-        userId: userId,
+        currentUserId: userId,
+        userId: widget.currentUserId,
       );
+
       var friends = await DatabaseService.getUserWithId(userId);
 
       if (isFollower == true && isFollowing == true) {
@@ -161,18 +167,13 @@ class _HomeScreenState extends State<HomeScreen>
           isFriends = true;
           _friends.add(friends);
         });
-      } else {
+      } else if (isFollowing == false && isFollower == true) {
         setState(() {
-          isFriends = false;
           isRequest = true;
           _requests.add(friends);
         });
       }
     }
-
-    print(_friends.length);
-    print(isRequest);
-
     setState(() {
       _isLoading = false;
     });
@@ -366,15 +367,13 @@ class _HomeScreenState extends State<HomeScreen>
                                   ? lightColor
                                   : Colors.transparent))),
                   BottomNavigationBarItem(
-                      icon: Stack(
+                      icon: Column(
                         children: [
+                          if (isRead == false)
+                            Icon(Icons.circle, color: Colors.red, size: 6),
+                          SizedBox(height: 3),
                           SvgPicture.asset('assets/images/message.svg',
                               color: isSelected2 ? lightColor : Colors.grey),
-                          if (isRead == false)
-                            Positioned(
-                                left: 11,
-                                child: Icon(Icons.circle,
-                                    color: Colors.red, size: 12))
                         ],
                       ),
                       title: Text(isSelected2 ? S.of(context)!.messages : '',
@@ -393,15 +392,13 @@ class _HomeScreenState extends State<HomeScreen>
                                   ? lightColor
                                   : Colors.transparent))),
                   BottomNavigationBarItem(
-                      icon: Stack(
+                      icon: Column(
                         children: [
+                          if (isRequest == true)
+                            Icon(Icons.circle, color: Colors.red, size: 6),
+                          SizedBox(height: 3),
                           SvgPicture.asset('assets/images/groups.svg',
                               color: isSelected4 ? lightColor : Colors.grey),
-                          if (isRequest == true)
-                            Positioned(
-                                right: 0,
-                                child: Icon(Icons.circle,
-                                    color: Colors.red, size: 8))
                         ],
                       ),
                       title: Text(isSelected4 ? S.of(context)!.friends : '',

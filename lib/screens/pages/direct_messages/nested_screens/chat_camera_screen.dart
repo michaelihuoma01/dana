@@ -39,6 +39,7 @@ class _ChatCameraScreenState extends State<ChatCameraScreen>
   // CameraConsumer? _cameraConsumer = CameraConsumer.post;
   bool fromCamera = false;
   bool isRecording = false;
+  double zoom = 0.0;
 
   @override
   void initState() {
@@ -105,6 +106,41 @@ class _ChatCameraScreenState extends State<ChatCameraScreen>
                   size: 22,
                 ),
                 onTap: () => Navigator.pop(context),
+              ),
+            ),
+          ),
+            Align(
+            alignment: Alignment.centerRight,
+            child: Container(
+              height: 300,
+              width: 50, 
+              child: RotatedBox(
+                quarterTurns: 3,
+                child: Slider(
+                  activeColor: Colors.white,
+                  inactiveColor: Colors.grey,
+                  value: zoom, 
+                  label: zoom.toString(),
+                  onChanged: (value) {
+                    print(value);
+// as slider values are in decimals, we multiply it by 10 because camera
+//take values above 1.0 and below 8.0
+//e.g:
+//value=0.19 //according to slider
+//value=value*10=> 0.19*10
+//Now the updated value is:
+//value=1.9
+
+                    value = value * 10;
+                    if (value <= 8.0 && value >= 1.0) {
+//Here we set the zoom level when we move slider pointer
+                      controller!.setZoomLevel(value);
+                    }
+//and to set slider pointer position visually, we divided the value by 10
+//to give slider its original value.
+                    setState(() => zoom = value / 10);
+                  },
+                ),
               ),
             ),
           ),

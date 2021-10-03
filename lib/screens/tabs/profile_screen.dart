@@ -258,9 +258,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                           context,
                                           MaterialPageRoute(
                                               builder: (context) =>
-                                                  SettingsScreen(
-                                                      currentUser:
-                                                          widget.user)));
+                                                  SettingsScreen()));
                                     },
                                     child: Container(
                                       decoration: BoxDecoration(

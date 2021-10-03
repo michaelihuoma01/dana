@@ -45,46 +45,32 @@ class UserProfile extends StatefulWidget {
 }
 
 class _UserProfileState extends State<UserProfile> {
-  bool _isFollowing = false;
-  int _followersCount = 0;
-  int _followingCount = 0;
   List<Post> _posts = [];
   int _displayPosts = 0; // 0 - grid, 1 - column
   AppUser? _profileUser;
- AppUser? _currentUser;
-  List<Story>? _userStories;
+  AppUser? _currentUser;
   var _future;
-  bool isFollower = false;
-  bool isFollowingUser = false;
   bool isFriends = false;
   bool isRequest = false;
-  bool notFriends = false;
   bool pendingFriends = false;
   List<AppUser> _friends = [];
   List<AppUser> _requests = [];
+  bool _isLoading = false;
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
- 
-    _setupIsFollowing();  
-    _setupPosts();
-    _setupProfileUser();
-    _setupFriends();
+    _setupAll();
+
     _future = usersRef.doc(widget.userId).get();
   }
 
-  _setupIsFollowing() async {
-    bool isFollowingUser = await DatabaseService.isFollowingUser(
-      currentUserId: widget.currentUserId,
-      userId: widget.userId,
-    );
-    if (!mounted) return;
-    setState(() {
-      _isFollowing = isFollowingUser;
-    });
-  }  
+  _setupAll() {
+    _setupPosts();
+    _setupProfileUser();
+    _setupFriends();
+  }
 
   _setupPosts() async {
     List<Post> posts = await DatabaseService.getUserPosts(widget.userId);
@@ -96,8 +82,7 @@ class _UserProfileState extends State<UserProfile> {
 
   _setupProfileUser() async {
     AppUser profileUser = await DatabaseService.getUserWithId(widget.userId);
-   _currentUser =
-        await DatabaseService.getUserWithId(widget.currentUserId);
+    _currentUser = await DatabaseService.getUserWithId(widget.currentUserId);
     if (!mounted) return;
     setState(() {
       _profileUser = profileUser;
@@ -110,50 +95,37 @@ class _UserProfileState extends State<UserProfile> {
     }
   }
 
-   
-
   _followOrUnfollow() {
-    if (notFriends) {
-      _followUser();
-      print('notFriends');
-
+    if (isFriends) {
+      _unfollowUser();
       setState(() {
-        isRequest = true;
+        isRequest = false;
         isFriends = false;
         pendingFriends = false;
-        notFriends = false;
+        // notFriends = true;
       });
     } else if (isRequest) {
       _followUser();
-      print('request');
-
       setState(() {
         isRequest = false;
         isFriends = true;
         pendingFriends = false;
-        notFriends = false;
       });
     } else if (pendingFriends) {
       _unfollowUser();
-      print('pendingFriends');
-
       setState(() {
+        pendingFriends = false;
         isRequest = false;
         isFriends = false;
-        pendingFriends = false;
-        notFriends = true;
       });
-    } else if (isFriends) {
-      _unfollowUser();
-      print('isFriends');
+    } else {
+      _followUser();
       setState(() {
+        pendingFriends = true;
         isRequest = false;
         isFriends = false;
-        pendingFriends = false;
-        notFriends = true;
       });
     }
-    // _unfollowUser();
     setState(() {});
   }
 
@@ -172,90 +144,96 @@ class _UserProfileState extends State<UserProfile> {
     if (!mounted) return;
   }
 
-  //   _setupFriends() async {
-  //   List<String?> followingUsers =
-  //       await DatabaseService.getUserFollowingIds(widget.currentUserId);
-
-  //   List<String?> followerUsers =
-  //       await DatabaseService.getUserFollowersIds(widget.currentUserId);
-
-  //   var friendList = [...followingUsers, ...followerUsers].toSet().toList();
-
-  
-  //     var isFollowing = await DatabaseService.isFollowingUser(
-  //       currentUserId: widget.currentUserId,
-  //       userId: widget.userId,
-  //     );
-
-  //     var isFollower = await DatabaseService.isUserFollower(
-  //       currentUserId: widget.currentUserId,
-  //       userId: widget.userId,
-  //     );
-  //     var friends = await DatabaseService.getUserWithId(widget.userId);
-
-  //     if (isFollower == true && isFollowing == true) {
-  //       setState(() {
-  //         isFriends = true;
-  //         _friends.add(friends);
-  //       });
-  //     } else {
-  //       setState(() {
-  //         isRequest = true;
-  //         _requests.add(friends);
-  //       });
-     
-  //   }
-
-  //   print(_friends.length);
-  //   print(_requests.length);
-  
-  // }
-
   _setupFriends() async {
-    isFollower = await DatabaseService.isUserFollower(
+    setState(() {
+      _isLoading = true;
+    });
+    // List<String?> followingUsers =
+    //     await DatabaseService.getUserFollowingIds(widget.currentUserId);
+
+    // List<String?> followerUsers =
+    //     await DatabaseService.getUserFollowersIds(widget.currentUserId);
+
+    // var friendList = [...followingUsers, ...followerUsers].toSet().toList();
+
+    // for (String? userId in friendList) {
+    // var isFollowing = await DatabaseService.isFollowingUser(
+    //   currentUserId: widget.currentUser!.id,
+    //   userId: userId,
+    // );
+
+    var isFollowing = await DatabaseService.isUserFollower(
       currentUserId: widget.currentUserId,
       userId: widget.userId,
     );
 
-    isFollowingUser = await DatabaseService.isFollowingUser(
-      currentUserId: widget.currentUserId,
-      userId: widget.userId,
+    var isFollower = await DatabaseService.isUserFollower(
+      currentUserId: widget.userId,
+      userId: widget.currentUserId,
     );
 
-    if (isFollower == true && isFollowingUser == true) {
+    var friends = await DatabaseService.getUserWithId(widget.toStringDeep());
+
+    if (isFollower == true && isFollowing == true) {
       setState(() {
         isFriends = true;
-        isRequest = false;
-        pendingFriends = false;
-        notFriends = false;
+        _friends.add(friends);
       });
-      print('isFriends');
-    } else if (isFollower == true && isFollowingUser != true) {
+    } else if (isFollowing == false && isFollower == true) {
       setState(() {
         isRequest = true;
-        isFriends = false;
-        pendingFriends = false;
-        notFriends = false;
+        _requests.add(friends);
       });
-      print('isRequest');
-    } else if (isFollower != true && isFollowingUser != true) {
-      setState(() {
-        notFriends = true;
-        isRequest = false;
-        isFriends = false;
-        pendingFriends = false;
-      });
-      print('notFriends');
-    } else if (isFollower != true && isFollowingUser != true) {
-      setState(() {
-        pendingFriends = true;
-        isRequest = false;
-        isFriends = false;
-        notFriends = false;
-      });
-      print('pendingFriends');
     }
+    setState(() {
+      _isLoading = false;
+    });
   }
+  // _setupFriends() async {
+  //   isFollower = await DatabaseService.isUserFollower(
+  //     currentUserId: widget.currentUserId,
+  //     userId: widget.userId,
+  //   );
+
+  //   isFollowingUser = await DatabaseService.isFollowingUser(
+  //     currentUserId: widget.currentUserId,
+  //     userId: widget.userId,
+  //   );
+
+  //   if (isFollower == true && isFollowingUser == true) {
+  //     setState(() {
+  //       isFriends = true;
+  //       isRequest = false;
+  //       pendingFriends = false;
+  //       notFriends = false;
+  //     });
+  //     print('isFriends');
+  //   } else if (isFollower == true && isFollowingUser != true) {
+  //     setState(() {
+  //       isRequest = true;
+  //       isFriends = false;
+  //       pendingFriends = false;
+  //       notFriends = false;
+  //     });
+  //     print('isRequest');
+  //   } else if (isFollower != true && isFollowingUser != true) {
+  //     setState(() {
+  //       notFriends = true;
+  //       isRequest = false;
+  //       isFriends = false;
+  //       pendingFriends = false;
+  //     });
+  //     print('notFriends');
+  //   } else if (isFollower != true && isFollowingUser != true) {
+  //     setState(() {
+  //       pendingFriends = true;
+  //       isRequest = false;
+  //       isFriends = false;
+  //       notFriends = false;
+  //     });
+  //     print('pendingFriends');
+  //   }
+  // }
 
   GridTile _buildTilePost(Post post) {
     return GridTile(
@@ -355,7 +333,6 @@ class _UserProfileState extends State<UserProfile> {
 
   @override
   Widget build(BuildContext context) {
-    _setupFriends();
     return Stack(children: [
       Container(
         height: double.infinity,
@@ -377,8 +354,7 @@ class _UserProfileState extends State<UserProfile> {
             }
             AppUser user = AppUser.fromDoc(snapshot.data);
             return PickupLayout(
-                 currentUser: _currentUser,
-
+              currentUser: _currentUser,
               scaffold: Scaffold(
                   appBar: PreferredSize(
                     child: AppBar(
@@ -391,12 +367,12 @@ class _UserProfileState extends State<UserProfile> {
                         Padding(
                           padding: const EdgeInsets.all(8.0),
                           child: GestureDetector(
-                              onTap: () {
-                            showDialog(
-                                context: context,
-                                builder: (BuildContext context) =>
-                                    QrDialog(userID: user.id));
-                          },
+                            onTap: () {
+                              showDialog(
+                                  context: context,
+                                  builder: (BuildContext context) =>
+                                      QrDialog(userID: user.id));
+                            },
                             child: Icon(Icons.qr_code,
                                 color: Colors.white, size: 20),
                           ),
@@ -454,119 +430,307 @@ class _UserProfileState extends State<UserProfile> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Padding(
-                                  padding:
-                                      const EdgeInsets.symmetric(horizontal: 10),
-                                  child: Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      Row(children: [
-                                        GestureDetector(
-                                          onTap: () {
-                                            Clipboard.setData(
-                                                ClipboardData(text: user.pin));
-                                            Utility.showMessage(context,
-                                                message: 'Pin Copied!',
-                                                pulsate: false,
-                                                bgColor: Colors.green[600]!);
-                                          },
-                                          child: Text('PIN: ${user.pin}',
-                                              style: TextStyle(
-                                                  color: Colors.white,
-                                                  fontSize: 18)),
-                                        ),
-                                        SizedBox(width: 15),
-                                        if (!user.isPublic! && isFriends)
-                                          GestureDetector(
+                              (!_isLoading)
+                                  ? Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 10),
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Row(children: [
+                                            GestureDetector(
                                               onTap: () {
-                                                Navigator.push(
-                                                    context,
-                                                    MaterialPageRoute(
-                                                        builder: (_) =>
-                                                            ChatScreen(
+                                                Clipboard.setData(ClipboardData(
+                                                    text: user.pin));
+                                                Utility.showMessage(context,
+                                                    message: 'Pin Copied!',
+                                                    pulsate: false,
+                                                    bgColor:
+                                                        Colors.green[600]!);
+                                              },
+                                              child: Text('PIN: ${user.pin}',
+                                                  style: TextStyle(
+                                                      color: Colors.white,
+                                                      fontSize: 18)),
+                                            ),
+                                            SizedBox(width: 15),
+                                            if (!user.isPublic! && isFriends)
+                                              GestureDetector(
+                                                  onTap: () {
+                                                    Navigator.push(
+                                                        context,
+                                                        MaterialPageRoute(
+                                                            builder: (_) => ChatScreen(
                                                                 receiverUser:
                                                                     _profileUser,
                                                                 isGroup: false,
                                                                 imageFile: widget
                                                                     .imageFile)));
-                                                print(_profileUser!.id);
-                                              },
-                                              child: Icon(Icons.chat_bubble,
-                                                  color: Colors.white, size: 17)),
-                                        SizedBox(width: 15),
-                                        if (!user.isPublic! && isFriends)
-                                          GestureDetector(
-                                              onTap: () {
-                                                try {
-                                                  CallUtils.dial(
-                                                      from: _currentUser!,
-                                                      to: _profileUser!,
-                                                      context: context,
-                                                      isAudio: false);
-                                                } catch (e) {
-                                                  print('=============$e');
-                                                }
-                                              },
-                                              child: Icon(FontAwesomeIcons.video,
-                                                  color: Colors.white, size: 15)),
-                                        SizedBox(width: 15),
-                                        if (!user.isPublic! && isFriends)
-                                          GestureDetector(
-                                              onTap: () {
-                                                try {
-                                                  CallUtils.dial(
-                                                      from: _currentUser!,
-                                                      to: _profileUser!,
-                                                      context: context,
-                                                      isAudio: true);
-                                                } catch (e) {
-                                                  print('=============$e');
-                                                }
-                                              },
-                                              child: Icon(
-                                                  FontAwesomeIcons.phoneAlt,
-                                                  color: Colors.white,
-                                                  size: 15)),
-                                      ]),
-                                      OutlinedButton(
-                                          style: ButtonStyle(
-                                              shape: MaterialStateProperty.all(
-                                                  RoundedRectangleBorder(
-                                                      borderRadius:
-                                                          new BorderRadius
-                                                              .circular(10))),
-                                              backgroundColor:
-                                                  MaterialStateProperty.all(
-                                                      (isFriends == true)
-                                                          ? Colors.red
-                                                          : (isRequest == true)
-                                                              ? Colors.green
-                                                              : (pendingFriends ==
-                                                                      true)
-                                                                  ? Colors.grey
-                                                                  : lightColor)),
-                                          onPressed: _followOrUnfollow,
-                                          child: Text(
-                                              (isFriends == true)
-                                                  ?  S.of(context)!.remove
-                                                  : (isRequest == true)
-                                                      ?  S.of(context)!.accept
-                                                      : (pendingFriends == true)
-                                                          ? 'Sent'
-                                                          :  S.of(context)!.add,
-                                              style: TextStyle(
-                                                  fontSize: 14,
-                                                  color: Colors.white,
-                                                  fontFamily:
-                                                      'Poppins-Regular'))),
-                                    ],
-                                  )),
+                                                    print(_profileUser!.id);
+                                                  },
+                                                  child: Icon(Icons.chat_bubble,
+                                                      color: Colors.white,
+                                                      size: 17)),
+                                            SizedBox(width: 15),
+                                            if (!user.isPublic! && isFriends)
+                                              GestureDetector(
+                                                  onTap: () {
+                                                    try {
+                                                      CallUtils.dial(
+                                                          from: _currentUser!,
+                                                          to: _profileUser!,
+                                                          context: context,
+                                                          isAudio: false);
+                                                    } catch (e) {
+                                                      print('=============$e');
+                                                    }
+                                                  },
+                                                  child: Icon(
+                                                      FontAwesomeIcons.video,
+                                                      color: Colors.white,
+                                                      size: 15)),
+                                            SizedBox(width: 15),
+                                            if (!user.isPublic! && isFriends)
+                                              GestureDetector(
+                                                  onTap: () {
+                                                    try {
+                                                      CallUtils.dial(
+                                                          from: _currentUser!,
+                                                          to: _profileUser!,
+                                                          context: context,
+                                                          isAudio: true);
+                                                    } catch (e) {
+                                                      print('=============$e');
+                                                    }
+                                                  },
+                                                  child: Icon(
+                                                      FontAwesomeIcons.phoneAlt,
+                                                      color: Colors.white,
+                                                      size: 15)),
+                                          ]),
+                                          if (isFriends)
+                                            OutlinedButton(
+                                                style: ButtonStyle(
+                                                    shape: MaterialStateProperty.all(
+                                                        RoundedRectangleBorder(
+                                                            borderRadius:
+                                                                new BorderRadius
+                                                                        .circular(
+                                                                    10))),
+                                                    backgroundColor:
+                                                        MaterialStateProperty
+                                                            .all(Colors.red)),
+                                                onPressed: () {
+                                                  followingRef
+                                                      .doc(widget.currentUserId)
+                                                      .collection(userFollowing)
+                                                      .doc(widget.userId)
+                                                      .get()
+                                                      .then((doc) {
+                                                    if (doc.exists) {
+                                                      print(
+                                                          '||||||||||||widget.userId');
+
+                                                      doc.reference.delete();
+                                                    }
+                                                  });
+
+                                                  followingRef
+                                                      .doc(widget.userId)
+                                                      .collection(userFollowing)
+                                                      .doc(widget.currentUserId)
+                                                      .get()
+                                                      .then((doc) {
+                                                    if (doc.exists) {
+                                                      doc.reference.delete();
+                                                    }
+                                                  });
+
+                                                  setState(() {
+                                                    isRequest = false;
+                                                    isFriends = false;
+                                                  });
+                                                },
+                                                child: Text(
+                                                    S.of(context)!.remove,
+                                                    style: TextStyle(
+                                                        fontSize: 14,
+                                                        color: Colors.white,
+                                                        fontFamily:
+                                                            'Poppins-Regular'))),
+                                          if (isRequest)
+                                            Row(children: [
+                                              OutlinedButton(
+                                                  style: ButtonStyle(
+                                                      shape: MaterialStateProperty.all(
+                                                          RoundedRectangleBorder(
+                                                              borderRadius:
+                                                                  new BorderRadius
+                                                                          .circular(
+                                                                      10))),
+                                                      backgroundColor:
+                                                          MaterialStateProperty.all(
+                                                              Colors.green)),
+                                                  onPressed: _followOrUnfollow,
+                                                  child: Text(
+                                                      S.of(context)!.accept,
+                                                      style: TextStyle(
+                                                          fontSize: 14,
+                                                          color: Colors.white,
+                                                          fontFamily:
+                                                              'Poppins-Regular'))),
+                                              SizedBox(width: 10),
+                                              OutlinedButton(
+                                                  style: ButtonStyle(
+                                                      shape: MaterialStateProperty.all(
+                                                          RoundedRectangleBorder(
+                                                              borderRadius:
+                                                                  new BorderRadius
+                                                                          .circular(
+                                                                      10))),
+                                                      backgroundColor:
+                                                          MaterialStateProperty
+                                                              .all(Colors.red)),
+                                                  onPressed: () {
+                                                    print(widget.currentUserId);
+
+                                                    followingRef
+                                                        .doc(widget
+                                                            .currentUserId)
+                                                        .collection(
+                                                            userFollowing)
+                                                        .doc(widget.userId)
+                                                        .get()
+                                                        .then((doc) {
+                                                      if (doc.exists) {
+                                                        print(
+                                                            '||||||||||||widget.userId');
+
+                                                        doc.reference.delete();
+                                                      }
+                                                    });
+
+                                                    followingRef
+                                                        .doc(widget.userId)
+                                                        .collection(
+                                                            userFollowing)
+                                                        .doc(widget
+                                                            .currentUserId)
+                                                        .get()
+                                                        .then((doc) {
+                                                      if (doc.exists) {
+                                                        print(
+                                                            '||||||||||||widget.userId');
+
+                                                        doc.reference.delete();
+                                                      }
+                                                    });
+
+                                                    setState(() {
+                                                      isRequest = false;
+                                                    });
+                                                  },
+                                                  child: Text('Reject',
+                                                      style: TextStyle(
+                                                          fontSize: 14,
+                                                          color: Colors.white,
+                                                          fontFamily:
+                                                              'Poppins-Regular')))
+                                            ]),
+                                          if (pendingFriends)
+                                            OutlinedButton(
+                                                style: ButtonStyle(
+                                                    shape: MaterialStateProperty.all(
+                                                        RoundedRectangleBorder(
+                                                            borderRadius:
+                                                                new BorderRadius
+                                                                        .circular(
+                                                                    10))),
+                                                    backgroundColor:
+                                                        MaterialStateProperty
+                                                            .all(Colors.red)),
+                                                onPressed: () {
+                                                  print(widget.currentUserId);
+
+                                                  followingRef
+                                                      .doc(widget.currentUserId)
+                                                      .collection(userFollowing)
+                                                      .doc(widget.userId)
+                                                      .get()
+                                                      .then((doc) {
+                                                    if (doc.exists) {
+                                                      print(
+                                                          '||||||||||||widget.userId');
+
+                                                      doc.reference.delete();
+                                                    }
+                                                  });
+
+                                                  followingRef
+                                                      .doc(widget.userId)
+                                                      .collection(userFollowing)
+                                                      .doc(widget.currentUserId)
+                                                      .get()
+                                                      .then((doc) {
+                                                    if (doc.exists) {
+                                                      print(
+                                                          '||||||||||||widget.userId');
+
+                                                      doc.reference.delete();
+                                                    }
+                                                  });
+
+                                                  setState(() {
+                                                    isRequest = false;
+                                                  });
+                                                },
+                                                child: Text(
+                                                    S.of(context)!.remove,
+                                                    style: TextStyle(
+                                                        fontSize: 14,
+                                                        color: Colors.white,
+                                                        fontFamily:
+                                                            'Poppins-Regular'))),
+                                          if (!isFriends &&
+                                              !isRequest &&
+                                              !pendingFriends)
+                                            OutlinedButton(
+                                                style: ButtonStyle(
+                                                    shape: MaterialStateProperty.all(
+                                                        RoundedRectangleBorder(
+                                                            borderRadius:
+                                                                new BorderRadius.circular(
+                                                                    10))),
+                                                    backgroundColor:
+                                                        MaterialStateProperty
+                                                            .all(lightColor)),
+                                                onPressed: _followOrUnfollow,
+                                                child: Text(S.of(context)!.add,
+                                                    style: TextStyle(
+                                                        fontSize: 14,
+                                                        color: Colors.white,
+                                                        fontFamily:
+                                                            'Poppins-Regular'))),
+                                        ],
+                                      ))
+                                  : Center(
+                                      child: Padding(
+                                        padding: const EdgeInsets.all(10),
+                                        child: Container(
+                                          height: 20,
+                                          width: 20,
+                                          child: CircularProgressIndicator(
+                                              strokeWidth: 2.0,
+                                              color: lightColor),
+                                        ),
+                                      ),
+                                    ),
                               BrandDivider(),
                               Padding(
                                 padding:
                                     const EdgeInsets.symmetric(horizontal: 10),
-                                child: Text( S.of(context)!.bio,
+                                child: Text(S.of(context)!.bio,
                                     style: TextStyle(
                                         color: Colors.white, fontSize: 16)),
                               ),
@@ -581,22 +745,23 @@ class _UserProfileState extends State<UserProfile> {
                             ],
                           ),
                         ),
-                        (!user.isPublic! && isFriends)
+                        (user.isPublic!)
                             ? ListView.builder(
                                 shrinkWrap: true,
                                 physics: NeverScrollableScrollPhysics(),
-                                itemCount: _posts.length > 0 ? _posts.length : 1,
+                                itemCount:
+                                    _posts.length > 0 ? _posts.length : 1,
                                 itemBuilder: (BuildContext context, int index) {
                                   if (_posts.length == 0) {
                                     //If there is no posts
                                     return Center(
-                                        child: Text( S.of(context)!.nopost,
-                                            style:
-                                                TextStyle(color: Colors.white)));
+                                        child: Text(S.of(context)!.nopost,
+                                            style: TextStyle(
+                                                color: Colors.white)));
                                   }
-            
+
                                   Post post = _posts[index];
-            
+
                                   return FutureBuilder(
                                     future: DatabaseService.getUserWithId(
                                         post.authorId),
@@ -605,26 +770,29 @@ class _UserProfileState extends State<UserProfile> {
                                       if (!snapshot.hasData) {
                                         return SizedBox.shrink();
                                       }
-            
+
                                       AppUser? author = snapshot.data;
-            
+
                                       return (post.imageUrl == null)
                                           ? TextPost(
                                               postStatus: PostStatus.feedPost,
-                                              currentUserId: widget.currentUserId,
+                                              currentUserId:
+                                                  widget.currentUserId,
                                               author: author,
                                               post: post,
                                             )
                                           : (post.videoUrl != null)
                                               ? VideoPostView(
-                                                  postStatus: PostStatus.feedPost,
+                                                  postStatus:
+                                                      PostStatus.feedPost,
                                                   currentUserId:
                                                       widget.currentUserId,
                                                   author: author,
                                                   post: post,
                                                 )
                                               : PostView(
-                                                  postStatus: PostStatus.feedPost,
+                                                  postStatus:
+                                                      PostStatus.feedPost,
                                                   currentUserId:
                                                       widget.currentUserId,
                                                   author: author,
@@ -640,8 +808,8 @@ class _UserProfileState extends State<UserProfile> {
                                     Container(
                                         decoration: BoxDecoration(
                                             shape: BoxShape.circle,
-                                            border:
-                                                Border.all(color: Colors.white)),
+                                            border: Border.all(
+                                                color: Colors.white)),
                                         padding: const EdgeInsets.all(15),
                                         child: Icon(Icons.lock,
                                             color: Colors.white, size: 26)),

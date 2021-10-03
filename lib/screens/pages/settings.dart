@@ -3,26 +3,32 @@ import 'package:Dana/classes/language.dart';
 import 'package:Dana/generated/l10n.dart';
 import 'package:Dana/localization/language_constants.dart';
 import 'package:Dana/main.dart';
+import 'package:Dana/models/user_data.dart';
 import 'package:Dana/models/user_model.dart';
 import 'package:Dana/screens/pages/privacy_policy.dart';
 import 'package:Dana/screens/pages/report_issue.dart';
 import 'package:Dana/services/api/auth_service.dart';
+import 'package:Dana/services/api/database_service.dart';
 import 'package:Dana/utilities/constants.dart';
 import 'package:Dana/utils/constants.dart';
 import 'package:Dana/widgets/BrandDivider.dart';
 import 'package:Dana/widgets/add_post_appbar.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:switcher_button/switcher_button.dart';
 
 class SettingsScreen extends StatefulWidget {
-  AppUser? currentUser;
+  // AppUser? currentUser;
 
-  SettingsScreen({this.currentUser});
+  // SettingsScreen({this.currentUser});
   @override
   SettingsScreenState createState() => SettingsScreenState();
 }
 
 class SettingsScreenState extends State<SettingsScreen> {
+  String? currentUserId;
+  AppUser? currentUser;
+
   void _changeLanguage(Language language) async {
     Locale _locale = await setLocale(language.languageCode);
     MyApp.setLocale(context, _locale);
@@ -32,13 +38,20 @@ class SettingsScreenState extends State<SettingsScreen> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    print(widget.currentUser!.isPublic);
+    currentUserId =
+        Provider.of<UserData>(context, listen: false).currentUser!.id;
+    getUser();
+  }
+
+  getUser() async {
+    currentUser = await DatabaseService.getUserWithId(currentUserId!);
   }
 
   @override
   Widget build(BuildContext context) {
+   var myUser = Provider.of<UserData>(context, listen: false).currentUser;
     return PickupLayout(
-         currentUser: widget.currentUser,
+      currentUser: myUser!,
       scaffold: Scaffold(
         backgroundColor: darkColor,
         appBar: PreferredSize(
@@ -97,30 +110,89 @@ class SettingsScreenState extends State<SettingsScreen> {
                 SizedBox(height: 10),
                 GestureDetector(
                   onTap: () {
-                    Navigator.push(context,
-                        MaterialPageRoute(builder: (_) => ReportScreen()));
+                    showModalBottomSheet(
+                        context: context,
+                        builder: (context) {
+                          return Container(
+                            color: darkColor,
+                            height: 100,
+                            child: Column(
+                              children: <Widget>[
+                                GestureDetector(
+                                  onTap: () async {
+                                    usersRef
+                                        .doc(currentUser!.id)
+                                        .update({'isPublic': false}).then(
+                                            (value) => Navigator.pop(context));
+                                  },
+                                  child: Padding(
+                                    padding: const EdgeInsets.only(top: 18),
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        Text('Private',
+                                            style: TextStyle(
+                                                color: Colors.white,
+                                                fontSize: 18)),
+                                        SizedBox(width: 10),
+                                        if (currentUser!.isPublic == false)
+                                          Icon(Icons.done, color: Colors.green)
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                                GestureDetector(
+                                  onTap: () async {
+                                    usersRef
+                                        .doc(currentUser!.id)
+                                        .update({'isPublic': true}).then(
+                                            (value) => Navigator.pop(context));
+                                    setState(() {});
+                                  },
+                                  child: Padding(
+                                    padding: const EdgeInsets.only(top: 20),
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        Text('Public',
+                                            style: TextStyle(
+                                                color: Colors.white,
+                                                fontSize: 20)),
+                                        SizedBox(width: 10),
+                                        if (currentUser!.isPublic == true)
+                                          Icon(Icons.done, color: Colors.green)
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          );
+                        });
                   },
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text(S.of(context)!.private,
+                      Text('Account Mode',
                           style: TextStyle(color: Colors.white, fontSize: 18)),
-                      SwitcherButton(
-                        onColor: lightColor,
-                        offColor: Colors.grey,
-                        size: 40,
-                        value:
-                            (widget.currentUser!.isPublic == true) ? false : true,
-                        onChange: (value) {
-                          usersRef.doc(widget.currentUser!.id).update({
-                            'isPublic': (widget.currentUser!.isPublic == true)
-                                ? false
-                                : true
-                          });
-                          setState(() {});
-                          print(value);
-                        },
-                      )
+
+                      Icon(Icons.arrow_drop_down, color: Colors.white)
+                      // SwitcherButton(
+                      //   onColor: lightColor,
+                      //   offColor: Colors.grey,
+                      //   size: 40,
+                      //   value: (currentUser!.isPublic == true) ? false : true,
+                      //   onChange: (value) {
+                      //     usersRef.doc(currentUser!.id).update({
+                      //       'isPublic':
+                      //           (currentUser!.isPublic == true) ? false : true
+                      //     });
+                      //     setState(() {});
+                      //     print(value);
+                      //   },
+                      // )
                     ],
                   ),
                 ),
@@ -145,7 +217,8 @@ class SettingsScreenState extends State<SettingsScreen> {
                             (e) => DropdownMenuItem<Language>(
                               value: e,
                               child: Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceAround,
                                 children: <Widget>[
                                   Text(
                                     e.flag,

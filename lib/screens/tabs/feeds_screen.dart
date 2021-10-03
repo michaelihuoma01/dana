@@ -234,7 +234,10 @@ class _FeedsScreenState extends State<FeedsScreen> {
                               builder: (context) => AddPost(
                                   currentUserId: widget.currentUser!.id)));
                     },
-                    child: Icon(Icons.post_add, color: lightColor, size: 30)),
+                    child: Padding(
+                      padding: const EdgeInsets.only(bottom: 5),
+                      child: Icon(Icons.post_add, color: lightColor, size: 28),
+                    )),
                 SizedBox(width: 10),
                 GestureDetector(
                   onTap: () async {
@@ -258,13 +261,20 @@ class _FeedsScreenState extends State<FeedsScreen> {
                     padding: const EdgeInsets.only(top: 13),
                     child: Stack(
                       children: [
-                        Icon(Icons.notifications, color: lightColor, size: 30),
+                        Icon(FontAwesomeIcons.bell,
+                            color: lightColor, size: 24),
                         if (unreadNotifications == true)
                           Positioned(
-                              left: 16,
+                              left: 12,
+                              top: 4,
+                              child: Icon(Icons.circle,
+                                  color: darkColor, size: 11)),
+                        if (unreadNotifications == true)
+                          Positioned(
+                              left: 15,
                               top: 6,
                               child: Icon(Icons.circle,
-                                  color: Colors.red, size: 8))
+                                  color: Colors.red, size: 7)),
                       ],
                     ),
                   ),

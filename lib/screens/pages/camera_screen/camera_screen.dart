@@ -40,9 +40,7 @@ class _CameraScreenState extends State<CameraScreen>
   CameraConsumer? _cameraConsumer = CameraConsumer.post;
   bool fromCamera = false;
   bool isRecording = false;
-  double zoom = 0.0;
-  // double minZoom = 0.0;
-  // double maxZoom = 0.0;
+  double zoom = 0.0; 
   bool isInitialize = false;
 
   @override
@@ -56,28 +54,9 @@ class _CameraScreenState extends State<CameraScreen>
     if (widget.cameraConsumer != CameraConsumer.post) {
       changeConsumer(widget.cameraConsumer);
     }
- 
 
     super.initState();
-  }
-
-  // initializeCamera() async {
-  //   if (isInitialize == true) {
-  //     await controller!.getMinZoomLevel().then((value) {
-  //       setState(() { 
-  //         minZoom = value;
-  //       });
-  //     });
-  //     await controller!.getMaxZoomLevel().then((value) {
-  //       setState(() {
-  //         maxZoom = value;
-  //       });
-  //     });
-
-  //     print(minZoom);
-  //     print(maxZoom);
-  //   }
-  // }
+  } 
 
   @override
   void dispose() {
@@ -114,7 +93,7 @@ class _CameraScreenState extends State<CameraScreen>
         children: <Widget>[
           Center(
             child: Transform.scale(
-              scale: 1.2,
+              scale: 1.3,
               child: new CameraPreview(controller!),
             ),
           ),
@@ -133,20 +112,17 @@ class _CameraScreenState extends State<CameraScreen>
               ),
             ),
           ),
-          Container(
-            height: 300,
-            width: 50,
-            padding: EdgeInsets.only(top: 50, left: 20),
-            child: Align(
-              alignment: Alignment.centerLeft,
+          Align(
+            alignment: Alignment.centerRight,
+            child: Container(
+              height: 300,
+              width: 50, 
               child: RotatedBox(
                 quarterTurns: 3,
                 child: Slider(
                   activeColor: Colors.white,
                   inactiveColor: Colors.grey,
-                  value: zoom,
-                  // min: minZoom,
-                  // max: maxZoom,
+                  value: zoom, 
                   label: zoom.toString(),
                   onChanged: (value) {
                     print(value);

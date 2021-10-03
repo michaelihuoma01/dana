@@ -265,9 +265,9 @@ class DatabaseService {
   static Future<bool> isUserFollower(
       {String? currentUserId, String? userId}) async {
     DocumentSnapshot followingDoc = await followingRef
-        .doc(userId)
-        .collection(userFollowing)
         .doc(currentUserId)
+        .collection(userFollowing)
+        .doc(userId)
         .get();
 
     return followingDoc.exists;

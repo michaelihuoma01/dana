@@ -77,15 +77,21 @@ class _ContactScreenState extends State<ContactScreen> {
     var friendList = [...followingUsers, ...followerUsers].toSet().toList();
 
     for (String? userId in friendList) {
-      var isFollowing = await DatabaseService.isFollowingUser(
+      // var isFollowing = await DatabaseService.isFollowingUser(
+      //   currentUserId: widget.currentUser!.id,
+      //   userId: userId,
+      // );
+
+      var isFollowing = await DatabaseService.isUserFollower(
         currentUserId: widget.currentUser!.id,
         userId: userId,
       );
 
       var isFollower = await DatabaseService.isUserFollower(
-        currentUserId: widget.currentUser!.id,
-        userId: userId,
+        currentUserId: userId,
+        userId: widget.currentUser!.id,
       );
+
       var friends = await DatabaseService.getUserWithId(userId);
 
       if (isFollower == true && isFollowing == true) {
@@ -93,17 +99,13 @@ class _ContactScreenState extends State<ContactScreen> {
           isFriends = true;
           _friends.add(friends);
         });
-      } else {
+      } else if (isFollowing == false && isFollower == true) {
         setState(() {
           isRequest = true;
           _requests.add(friends);
         });
-      }
-    }
-
-    print(_friends.length);
-    print(_requests.length);
- 
+      } 
+    } 
     setState(() {
       _isLoading = false;
     });
@@ -309,7 +311,6 @@ class _ContactScreenState extends State<ContactScreen> {
                                     ? Container(
                                         height: 80,
                                         child: ListView.builder(
-                                          
                                           itemCount: _requests.length,
                                           scrollDirection: Axis.horizontal,
                                           itemBuilder: (BuildContext context,
