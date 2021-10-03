@@ -40,6 +40,10 @@ class _CameraScreenState extends State<CameraScreen>
   CameraConsumer? _cameraConsumer = CameraConsumer.post;
   bool fromCamera = false;
   bool isRecording = false;
+  double zoom = 0.0;
+  // double minZoom = 0.0;
+  // double maxZoom = 0.0;
+  bool isInitialize = false;
 
   @override
   void initState() {
@@ -52,8 +56,28 @@ class _CameraScreenState extends State<CameraScreen>
     if (widget.cameraConsumer != CameraConsumer.post) {
       changeConsumer(widget.cameraConsumer);
     }
+ 
+
     super.initState();
   }
+
+  // initializeCamera() async {
+  //   if (isInitialize == true) {
+  //     await controller!.getMinZoomLevel().then((value) {
+  //       setState(() { 
+  //         minZoom = value;
+  //       });
+  //     });
+  //     await controller!.getMaxZoomLevel().then((value) {
+  //       setState(() {
+  //         maxZoom = value;
+  //       });
+  //     });
+
+  //     print(minZoom);
+  //     print(maxZoom);
+  //   }
+  // }
 
   @override
   void dispose() {
@@ -90,12 +114,12 @@ class _CameraScreenState extends State<CameraScreen>
         children: <Widget>[
           Center(
             child: Transform.scale(
-              scale: 1.3,
+              scale: 1.2,
               child: new CameraPreview(controller!),
             ),
           ),
           Align(
-            alignment: Alignment.topRight,
+            alignment: Alignment.topLeft,
             child: Padding(
               padding: const EdgeInsets.all(30.0),
               child: CircularIconButton(
@@ -106,6 +130,44 @@ class _CameraScreenState extends State<CameraScreen>
                   size: 22,
                 ),
                 onTap: widget.backToHomeScreen,
+              ),
+            ),
+          ),
+          Container(
+            height: 300,
+            width: 50,
+            padding: EdgeInsets.only(top: 50, left: 20),
+            child: Align(
+              alignment: Alignment.centerLeft,
+              child: RotatedBox(
+                quarterTurns: 3,
+                child: Slider(
+                  activeColor: Colors.white,
+                  inactiveColor: Colors.grey,
+                  value: zoom,
+                  // min: minZoom,
+                  // max: maxZoom,
+                  label: zoom.toString(),
+                  onChanged: (value) {
+                    print(value);
+// as slider values are in decimals, we multiply it by 10 because camera
+//take values above 1.0 and below 8.0
+//e.g:
+//value=0.19 //according to slider
+//value=value*10=> 0.19*10
+//Now the updated value is:
+//value=1.9
+
+                    value = value * 10;
+                    if (value <= 8.0 && value >= 1.0) {
+//Here we set the zoom level when we move slider pointer
+                      controller!.setZoomLevel(value);
+                    }
+//and to set slider pointer position visually, we divided the value by 10
+//to give slider its original value.
+                    setState(() => zoom = value / 10);
+                  },
+                ),
               ),
             ),
           ),

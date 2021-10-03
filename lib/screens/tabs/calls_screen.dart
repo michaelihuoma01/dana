@@ -29,7 +29,7 @@ class _CallsScreenState extends State<CallsScreen> {
   late AppUser receiverUser; 
 
   Stream<List<Call>> getCalls() async* {
-    try {
+    // try {
       List<Call> dataToReturn = [];
 
       Stream<QuerySnapshot> stream = FirebaseFirestore.instance
@@ -69,9 +69,9 @@ class _CallsScreenState extends State<CallsScreen> {
 
         yield dataToReturn;
       }
-    } catch (err) {
-      print('////$err');
-    }
+    // } catch (err) {
+    //   print('////$err');
+    // }
   }
 
   _buildCall(Call call, String? currentUserId) {

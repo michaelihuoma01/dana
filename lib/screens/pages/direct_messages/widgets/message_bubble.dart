@@ -43,7 +43,8 @@ class MessageBubble extends StatefulWidget {
   _MessageBubbleState createState() => _MessageBubbleState();
 }
 
-class _MessageBubbleState extends State<MessageBubble> {
+class _MessageBubbleState extends State<MessageBubble>
+    with WidgetsBindingObserver {
   bool? _isLiked = false;
   bool _heartAnim = false;
   bool showTime = false;
@@ -68,19 +69,28 @@ class _MessageBubbleState extends State<MessageBubble> {
     initVideo();
   }
 
+  @override
+  void dispose() {
+    _controller?.dispose();
+    chewieController?.dispose();
+    super.dispose();
+  }
+
   initVideo() async {
     try {
       if (widget.message!.videoUrl != null) {
-        _controller = VideoPlayerController.network(widget.message!.videoUrl!)
-          ..initialize().then((_) {
-            // Ensure the first frame is shown after the video is initialized, even before the play button has been pressed.
-            setState(() {});
-          });
-        chewieController = ChewieController(
-          videoPlayerController: _controller!,
-          autoPlay: false,
-          looping: false,
-        );
+        if (_controller == null) {
+          _controller = VideoPlayerController.network(widget.message!.videoUrl!)
+            ..initialize().then((_) {
+              // Ensure the first frame is shown after the video is initialized, even before the play button has been pressed.
+              setState(() {});
+            });
+          chewieController = ChewieController(
+            videoPlayerController: _controller!,
+            autoPlay: false,
+            looping: false,
+          );
+        }
       }
     } on PlatformException catch (e) {
       print(e);
@@ -352,83 +362,95 @@ class _MessageBubbleState extends State<MessageBubble> {
 
     _buildVideo(BuildContext context) {
       final size = MediaQuery.of(context).size;
-      return GestureDetector(
-        onLongPress: () {
-          setState(() {
-            showTime = true;
-          });
+      if (_controller != null) {
+        return GestureDetector(
+          onLongPress: () {
+            setState(() {
+              showTime = true;
+            });
 
-          showModalBottomSheet(
-              context: context,
-              backgroundColor: Colors.transparent,
-              builder: (context) {
-                return Padding(
-                  padding: const EdgeInsets.all(20),
-                  child: Container(
-                    height: 120,
-                    decoration: BoxDecoration(color: darkColor),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: <Widget>[
-                        GestureDetector(
-                          onTap: () async {
-                            print(widget.message!.id);
-                            Navigator.pop(context);
+            showModalBottomSheet(
+                context: context,
+                backgroundColor: Colors.transparent,
+                builder: (context) {
+                  return Padding(
+                    padding: const EdgeInsets.all(20),
+                    child: Container(
+                      height: 120,
+                      decoration: BoxDecoration(color: darkColor),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: <Widget>[
+                          GestureDetector(
+                            onTap: () async {
+                              print(widget.message!.id);
+                              Navigator.pop(context);
 
-                            await chatsRef
-                                .doc(widget.chat!.id)
-                                .collection('messages')
-                                .doc(widget.message!.id)
-                                .delete()
-                                .then((docs) {
-                              print('=======succesful');
-                            });
-                          },
-                          child: Padding(
-                              padding: const EdgeInsets.only(top: 20),
-                              child: Text('Delete',
-                                  style: TextStyle(
-                                      color: Colors.red,
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w600))),
-                        ),
-                      ],
+                              await chatsRef
+                                  .doc(widget.chat!.id)
+                                  .collection('messages')
+                                  .doc(widget.message!.id)
+                                  .delete()
+                                  .then((docs) {
+                                print('=======succesful');
+                              });
+                            },
+                            child: Padding(
+                                padding: const EdgeInsets.only(top: 20),
+                                child: Text('Delete',
+                                    style: TextStyle(
+                                        color: Colors.red,
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w600))),
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
+                });
+          },
+          onDoubleTap: widget.message!.senderId == currentUser.id
+              ? null
+              : () => _likeUnLikeMessage(currentUser.id),
+          // onTap: () => _videoFullScreen(widget.message!.videoUrl),
+          child: Padding(
+              padding: const EdgeInsets.all(10),
+              child: Stack(
+                alignment: Alignment.center,
+                children: [
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(15),
+                    child: Hero(
+                      tag: widget.message!.videoUrl!,
+                      child: (_controller != null)
+                          ? _controller!.value.isInitialized
+                              ? AspectRatio(
+                                  aspectRatio: 1 / 1,
+                                  child: Chewie(controller: chewieController!),
+                                )
+                              : Row(mainAxisSize: MainAxisSize.min, children: [
+                                  Container(
+                                      height: 20,
+                                      width: 20,
+                                      child: CircularProgressIndicator(
+                                          color: lightColor)),
+                                ])
+                          : Row(mainAxisSize: MainAxisSize.min, children: [
+                              Container(
+                                  height: 20,
+                                  width: 20,
+                                  child: CircularProgressIndicator(
+                                      color: lightColor))
+                            ]),
                     ),
                   ),
-                );
-              });
-        },
-        onDoubleTap: widget.message!.senderId == currentUser.id
-            ? null
-            : () => _likeUnLikeMessage(currentUser.id),
-        // onTap: () => _videoFullScreen(widget.message!.videoUrl),
-        child: Padding(
-            padding: const EdgeInsets.all(10),
-            child: Stack(
-              alignment: Alignment.center,
-              children: [
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(15),
-                  child: Hero(
-                    tag: widget.message!.videoUrl!,
-                    child: _controller!.value.isInitialized
-                        ? AspectRatio(
-                            aspectRatio: 1 / 1,
-                            child: Chewie(controller: chewieController!),
-                          )
-                        : Row(mainAxisSize: MainAxisSize.min, children: [
-                            Container(
-                                height: 20,
-                                width: 20,
-                                child: CircularProgressIndicator(
-                                    color: lightColor)),
-                          ]),
-                  ),
-                ), 
-                _heartAnim ? HeartAnime(80.0) : SizedBox.shrink(),
-              ],
-            )),
-      );
+                  _heartAnim ? HeartAnime(80.0) : SizedBox.shrink(),
+                ],
+              )),
+        );
+      } else {
+        initVideo();
+      }
     }
 
     _buildImage(BuildContext context) {

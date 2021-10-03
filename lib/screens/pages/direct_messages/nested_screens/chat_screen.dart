@@ -344,8 +344,11 @@ class _ChatScreenState extends State<ChatScreen> {
                                   children: <Widget>[
                                     GestureDetector(
                                       onTap: () async {
+                                        Navigator.pop(context);
+
                                         List<Media>? res =
                                             await (ImagesPicker.pick(
+                                          language: Language.English,
                                           count: 5,
                                           pickType: PickType.image,
                                           gif: true,
@@ -376,7 +379,6 @@ class _ChatScreenState extends State<ChatScreen> {
                                           }
                                         });
 
-                                        Navigator.pop(context);
                                         setState(() => isSending = false);
                                       },
                                       child: Padding(
@@ -407,11 +409,13 @@ class _ChatScreenState extends State<ChatScreen> {
                                     ),
                                     GestureDetector(
                                       onTap: () async {
+                                        Navigator.pop(context);
+
                                         var pickedFile =
                                             await (ImagePicker().pickVideo(
                                           source: ImageSource.gallery,
-                                        ) as FutureOr<XFile>);
-                                        File imageFile = File(pickedFile.path);
+                                        ));
+                                        File imageFile = File(pickedFile!.path);
                                         setState(() => isSending = true);
 
                                         if (imageFile != null) {
@@ -428,8 +432,6 @@ class _ChatScreenState extends State<ChatScreen> {
                                               fileUrl: null);
                                         }
                                         setState(() => isSending = false);
-
-                                        Navigator.pop(context);
                                       },
                                       child: Padding(
                                         padding: const EdgeInsets.only(top: 20),
@@ -459,6 +461,8 @@ class _ChatScreenState extends State<ChatScreen> {
                                     ),
                                     GestureDetector(
                                       onTap: () async {
+                                        Navigator.pop(context);
+
                                         FilePickerResult? result =
                                             await FilePicker.platform
                                                 .pickFiles();
@@ -497,8 +501,6 @@ class _ChatScreenState extends State<ChatScreen> {
                                               fileUrl: fileUrl);
                                         }
                                         setState(() => isSending = false);
-
-                                        Navigator.pop(context);
                                       },
                                       child: Padding(
                                         padding: const EdgeInsets.only(top: 20),
@@ -545,7 +547,8 @@ class _ChatScreenState extends State<ChatScreen> {
                     onTap: () async {
                       GiphyGif? gif = await GiphyGet.getGif(
                         context: context,
-                        apiKey: 'XTqy1ONihK1xvtVZauKuaFt5zxUaoGaQ', //YOUR API KEY HERE
+                        apiKey:
+                            'XTqy1ONihK1xvtVZauKuaFt5zxUaoGaQ', //YOUR API KEY HERE
                         lang: GiphyLanguage.spanish,
                       );
                       if (gif != null && mounted) {
@@ -777,6 +780,7 @@ class _ChatScreenState extends State<ChatScreen> {
                   const EdgeInsets.symmetric(horizontal: 10.0, vertical: 20.0),
               physics: AlwaysScrollableScrollPhysics(),
               reverse: true,
+              cacheExtent: 1000,
               children: _buildMessageBubbles(
                   snapshot as AsyncSnapshot<QuerySnapshot<Object>>),
             ),

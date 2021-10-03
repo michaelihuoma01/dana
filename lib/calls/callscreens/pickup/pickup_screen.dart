@@ -48,6 +48,8 @@ class _PickupScreenState extends State<PickupScreen> {
     if (isCallMissed) {
       addToLocalStorage(callStatus: CALL_STATUS_MISSED);
     }
+    audioPlayer.stop();
+    audioPlayer.release();
     super.dispose();
   }
 
@@ -132,7 +134,7 @@ class _PickupScreenState extends State<PickupScreen> {
                       ),
                       onTap: () async {
                         audioPlayer.stop();
-                        isCallMissed = false; 
+                        isCallMissed = false;
                         await callMethods.endCall(
                             call: widget.call, isMissed: true);
                       },

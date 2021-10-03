@@ -67,11 +67,8 @@ class _UserProfileState extends State<UserProfile> {
   void initState() {
     // TODO: implement initState
     super.initState();
-
-    _setupUserStories();
-    _setupIsFollowing();
-    _setupFollowers();
-    _setupFollowing();
+ 
+    _setupIsFollowing();  
     _setupPosts();
     _setupProfileUser();
     _setupFriends();
@@ -87,23 +84,7 @@ class _UserProfileState extends State<UserProfile> {
     setState(() {
       _isFollowing = isFollowingUser;
     });
-  }
-
-  _setupFollowers() async {
-    int userFollowersCount = await DatabaseService.numFollowers(widget.userId);
-    if (!mounted) return;
-    setState(() {
-      _followersCount = userFollowersCount;
-    });
-  }
-
-  _setupFollowing() async {
-    int userFollowingCount = await DatabaseService.numFollowing(widget.userId);
-    if (!mounted) return;
-    setState(() {
-      _followingCount = userFollowingCount;
-    });
-  }
+  }  
 
   _setupPosts() async {
     List<Post> posts = await DatabaseService.getUserPosts(widget.userId);
@@ -129,17 +110,7 @@ class _UserProfileState extends State<UserProfile> {
     }
   }
 
-  _setupUserStories() async {
-    List<Story>? userStories =
-        await StoriesService.getStoriesByUserId(widget.userId, true);
-    if (!mounted) return;
-
-    if (userStories != null) {
-      setState(() {
-        _userStories = userStories;
-      });
-    }
-  }
+   
 
   _followOrUnfollow() {
     if (notFriends) {
@@ -200,6 +171,45 @@ class _UserProfileState extends State<UserProfile> {
     );
     if (!mounted) return;
   }
+
+  //   _setupFriends() async {
+  //   List<String?> followingUsers =
+  //       await DatabaseService.getUserFollowingIds(widget.currentUserId);
+
+  //   List<String?> followerUsers =
+  //       await DatabaseService.getUserFollowersIds(widget.currentUserId);
+
+  //   var friendList = [...followingUsers, ...followerUsers].toSet().toList();
+
+  
+  //     var isFollowing = await DatabaseService.isFollowingUser(
+  //       currentUserId: widget.currentUserId,
+  //       userId: widget.userId,
+  //     );
+
+  //     var isFollower = await DatabaseService.isUserFollower(
+  //       currentUserId: widget.currentUserId,
+  //       userId: widget.userId,
+  //     );
+  //     var friends = await DatabaseService.getUserWithId(widget.userId);
+
+  //     if (isFollower == true && isFollowing == true) {
+  //       setState(() {
+  //         isFriends = true;
+  //         _friends.add(friends);
+  //       });
+  //     } else {
+  //       setState(() {
+  //         isRequest = true;
+  //         _requests.add(friends);
+  //       });
+     
+  //   }
+
+  //   print(_friends.length);
+  //   print(_requests.length);
+  
+  // }
 
   _setupFriends() async {
     isFollower = await DatabaseService.isUserFollower(
