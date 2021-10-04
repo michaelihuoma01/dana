@@ -94,6 +94,7 @@ dependencies:
   flutter_local_notifications: ^8.2.0
   qr_code_scanner: ^0.5.2
   qr_flutter: ^4.0.0
+  group_radio_button: ^1.1.0
 
 dev_dependencies:
   flutter_test:

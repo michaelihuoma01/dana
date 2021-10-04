@@ -22,9 +22,11 @@ import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:group_radio_button/group_radio_button.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
+import 'package:switcher_button/switcher_button.dart';
 
 class EditProfile extends StatefulWidget {
   static const String id = 'RegisterScreen';
@@ -50,14 +52,20 @@ class _EditProfileState extends State<EditProfile> {
 
   FirebaseAuth firebaseUser = FirebaseAuth.instance;
 
+  String? _verticalGroupValue = "On";
+
+  List<String>? _status = ["On", "Off"];
+
   String _name = '';
   String _bio = '';
   String? _pin = '';
+  bool? _isPublic;
   File? _profileImage;
 
   @override
   void initState() {
     super.initState();
+    _isPublic = widget.user!.isPublic;
     checkPermissions();
   }
 
@@ -86,11 +94,16 @@ class _EditProfileState extends State<EditProfile> {
         profileImageUrl: _profileImageUrl,
         bio: (_bio == '') ? widget.user!.bio : _bio.trim(),
         role: widget.user!.role,
+        isPublic: _isPublic,
         isVerified: widget.user!.isVerified);
 
     try {
       DatabaseService.updateUser(user);
       widget.updateUser!(user);
+
+      usersRef
+          .doc(user.id)
+          .update({'isPublic': (_isPublic == true) ? false : true});
 
       Utility.showMessage(context,
           message: 'Profile updated',
@@ -156,13 +169,13 @@ class _EditProfileState extends State<EditProfile> {
               }
               AppUser user = AppUser.fromDoc(snapshot.data);
               return PickupLayout(
-                   currentUser: widget.user,
+                currentUser: widget.user,
                 scaffold: Scaffold(
                   bottomNavigationBar: Container(
                     color: Colors.transparent,
                     child: Padding(
-                      padding:
-                          const EdgeInsets.only(bottom: 50, left: 20, right: 20),
+                      padding: const EdgeInsets.only(
+                          bottom: 50, left: 20, right: 20),
                       child: ButtonWidget(
                         title: S.of(context)!.save,
                         onPressed: () {
@@ -184,8 +197,8 @@ class _EditProfileState extends State<EditProfile> {
                   backgroundColor: Colors.transparent,
                   key: _scaffoldKey,
                   body: Padding(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 20, vertical: 20),
                     child: SingleChildScrollView(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -276,6 +289,27 @@ class _EditProfileState extends State<EditProfile> {
                                   fontSize: 20,
                                   fontWeight: FontWeight.bold),
                               enabled: false),
+                          SizedBox(height: 25),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(S.of(context)!.private,
+                                  style:
+                                      TextStyle(color: Colors.white, fontSize: 20)),
+                                      SwitcherButton(
+                            onColor: lightColor,
+                            offColor: Colors.grey,
+                            size: 40,
+                            value: user.isPublic! ? false : true,
+                            onChange: (value) {
+                              _isPublic = value;
+                              setState(() {});
+                              print(value);
+                            },
+                          )
+                            ],
+                          ), 
+                          
                         ],
                       ),
                     ),

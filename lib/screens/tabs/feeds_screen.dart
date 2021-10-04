@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:Dana/generated/l10n.dart';
@@ -41,12 +43,11 @@ class _FeedsScreenState extends State<FeedsScreen> {
   bool _isLoadingStories = false;
   List<AppUser> _followingUsersWithStories = [];
   CameraConsumer _cameraConsumer = CameraConsumer.post;
-  var stream;
+  StreamSubscription? stream;
   bool unreadNotifications = false;
 
   void _goToCameraScreen() {
     setState(() => _cameraConsumer = CameraConsumer.story);
-    print('kol');
   }
 
   @override
@@ -54,6 +55,12 @@ class _FeedsScreenState extends State<FeedsScreen> {
     super.initState();
     _getCurrentUser();
     _setupFeed();
+  }
+
+  @override
+  void dispose() {
+    stream!.cancel();
+    super.dispose();
   }
 
   _setupFeed() async {

@@ -108,96 +108,96 @@ class SettingsScreenState extends State<SettingsScreen> {
                 SizedBox(height: 10),
                 BrandDivider(),
                 SizedBox(height: 10),
-                GestureDetector(
-                  onTap: () {
-                    showModalBottomSheet(
-                        context: context,
-                        builder: (context) {
-                          return Container(
-                            color: darkColor,
-                            height: 100,
-                            child: Column(
-                              children: <Widget>[
-                                GestureDetector(
-                                  onTap: () async {
-                                    usersRef
-                                        .doc(currentUser!.id)
-                                        .update({'isPublic': false}).then(
-                                            (value) => Navigator.pop(context));
-                                  },
-                                  child: Padding(
-                                    padding: const EdgeInsets.only(top: 18),
-                                    child: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      children: [
-                                        Text('Private',
-                                            style: TextStyle(
-                                                color: Colors.white,
-                                                fontSize: 18)),
-                                        SizedBox(width: 10),
-                                        if (currentUser!.isPublic == false)
-                                          Icon(Icons.done, color: Colors.green)
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                                GestureDetector(
-                                  onTap: () async {
-                                    usersRef
-                                        .doc(currentUser!.id)
-                                        .update({'isPublic': true}).then(
-                                            (value) => Navigator.pop(context));
-                                    setState(() {});
-                                  },
-                                  child: Padding(
-                                    padding: const EdgeInsets.only(top: 20),
-                                    child: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      children: [
-                                        Text('Public',
-                                            style: TextStyle(
-                                                color: Colors.white,
-                                                fontSize: 20)),
-                                        SizedBox(width: 10),
-                                        if (currentUser!.isPublic == true)
-                                          Icon(Icons.done, color: Colors.green)
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          );
-                        });
-                  },
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text('Account Mode',
-                          style: TextStyle(color: Colors.white, fontSize: 18)),
+                // GestureDetector(
+                //   onTap: () {
+                //     showModalBottomSheet(
+                //         context: context,
+                //         builder: (context) {
+                //           return Container(
+                //             color: darkColor,
+                //             height: 100,
+                //             child: Column(
+                //               children: <Widget>[
+                //                 GestureDetector(
+                //                   onTap: () async {
+                //                     usersRef
+                //                         .doc(currentUser!.id)
+                //                         .update({'isPublic': false}).then(
+                //                             (value) => Navigator.pop(context));
+                //                   },
+                //                   child: Padding(
+                //                     padding: const EdgeInsets.only(top: 18),
+                //                     child: Row(
+                //                       mainAxisAlignment:
+                //                           MainAxisAlignment.center,
+                //                       children: [
+                //                         Text('Private',
+                //                             style: TextStyle(
+                //                                 color: Colors.white,
+                //                                 fontSize: 18)),
+                //                         SizedBox(width: 10),
+                //                         if (currentUser!.isPublic == false)
+                //                           Icon(Icons.done, color: Colors.green)
+                //                       ],
+                //                     ),
+                //                   ),
+                //                 ),
+                //                 GestureDetector(
+                //                   onTap: () async {
+                //                     usersRef
+                //                         .doc(currentUser!.id)
+                //                         .update({'isPublic': true}).then(
+                //                             (value) => Navigator.pop(context));
+                //                     setState(() {});
+                //                   },
+                //                   child: Padding(
+                //                     padding: const EdgeInsets.only(top: 20),
+                //                     child: Row(
+                //                       mainAxisAlignment:
+                //                           MainAxisAlignment.center,
+                //                       children: [
+                //                         Text('Public',
+                //                             style: TextStyle(
+                //                                 color: Colors.white,
+                //                                 fontSize: 20)),
+                //                         SizedBox(width: 10),
+                //                         if (currentUser!.isPublic == true)
+                //                           Icon(Icons.done, color: Colors.green)
+                //                       ],
+                //                     ),
+                //                   ),
+                //                 ),
+                //               ],
+                //             ),
+                //           );
+                //         });
+                //   },
+                //   child: Row(
+                //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                //     children: [
+                //       Text('Account Mode',
+                //           style: TextStyle(color: Colors.white, fontSize: 18)),
 
-                      Icon(Icons.arrow_drop_down, color: Colors.white)
-                      // SwitcherButton(
-                      //   onColor: lightColor,
-                      //   offColor: Colors.grey,
-                      //   size: 40,
-                      //   value: (currentUser!.isPublic == true) ? false : true,
-                      //   onChange: (value) {
-                      //     usersRef.doc(currentUser!.id).update({
-                      //       'isPublic':
-                      //           (currentUser!.isPublic == true) ? false : true
-                      //     });
-                      //     setState(() {});
-                      //     print(value);
-                      //   },
-                      // )
-                    ],
-                  ),
-                ),
-                SizedBox(height: 10),
-                BrandDivider(),
+                //       Icon(Icons.arrow_drop_down, color: Colors.white)
+                //       // SwitcherButton(
+                //       //   onColor: lightColor,
+                //       //   offColor: Colors.grey,
+                //       //   size: 40,
+                //       //   value: (currentUser!.isPublic == true) ? false : true,
+                //       //   onChange: (value) {
+                //       //     usersRef.doc(currentUser!.id).update({
+                //       //       'isPublic':
+                //       //           (currentUser!.isPublic == true) ? false : true
+                //       //     });
+                //       //     setState(() {});
+                //       //     print(value);
+                //       //   },
+                //       // )
+                //     ],
+                //   ),
+                // ),
+                // SizedBox(height: 10),
+                // BrandDivider(),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
