@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:Dana/calls/callscreens/pickup/pickup_layout.dart';
+import 'package:Dana/widgets/custom_modal_progress_hud.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:Dana/calls/call_utilities.dart';
@@ -276,19 +277,22 @@ class _UserProfileState extends State<UserProfile> {
                           style: TextStyle(color: Colors.white),
                         ),
                       ),
-                      body: Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 20),
-                        child: ListView(
-                          children: <Widget>[
-                            Container(
-                              child: PostView(
-                                postStatus: PostStatus.feedPost,
-                                currentUserId: widget.userId,
-                                post: post,
-                                author: _profileUser,
+                      body: CustomModalProgressHUD(
+                        inAsyncCall: _isLoading,
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 20),
+                          child: ListView(
+                            children: <Widget>[
+                              Container(
+                                child: PostView(
+                                  postStatus: PostStatus.feedPost,
+                                  currentUserId: widget.userId,
+                                  post: post,
+                                  author: _profileUser,
+                                ),
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
                       )),
                 ],
@@ -440,303 +444,280 @@ class _UserProfileState extends State<UserProfile> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              (_isLoading == false)
-                                  ? Padding(
-                                      padding: const EdgeInsets.symmetric(
-                                          horizontal: 10),
-                                      child: Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceBetween,
-                                        children: [
-                                          Row(children: [
-                                            GestureDetector(
-                                              onTap: () {
-                                                Clipboard.setData(ClipboardData(
-                                                    text: user.pin));
-                                                Utility.showMessage(context,
-                                                    message: 'Pin Copied!',
-                                                    pulsate: false,
-                                                    bgColor:
-                                                        Colors.green[600]!);
-                                              },
-                                              child: Text('PIN: ${user.pin}',
-                                                  style: TextStyle(
-                                                      color: Colors.white,
-                                                      fontSize: 18)),
-                                            ),
-                                            SizedBox(width: 15),
-                                            if (isFriends)
-                                              GestureDetector(
-                                                  onTap: () {
-                                                    Navigator.push(
-                                                        context,
-                                                        MaterialPageRoute(
-                                                            builder: (_) => ChatScreen(
-                                                                receiverUser:
-                                                                    _profileUser,
-                                                                isGroup: false,
-                                                                imageFile: widget
-                                                                    .imageFile)));
-                                                    print(_profileUser!.id);
-                                                  },
-                                                  child: Icon(Icons.chat_bubble,
-                                                      color: Colors.white,
-                                                      size: 17)),
-                                            SizedBox(width: 15),
-                                            if (isFriends)
-                                              GestureDetector(
-                                                  onTap: () {
-                                                    try {
-                                                      CallUtils.dial(
-                                                          from: _currentUser!,
-                                                          to: _profileUser!,
-                                                          context: context,
-                                                          isAudio: false);
-                                                    } catch (e) {
-                                                      print('=============$e');
-                                                    }
-                                                  },
-                                                  child: Icon(
-                                                      FontAwesomeIcons.video,
-                                                      color: Colors.white,
-                                                      size: 15)),
-                                            SizedBox(width: 15),
-                                            if (isFriends)
-                                              GestureDetector(
-                                                  onTap: () {
-                                                    try {
-                                                      CallUtils.dial(
-                                                          from: _currentUser!,
-                                                          to: _profileUser!,
-                                                          context: context,
-                                                          isAudio: true);
-                                                    } catch (e) {
-                                                      print('=============$e');
-                                                    }
-                                                  },
-                                                  child: Icon(
-                                                      FontAwesomeIcons.phoneAlt,
-                                                      color: Colors.white,
-                                                      size: 15)),
-                                          ]),
-                                          if (isFriends)
-                                            OutlinedButton(
-                                                style: ButtonStyle(
-                                                    shape: MaterialStateProperty.all(
-                                                        RoundedRectangleBorder(
-                                                            borderRadius:
-                                                                new BorderRadius
-                                                                        .circular(
-                                                                    10))),
-                                                    backgroundColor:
-                                                        MaterialStateProperty
-                                                            .all(Colors.red)),
-                                                onPressed: () {
-                                                  followingRef
-                                                      .doc(widget.currentUserId)
-                                                      .collection(userFollowing)
-                                                      .doc(widget.userId)
-                                                      .get()
-                                                      .then((doc) {
-                                                    if (doc.exists) {
-                                                      print(
-                                                          '||||||||||||widget.userId');
-
-                                                      doc.reference.delete();
-                                                    }
-                                                  });
-
-                                                  followingRef
-                                                      .doc(widget.userId)
-                                                      .collection(userFollowing)
-                                                      .doc(widget.currentUserId)
-                                                      .get()
-                                                      .then((doc) {
-                                                    if (doc.exists) {
-                                                      doc.reference.delete();
-                                                    }
-                                                  });
-
-                                                  setState(() {
-                                                    isRequest = false;
-                                                    isFriends = false;
-                                                  });
-                                                },
-                                                child: Text(
-                                                    S.of(context)!.remove,
-                                                    style: TextStyle(
-                                                        fontSize: 14,
-                                                        color: Colors.white,
-                                                        fontFamily:
-                                                            'Poppins-Regular'))),
-                                          if (isRequest)
-                                            Row(children: [
-                                              OutlinedButton(
-                                                  style: ButtonStyle(
-                                                      shape: MaterialStateProperty.all(
-                                                          RoundedRectangleBorder(
-                                                              borderRadius:
-                                                                  new BorderRadius
-                                                                          .circular(
-                                                                      10))),
-                                                      backgroundColor:
-                                                          MaterialStateProperty.all(
-                                                              Colors.green)),
-                                                  onPressed: _followOrUnfollow,
-                                                  child: Text(
-                                                      S.of(context)!.accept,
-                                                      style: TextStyle(
-                                                          fontSize: 14,
-                                                          color: Colors.white,
-                                                          fontFamily:
-                                                              'Poppins-Regular'))),
-                                              SizedBox(width: 10),
-                                              OutlinedButton(
-                                                  style: ButtonStyle(
-                                                      shape: MaterialStateProperty.all(
-                                                          RoundedRectangleBorder(
-                                                              borderRadius:
-                                                                  new BorderRadius
-                                                                          .circular(
-                                                                      10))),
-                                                      backgroundColor:
-                                                          MaterialStateProperty
-                                                              .all(Colors.red)),
-                                                  onPressed: () {
-                                                    print(widget.currentUserId);
-
-                                                    followingRef
-                                                        .doc(widget
-                                                            .currentUserId)
-                                                        .collection(
-                                                            userFollowing)
-                                                        .doc(widget.userId)
-                                                        .get()
-                                                        .then((doc) {
-                                                      if (doc.exists) {
-                                                        print(
-                                                            '||||||||||||widget.userId');
-
-                                                        doc.reference.delete();
-                                                      }
-                                                    });
-
-                                                    followingRef
-                                                        .doc(widget.userId)
-                                                        .collection(
-                                                            userFollowing)
-                                                        .doc(widget
-                                                            .currentUserId)
-                                                        .get()
-                                                        .then((doc) {
-                                                      if (doc.exists) {
-                                                        print(
-                                                            '||||||||||||widget.userId');
-
-                                                        doc.reference.delete();
-                                                      }
-                                                    });
-
-                                                    setState(() {
-                                                      isRequest = false;
-                                                    });
-                                                  },
-                                                  child: Text('Reject',
-                                                      style: TextStyle(
-                                                          fontSize: 14,
-                                                          color: Colors.white,
-                                                          fontFamily:
-                                                              'Poppins-Regular')))
-                                            ]),
-                                          if (pendingFriends)
-                                            OutlinedButton(
-                                                style: ButtonStyle(
-                                                    shape: MaterialStateProperty.all(
-                                                        RoundedRectangleBorder(
-                                                            borderRadius:
-                                                                new BorderRadius
-                                                                        .circular(
-                                                                    10))),
-                                                    backgroundColor:
-                                                        MaterialStateProperty
-                                                            .all(Colors.red)),
-                                                onPressed: () {
-                                                  print(widget.currentUserId);
-
-                                                  followingRef
-                                                      .doc(widget.currentUserId)
-                                                      .collection(userFollowing)
-                                                      .doc(widget.userId)
-                                                      .get()
-                                                      .then((doc) {
-                                                    if (doc.exists) {
-                                                      print(
-                                                          '||||||||||||widget.userId');
-
-                                                      doc.reference.delete();
-                                                    }
-                                                  });
-
-                                                  followingRef
-                                                      .doc(widget.userId)
-                                                      .collection(userFollowing)
-                                                      .doc(widget.currentUserId)
-                                                      .get()
-                                                      .then((doc) {
-                                                    if (doc.exists) {
-                                                      print(
-                                                          '||||||||||||widget.userId');
-
-                                                      doc.reference.delete();
-                                                    }
-                                                  });
-
-                                                  setState(() {
-                                                    isRequest = false;
-                                                    pendingFriends = false;
-                                                  });
-                                                },
-                                                child: Text(
-                                                    S.of(context)!.remove,
-                                                    style: TextStyle(
-                                                        fontSize: 14,
-                                                        color: Colors.white,
-                                                        fontFamily:
-                                                            'Poppins-Regular'))),
-                                          if (!isFriends &&
-                                              !isRequest &&
-                                              !pendingFriends)
-                                            OutlinedButton(
-                                                style: ButtonStyle(
-                                                    shape: MaterialStateProperty.all(
-                                                        RoundedRectangleBorder(
-                                                            borderRadius:
-                                                                new BorderRadius.circular(
-                                                                    10))),
-                                                    backgroundColor:
-                                                        MaterialStateProperty
-                                                            .all(lightColor)),
-                                                onPressed: _followOrUnfollow,
-                                                child: Text(S.of(context)!.add,
-                                                    style: TextStyle(
-                                                        fontSize: 14,
-                                                        color: Colors.white,
-                                                        fontFamily:
-                                                            'Poppins-Regular'))),
-                                        ],
-                                      ))
-                                  : Center(
-                                      child: Padding(
-                                        padding: const EdgeInsets.all(10),
-                                        child: Container(
-                                          height: 20,
-                                          width: 20,
-                                          child: CircularProgressIndicator(
-                                              strokeWidth: 2.0,
-                                              color: lightColor),
+                              Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 10),
+                                  child: Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Row(children: [
+                                        GestureDetector(
+                                          onTap: () {
+                                            Clipboard.setData(
+                                                ClipboardData(text: user.pin));
+                                            Utility.showMessage(context,
+                                                message: 'Pin Copied!',
+                                                pulsate: false,
+                                                bgColor: Colors.green[600]!);
+                                          },
+                                          child: Text('PIN: ${user.pin}',
+                                              style: TextStyle(
+                                                  color: Colors.white,
+                                                  fontSize: 18)),
                                         ),
-                                      ),
-                                    ),
+                                        SizedBox(width: 15),
+                                        if (isFriends)
+                                          GestureDetector(
+                                              onTap: () {
+                                                Navigator.push(
+                                                    context,
+                                                    MaterialPageRoute(
+                                                        builder: (_) => ChatScreen(
+                                                            receiverUser:
+                                                                _profileUser,
+                                                            isGroup: false,
+                                                            imageFile: widget
+                                                                .imageFile)));
+                                                print(_profileUser!.id);
+                                              },
+                                              child: Icon(Icons.chat_bubble,
+                                                  color: Colors.white,
+                                                  size: 17)),
+                                        SizedBox(width: 15),
+                                        if (isFriends)
+                                          GestureDetector(
+                                              onTap: () {
+                                                try {
+                                                  CallUtils.dial(
+                                                      from: _currentUser!,
+                                                      to: _profileUser!,
+                                                      context: context,
+                                                      isAudio: false);
+                                                } catch (e) {
+                                                  print('=============$e');
+                                                }
+                                              },
+                                              child: Icon(
+                                                  FontAwesomeIcons.video,
+                                                  color: Colors.white,
+                                                  size: 15)),
+                                        SizedBox(width: 15),
+                                        if (isFriends)
+                                          GestureDetector(
+                                              onTap: () {
+                                                try {
+                                                  CallUtils.dial(
+                                                      from: _currentUser!,
+                                                      to: _profileUser!,
+                                                      context: context,
+                                                      isAudio: true);
+                                                } catch (e) {
+                                                  print('=============$e');
+                                                }
+                                              },
+                                              child: Icon(
+                                                  FontAwesomeIcons.phoneAlt,
+                                                  color: Colors.white,
+                                                  size: 15)),
+                                      ]),
+                                      if (isFriends)
+                                        OutlinedButton(
+                                            style: ButtonStyle(
+                                                shape: MaterialStateProperty
+                                                    .all(RoundedRectangleBorder(
+                                                        borderRadius:
+                                                            new BorderRadius
+                                                                .circular(10))),
+                                                backgroundColor:
+                                                    MaterialStateProperty.all(
+                                                        Colors.red)),
+                                            onPressed: () {
+                                              followingRef
+                                                  .doc(widget.currentUserId)
+                                                  .collection(userFollowing)
+                                                  .doc(widget.userId)
+                                                  .get()
+                                                  .then((doc) {
+                                                if (doc.exists) {
+                                                  print(
+                                                      '||||||||||||widget.userId');
+
+                                                  doc.reference.delete();
+                                                }
+                                              });
+
+                                              followingRef
+                                                  .doc(widget.userId)
+                                                  .collection(userFollowing)
+                                                  .doc(widget.currentUserId)
+                                                  .get()
+                                                  .then((doc) {
+                                                if (doc.exists) {
+                                                  doc.reference.delete();
+                                                }
+                                              });
+
+                                              setState(() {
+                                                isRequest = false;
+                                                isFriends = false;
+                                              });
+                                            },
+                                            child: Text(S.of(context)!.remove,
+                                                style: TextStyle(
+                                                    fontSize: 14,
+                                                    color: Colors.white,
+                                                    fontFamily:
+                                                        'Poppins-Regular'))),
+                                      if (isRequest)
+                                        Row(children: [
+                                          OutlinedButton(
+                                              style: ButtonStyle(
+                                                  shape: MaterialStateProperty.all(
+                                                      RoundedRectangleBorder(
+                                                          borderRadius:
+                                                              new BorderRadius
+                                                                      .circular(
+                                                                  10))),
+                                                  backgroundColor:
+                                                      MaterialStateProperty.all(
+                                                          Colors.green)),
+                                              onPressed: _followOrUnfollow,
+                                              child: Text(S.of(context)!.accept,
+                                                  style: TextStyle(
+                                                      fontSize: 14,
+                                                      color: Colors.white,
+                                                      fontFamily:
+                                                          'Poppins-Regular'))),
+                                          SizedBox(width: 10),
+                                          OutlinedButton(
+                                              style: ButtonStyle(
+                                                  shape: MaterialStateProperty
+                                                      .all(RoundedRectangleBorder(
+                                                          borderRadius:
+                                                              new BorderRadius
+                                                                      .circular(
+                                                                  10))),
+                                                  backgroundColor:
+                                                      MaterialStateProperty.all(
+                                                          Colors.red)),
+                                              onPressed: () {
+                                                print(widget.currentUserId);
+
+                                                followingRef
+                                                    .doc(widget.currentUserId)
+                                                    .collection(userFollowing)
+                                                    .doc(widget.userId)
+                                                    .get()
+                                                    .then((doc) {
+                                                  if (doc.exists) {
+                                                    print(
+                                                        '||||||||||||widget.userId');
+
+                                                    doc.reference.delete();
+                                                  }
+                                                });
+
+                                                followingRef
+                                                    .doc(widget.userId)
+                                                    .collection(userFollowing)
+                                                    .doc(widget.currentUserId)
+                                                    .get()
+                                                    .then((doc) {
+                                                  if (doc.exists) {
+                                                    print(
+                                                        '||||||||||||widget.userId');
+
+                                                    doc.reference.delete();
+                                                  }
+                                                });
+
+                                                setState(() {
+                                                  isRequest = false;
+                                                });
+                                              },
+                                              child: Text('Reject',
+                                                  style: TextStyle(
+                                                      fontSize: 14,
+                                                      color: Colors.white,
+                                                      fontFamily:
+                                                          'Poppins-Regular')))
+                                        ]),
+                                      if (pendingFriends)
+                                        OutlinedButton(
+                                            style: ButtonStyle(
+                                                shape: MaterialStateProperty
+                                                    .all(RoundedRectangleBorder(
+                                                        borderRadius:
+                                                            new BorderRadius
+                                                                .circular(10))),
+                                                backgroundColor:
+                                                    MaterialStateProperty.all(
+                                                        Colors.red)),
+                                            onPressed: () {
+                                              print(widget.currentUserId);
+
+                                              followingRef
+                                                  .doc(widget.currentUserId)
+                                                  .collection(userFollowing)
+                                                  .doc(widget.userId)
+                                                  .get()
+                                                  .then((doc) {
+                                                if (doc.exists) {
+                                                  print(
+                                                      '||||||||||||widget.userId');
+
+                                                  doc.reference.delete();
+                                                }
+                                              });
+
+                                              followingRef
+                                                  .doc(widget.userId)
+                                                  .collection(userFollowing)
+                                                  .doc(widget.currentUserId)
+                                                  .get()
+                                                  .then((doc) {
+                                                if (doc.exists) {
+                                                  print(
+                                                      '||||||||||||widget.userId');
+
+                                                  doc.reference.delete();
+                                                }
+                                              });
+
+                                              setState(() {
+                                                isRequest = false;
+                                                pendingFriends = false;
+                                              });
+                                            },
+                                            child: Text(S.of(context)!.remove,
+                                                style: TextStyle(
+                                                    fontSize: 14,
+                                                    color: Colors.white,
+                                                    fontFamily:
+                                                        'Poppins-Regular'))),
+                                      if (!isFriends &&
+                                          !isRequest &&
+                                          !pendingFriends)
+                                        OutlinedButton(
+                                            style: ButtonStyle(
+                                                shape: MaterialStateProperty
+                                                    .all(RoundedRectangleBorder(
+                                                        borderRadius:
+                                                            new BorderRadius
+                                                                .circular(10))),
+                                                backgroundColor:
+                                                    MaterialStateProperty.all(
+                                                        lightColor)),
+                                            onPressed: _followOrUnfollow,
+                                            child: Text(S.of(context)!.add,
+                                                style: TextStyle(
+                                                    fontSize: 14,
+                                                    color: Colors.white,
+                                                    fontFamily:
+                                                        'Poppins-Regular'))),
+                                    ],
+                                  )),
                               BrandDivider(),
                               Padding(
                                 padding:
@@ -808,7 +789,7 @@ class _UserProfileState extends State<UserProfile> {
                                   },
                                 );
                               }),
-                               if (user.isPublic! && isFriends)
+                        if (user.isPublic! && isFriends)
                           ListView.builder(
                               shrinkWrap: true,
                               physics: NeverScrollableScrollPhysics(),
@@ -861,64 +842,58 @@ class _UserProfileState extends State<UserProfile> {
                                 );
                               }),
                         if (!user.isPublic! && isFriends)
-                        ListView.builder(
-                                shrinkWrap: true,
-                                physics: NeverScrollableScrollPhysics(),
-                                itemCount:
-                                    _posts.length > 0 ? _posts.length : 1,
-                                itemBuilder: (BuildContext context, int index) {
-                                  if (_posts.length == 0) {
-                                    //If there is no posts
-                                    return Center(
-                                        child: Text(S.of(context)!.nopost,
-                                            style: TextStyle(
-                                                color: Colors.white)));
-                                  }
+                          ListView.builder(
+                              shrinkWrap: true,
+                              physics: NeverScrollableScrollPhysics(),
+                              itemCount: _posts.length > 0 ? _posts.length : 1,
+                              itemBuilder: (BuildContext context, int index) {
+                                if (_posts.length == 0) {
+                                  //If there is no posts
+                                  return Center(
+                                      child: Text(S.of(context)!.nopost,
+                                          style:
+                                              TextStyle(color: Colors.white)));
+                                }
 
-                                  Post post = _posts[index];
+                                Post post = _posts[index];
 
-                                  return FutureBuilder(
-                                    future: DatabaseService.getUserWithId(
-                                        post.authorId),
-                                    builder: (BuildContext context,
-                                        AsyncSnapshot snapshot) {
-                                      if (!snapshot.hasData) {
-                                        return SizedBox.shrink();
-                                      }
+                                return FutureBuilder(
+                                  future: DatabaseService.getUserWithId(
+                                      post.authorId),
+                                  builder: (BuildContext context,
+                                      AsyncSnapshot snapshot) {
+                                    if (!snapshot.hasData) {
+                                      return SizedBox.shrink();
+                                    }
 
-                                      AppUser? author = snapshot.data;
+                                    AppUser? author = snapshot.data;
 
-                                      return (post.imageUrl == null)
-                                          ? TextPost(
-                                              postStatus: PostStatus.feedPost,
-                                              currentUserId:
-                                                  widget.currentUserId,
-                                              author: author,
-                                              post: post,
-                                            )
-                                          : (post.videoUrl != null)
-                                              ? VideoPostView(
-                                                  postStatus:
-                                                      PostStatus.feedPost,
-                                                  currentUserId:
-                                                      widget.currentUserId,
-                                                  author: author,
-                                                  post: post,
-                                                )
-                                              : PostView(
-                                                  postStatus:
-                                                      PostStatus.feedPost,
-                                                  currentUserId:
-                                                      widget.currentUserId,
-                                                  author: author,
-                                                  post: post,
-                                                );
-                                    },
-                                  );
-                                }),
-
+                                    return (post.imageUrl == null)
+                                        ? TextPost(
+                                            postStatus: PostStatus.feedPost,
+                                            currentUserId: widget.currentUserId,
+                                            author: author,
+                                            post: post,
+                                          )
+                                        : (post.videoUrl != null)
+                                            ? VideoPostView(
+                                                postStatus: PostStatus.feedPost,
+                                                currentUserId:
+                                                    widget.currentUserId,
+                                                author: author,
+                                                post: post,
+                                              )
+                                            : PostView(
+                                                postStatus: PostStatus.feedPost,
+                                                currentUserId:
+                                                    widget.currentUserId,
+                                                author: author,
+                                                post: post,
+                                              );
+                                  },
+                                );
+                              }),
                         if (!user.isPublic! && !isFriends)
-
                           Center(
                             child: Column(
                               children: [
