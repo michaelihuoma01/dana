@@ -731,7 +731,7 @@ class _MessageBubbleState extends State<MessageBubble>
                               ),
                             );
                           });
-                      ;
+                   
                     },
                     background: Padding(
                       padding: const EdgeInsets.only(right: 2),

@@ -42,6 +42,7 @@ class _MessagesScreenState extends State<MessagesScreen> {
   AppUser? _currentUser;
   // List<AppUser> users;
   String? deleteUserID, userName;
+  List<Chat> dataToReturn = [];
 
   @override
   void initState() {
@@ -54,7 +55,6 @@ class _MessagesScreenState extends State<MessagesScreen> {
 
   Stream<List<Chat>> getChats() async* {
     // try {
-    List<Chat> dataToReturn = [];
 
     Stream<QuerySnapshot> stream = FirebaseFirestore.instance
         .collection('chats')
@@ -105,8 +105,9 @@ class _MessagesScreenState extends State<MessagesScreen> {
 
         dataToReturn.add(chatWithUserInfo);
       }
-    dataToReturn.sort((a, b) => b.recentTimestamp!.compareTo(a.recentTimestamp!));
-      
+      dataToReturn
+          .sort((a, b) => b.recentTimestamp!.compareTo(a.recentTimestamp!));
+
       yield dataToReturn;
     }
     // } catch (err) {
@@ -233,7 +234,7 @@ class _MessagesScreenState extends State<MessagesScreen> {
                     style: readStyle,
                   )
                 : Text(
-                  S.of(context)!.attach,
+                    S.of(context)!.attach,
                     overflow: TextOverflow.ellipsis,
                     style: readStyle,
                   ),
@@ -343,44 +344,68 @@ class _MessagesScreenState extends State<MessagesScreen> {
                         child: ListView.builder(
                       itemBuilder: (BuildContext context, int index) {
                         Chat chat = snapshot.data[index];
-                        
+
                         return Dismissible(
                             key: UniqueKey(),
-                            confirmDismiss: (direction) async { 
-                              return showDialog(
+                            confirmDismiss: (direction) async {
+                              return showModalBottomSheet(
                                   context: context,
-                                  builder: (BuildContext context) {
-                                    return DeleteDialog(
-                                      userName: userName,
-                                      onPressed: () async {
-                                        await chatsRef
-                                            .doc(chat.id)
-                                            .collection('messages')
-                                            .get()
-                                            .then((docs) {
-                                          docs.docs.forEach((element) {
-                                            element.reference
-                                                .delete()
-                                                .then((value) {
-                                              chatsRef
-                                                  .doc(chat.id)
-                                                  .delete()
-                                                  .then((value) {
-                                                print(
-                                                    '======= it is succesful');
-                                                // setState(() {
-                                                //   Navigator.of(context,
-                                                //           rootNavigator: true)
-                                                //       .pop();
-                                                // });
-                                              });
-                                            });
-                                          });
-                                          print('=======succesful');
-                                        });
+                                  backgroundColor: Colors.transparent,
+                                  builder: (context) {
+                                    return Padding(
+                                      padding: const EdgeInsets.all(20),
+                                      child: Container(
+                                        height: 60,
+                                        decoration:
+                                            BoxDecoration(color: darkColor),
+                                        child: Column(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
+                                          children: <Widget>[
+                                            GestureDetector(
+                                              onTap: () async {
+                                                Navigator.of(context).pop();
 
-                                        print('delete');
-                                      },
+                                                await chatsRef
+                                                    .doc(chat.id)
+                                                    .collection('messages')
+                                                    .get()
+                                                    .then((docs) {
+                                                  docs.docs.forEach((element) {
+                                                    element.reference
+                                                        .delete()
+                                                        .then((value) {
+                                                      chatsRef
+                                                          .doc(chat.id)
+                                                          .delete()
+                                                          .then((value) {
+                                                        print(
+                                                            '======= it is succesful');
+                                                        setState(() {
+                                                          dataToReturn
+                                                              .removeAt(index);
+                                                        });
+                                                      });
+                                                    });
+                                                  });
+                                                });
+
+                                                setState(() {});
+                                              },
+                                              child: Padding(
+                                                  padding:
+                                                      const EdgeInsets.only(
+                                                          top: 20),
+                                                  child: Text('Delete',
+                                                      style: TextStyle(
+                                                          color: Colors.red,
+                                                          fontSize: 16,
+                                                          fontWeight: FontWeight
+                                                              .w600))),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
                                     );
                                   });
                             },

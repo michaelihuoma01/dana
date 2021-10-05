@@ -205,7 +205,9 @@ class _FeedsScreenState extends State<FeedsScreen> {
                         radius: 25.0,
                         backgroundColor: Colors.grey,
                         backgroundImage: CachedNetworkImageProvider(
-                            widget.currentUser!.profileImageUrl!),
+                            (widget.currentUser!.profileImageUrl! == '')
+                                ? placeHolderImageRef
+                                : widget.currentUser!.profileImageUrl!),
                       ),
                     ),
                     SizedBox(width: 10),

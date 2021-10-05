@@ -99,18 +99,6 @@ class PushNotificationService {
         usersRef.doc(_auth.currentUser?.uid).update({'isVerified': true});
         print('A new onMessage event was =========!');
 
-        flutterLocalNotificationsPlugin.show(
-            notification.hashCode,
-            notification.title,
-            notification.body,
-            NotificationDetails(
-              android: AndroidNotificationDetails(
-                  channel.id, channel.name, channel.description,
-                  color: lightColor
-                  // icon: android.smallIcon,
-                  // other properties...
-                  ),
-            ));
         // fetchRideInfo(getRideID(message.data), context);
       }
     });
@@ -131,12 +119,25 @@ class PushNotificationService {
       AndroidNotification? android = message.notification?.android;
       // print('A new onBackgroundMessage event was =========!');
 
+      flutterLocalNotificationsPlugin.show(
+          notification.hashCode,
+          notification.title,
+          notification.body,
+          NotificationDetails(
+            android: AndroidNotificationDetails(
+                channel.id, channel.name, channel.description,
+                color: lightColor
+                // icon: android.smallIcon,
+                // other properties...
+                ),
+          ));
+
       if (android != null) {
         print('A new onBackgroundMessage event was ${message.data}!');
         // fetchRideInfo(getRideID(message.data), context);
       }
       return Future<void>.value();
-    }); 
+    });
   }
 
   Future<String?> getToken() async {
@@ -171,5 +172,4 @@ class PushNotificationService {
 
     return userID;
   }
- 
 }

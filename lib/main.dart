@@ -93,7 +93,7 @@ class _MyAppState extends State<MyApp> {
     FirebaseMessaging.onBackgroundMessage((message) {
       print('On onBackgroundMessage: $message');
       return Future<void>.value();
-    }); 
+    });
   }
 
   Widget _getScreenId() {

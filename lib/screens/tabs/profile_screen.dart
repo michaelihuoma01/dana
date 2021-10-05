@@ -351,7 +351,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           if (_posts.length == 0) {
                             //If there is no posts
                             return Center(
-                                child: Text('You don\'t have any post yet',
+                                child: Text(S.of(context)!.nopost,
                                     style: TextStyle(color: Colors.white)));
                           }
 
