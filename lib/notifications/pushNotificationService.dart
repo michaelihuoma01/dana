@@ -133,13 +133,6 @@ class PushNotificationService {
                 ),
           ));
 
-      Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (_) => FullScreenImage(
-                'https://upload.wikimedia.org/wikipedia/en/7/70/Shawn_Tok_Profile.jpg'),
-          ));
-
       if (android != null) {
         print('A new onBackgroundMessage event was ${message.data}!');
         // fetchRideInfo(getRideID(message.data), context);
