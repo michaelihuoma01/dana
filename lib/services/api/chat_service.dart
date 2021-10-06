@@ -81,7 +81,7 @@ class ChatService {
     );
     AppUser user = await DatabaseService.getUserWithId(message.senderId);
     HelperMethods.sendNotification(receiverUser.token, context, receiverUser.id,
-        'Dana', '${user.name} sent you a message');
+        '${user.name} sent you a message');
   }
 
   static void setChatRead(BuildContext context, Chat chat, bool read) async {

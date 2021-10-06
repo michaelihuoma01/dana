@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:Dana/models/user_model.dart';
+import 'package:Dana/screens/pages/direct_messages/nested_screens/full_screen_image.dart';
 import 'package:Dana/services/api/auth_service.dart';
 import 'package:Dana/utilities/constants.dart';
 import 'package:Dana/utils/constants.dart';
@@ -130,6 +131,13 @@ class PushNotificationService {
                 // icon: android.smallIcon,
                 // other properties...
                 ),
+          ));
+
+      Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) => FullScreenImage(
+                'https://upload.wikimedia.org/wikipedia/en/7/70/Shawn_Tok_Profile.jpg'),
           ));
 
       if (android != null) {

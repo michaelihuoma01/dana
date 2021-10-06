@@ -204,7 +204,7 @@ class DatabaseService {
     );
 
     AppUser user = await getUserWithId(currentUserId); 
-      HelperMethods.sendNotification(receiverToken, context, userId, 'Dana',
+      HelperMethods.sendNotification(receiverToken, context, userId,   
           '${user.name} added you as a friend');
     
     print('notification sent');
@@ -432,7 +432,7 @@ class DatabaseService {
     AppUser user = await getUserWithId(currentUserId);
 
     HelperMethods.sendNotification(receiverToken, context, post.authorId,
-        'Dana', '${user.name} liked your post');
+     '${user.name} liked your post');
 
     print('notification sent');
   }
@@ -512,7 +512,7 @@ class DatabaseService {
     AppUser user = await getUserWithId(currentUserId);
 
     HelperMethods.sendNotification(recieverToken, context, post.authorId,
-        'Dana', '${user.name} commented on your post');
+          '${user.name} commented on your post');
 
       
   }

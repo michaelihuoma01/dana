@@ -81,7 +81,7 @@ class _MessagesScreenState extends State<MessagesScreen> {
             await DatabaseService.getUserWithId(memberIds[receiverIndex]);
 
         if (memberIds.length > 2) {
-          for (String? userId in memberIds as Iterable<String?>) {
+          for (String? userId in memberIds) {
             AppUser user = await DatabaseService.getUserWithId(userId);
             membersInfo.add(user);
           }
