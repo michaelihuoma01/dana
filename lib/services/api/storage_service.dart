@@ -18,7 +18,7 @@ class StroageService {
       RegExp exp = RegExp(r'userProfile_(.*).jpg');
       photoId = exp.firstMatch(url)![1];
     }
-    File? image = await (compressImage(photoId, imageFile) );
+    File? image = await (compressImage(photoId, imageFile));
     UploadTask uploadTask = storageRef
         .child('images/users/userProfile_$photoId.jpg')
         .putFile(image!);
@@ -69,7 +69,7 @@ class StroageService {
 
   static Future<String> uploadPost(File imageFile) async {
     String photoId = Uuid().v4();
-    File? image = await (compressImage(photoId, imageFile) );
+    File? image = await (compressImage(photoId, imageFile));
     UploadTask uploadTask =
         storageRef.child('images/posts/post_$photoId.jpg').putFile(image!);
     // TaskSnapshot storageSnap = await uploadTask.onComplete;
@@ -79,10 +79,22 @@ class StroageService {
 
   static Future<String> uploadMessageImage(File imageFile) async {
     String imageId = Uuid().v4();
-    File? image = await (compressImage(imageId, imageFile) );
+    File? image = await (compressImage(imageId, imageFile));
 
     String downloadUrl = await _uploadImage(
       'images/messages/message_$imageId.jpg',
+      imageId,
+      image!,
+    );
+    return downloadUrl;
+  }
+
+  static Future<String> uploadGroupPhoto(File imageFile) async {
+    String imageId = Uuid().v4();
+    File? image = await (compressImage(imageId, imageFile));
+
+    String downloadUrl = await _uploadImage(
+      'images/groupPhoto/image$imageId.jpg',
       imageId,
       image!,
     );

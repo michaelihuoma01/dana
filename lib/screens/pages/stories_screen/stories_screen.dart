@@ -152,7 +152,7 @@ class _StoryScreenState extends State<StoryScreen>
         isLiked: false,
       );
 
-      ChatService.sendChatMessage(chat, message, receiver, context);
+      ChatService.sendChatMessage(chat, message, receiver, context, false);
       chatsRef.doc(chat.id).update({'readStatus.${receiver.id}': false});
       setState(() => isSending = false);
     }

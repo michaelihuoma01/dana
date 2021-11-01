@@ -352,8 +352,8 @@ PODS:
   - BoringSSL-GRPC/Interface (0.0.7)
   - camera (0.0.1):
     - Flutter
-  - cloud_firestore (2.5.3):
-    - Firebase/Firestore (= 8.6.0)
+  - cloud_firestore (2.5.4):
+    - Firebase/Firestore (= 8.8.0)
     - firebase_core
     - Flutter
   - connectivity_plus (0.0.1):
@@ -393,60 +393,60 @@ PODS:
   - file_picker (0.0.1):
     - DKImagePickerController/PhotoGallery
     - Flutter
-  - Firebase/Analytics (8.6.0):
+  - Firebase/Analytics (8.8.0):
     - Firebase/Core
-  - Firebase/Auth (8.6.0):
+  - Firebase/Auth (8.8.0):
     - Firebase/CoreOnly
-    - FirebaseAuth (~> 8.6.0)
-  - Firebase/Core (8.6.0):
+    - FirebaseAuth (~> 8.8.0)
+  - Firebase/Core (8.8.0):
     - Firebase/CoreOnly
-    - FirebaseAnalytics (~> 8.6.0)
-  - Firebase/CoreOnly (8.6.0):
-    - FirebaseCore (= 8.6.0)
-  - Firebase/Database (8.6.0):
+    - FirebaseAnalytics (~> 8.8.0)
+  - Firebase/CoreOnly (8.8.0):
+    - FirebaseCore (= 8.8.0)
+  - Firebase/Database (8.8.0):
     - Firebase/CoreOnly
-    - FirebaseDatabase (~> 8.6.0)
-  - Firebase/DynamicLinks (8.6.0):
+    - FirebaseDatabase (~> 8.8.0)
+  - Firebase/DynamicLinks (8.8.0):
     - Firebase/CoreOnly
-    - FirebaseDynamicLinks (~> 8.6.0)
-  - Firebase/Firestore (8.6.0):
+    - FirebaseDynamicLinks (~> 8.8.0)
+  - Firebase/Firestore (8.8.0):
     - Firebase/CoreOnly
-    - FirebaseFirestore (~> 8.6.0)
-  - Firebase/Messaging (8.6.0):
+    - FirebaseFirestore (~> 8.8.0)
+  - Firebase/Messaging (8.8.0):
     - Firebase/CoreOnly
-    - FirebaseMessaging (~> 8.6.0)
-  - Firebase/Storage (8.6.0):
+    - FirebaseMessaging (~> 8.8.0)
+  - Firebase/Storage (8.8.0):
     - Firebase/CoreOnly
-    - FirebaseStorage (~> 8.6.0)
-  - firebase_analytics (8.3.2):
-    - Firebase/Analytics (= 8.6.0)
+    - FirebaseStorage (~> 8.8.0)
+  - firebase_analytics (8.3.4):
+    - Firebase/Analytics (= 8.8.0)
     - firebase_core
     - Flutter
-  - firebase_auth (3.1.1):
-    - Firebase/Auth (= 8.6.0)
+  - firebase_auth (3.1.4):
+    - Firebase/Auth (= 8.8.0)
     - firebase_core
     - Flutter
-  - firebase_core (1.6.0):
-    - Firebase/CoreOnly (= 8.6.0)
+  - firebase_core (1.8.0):
+    - Firebase/CoreOnly (= 8.8.0)
     - Flutter
-  - firebase_database (7.2.2):
-    - Firebase/Database (= 8.6.0)
+  - firebase_database (8.0.1):
+    - Firebase/Database (= 8.8.0)
     - firebase_core
     - Flutter
-  - firebase_dynamic_links (2.0.9):
-    - Firebase/DynamicLinks (= 8.6.0)
+  - firebase_dynamic_links (2.0.11):
+    - Firebase/DynamicLinks (= 8.8.0)
     - firebase_core
     - Flutter
-  - firebase_messaging (10.0.7):
-    - Firebase/Messaging (= 8.6.0)
+  - firebase_messaging (10.0.9):
+    - Firebase/Messaging (= 8.8.0)
     - firebase_core
     - Flutter
-  - firebase_storage (10.0.3):
-    - Firebase/Storage (= 8.6.0)
+  - firebase_storage (10.0.6):
+    - Firebase/Storage (= 8.8.0)
     - firebase_core
     - Flutter
-  - FirebaseAnalytics (8.6.0):
-    - FirebaseAnalytics/AdIdSupport (= 8.6.0)
+  - FirebaseAnalytics (8.8.0):
+    - FirebaseAnalytics/AdIdSupport (= 8.8.0)
     - FirebaseCore (~> 8.0)
     - FirebaseInstallations (~> 8.0)
     - GoogleUtilities/AppDelegateSwizzler (~> 7.4)
@@ -454,35 +454,35 @@ PODS:
     - GoogleUtilities/Network (~> 7.4)
     - "GoogleUtilities/NSData+zlib (~> 7.4)"
     - nanopb (~> 2.30908.0)
-  - FirebaseAnalytics/AdIdSupport (8.6.0):
+  - FirebaseAnalytics/AdIdSupport (8.8.0):
     - FirebaseCore (~> 8.0)
     - FirebaseInstallations (~> 8.0)
-    - GoogleAppMeasurement (= 8.6.0)
+    - GoogleAppMeasurement (= 8.8.0)
     - GoogleUtilities/AppDelegateSwizzler (~> 7.4)
     - GoogleUtilities/MethodSwizzler (~> 7.4)
     - GoogleUtilities/Network (~> 7.4)
     - "GoogleUtilities/NSData+zlib (~> 7.4)"
     - nanopb (~> 2.30908.0)
-  - FirebaseAuth (8.6.0):
+  - FirebaseAuth (8.8.0):
     - FirebaseCore (~> 8.0)
     - GoogleUtilities/AppDelegateSwizzler (~> 7.4)
     - GoogleUtilities/Environment (~> 7.4)
     - GTMSessionFetcher/Core (~> 1.5)
-  - FirebaseCore (8.6.0):
+  - FirebaseCore (8.8.0):
     - FirebaseCoreDiagnostics (~> 8.0)
     - GoogleUtilities/Environment (~> 7.4)
     - GoogleUtilities/Logger (~> 7.4)
-  - FirebaseCoreDiagnostics (8.6.0):
-    - GoogleDataTransport (~> 9.0)
-    - GoogleUtilities/Environment (~> 7.4)
-    - GoogleUtilities/Logger (~> 7.4)
+  - FirebaseCoreDiagnostics (8.9.0):
+    - GoogleDataTransport (~> 9.1)
+    - GoogleUtilities/Environment (~> 7.6)
+    - GoogleUtilities/Logger (~> 7.6)
     - nanopb (~> 2.30908.0)
-  - FirebaseDatabase (8.6.0):
+  - FirebaseDatabase (8.8.0):
     - FirebaseCore (~> 8.0)
     - leveldb-library (~> 1.22)
-  - FirebaseDynamicLinks (8.6.0):
+  - FirebaseDynamicLinks (8.8.0):
     - FirebaseCore (~> 8.0)
-  - FirebaseFirestore (8.6.0):
+  - FirebaseFirestore (8.8.0):
     - abseil/algorithm (= 0.20200225.0)
     - abseil/base (= 0.20200225.0)
     - abseil/container/flat_hash_map (= 0.20200225.0)
@@ -495,12 +495,12 @@ PODS:
     - "gRPC-C++ (~> 1.28.0)"
     - leveldb-library (~> 1.22)
     - nanopb (~> 2.30908.0)
-  - FirebaseInstallations (8.6.0):
+  - FirebaseInstallations (8.9.0):
     - FirebaseCore (~> 8.0)
-    - GoogleUtilities/Environment (~> 7.4)
-    - GoogleUtilities/UserDefaults (~> 7.4)
+    - GoogleUtilities/Environment (~> 7.6)
+    - GoogleUtilities/UserDefaults (~> 7.6)
     - PromisesObjC (< 3.0, >= 1.2)
-  - FirebaseMessaging (8.6.0):
+  - FirebaseMessaging (8.8.0):
     - FirebaseCore (~> 8.0)
     - FirebaseInstallations (~> 8.0)
     - GoogleDataTransport (~> 9.0)
@@ -509,7 +509,7 @@ PODS:
     - GoogleUtilities/Reachability (~> 7.4)
     - GoogleUtilities/UserDefaults (~> 7.4)
     - nanopb (~> 2.30908.0)
-  - FirebaseStorage (8.6.0):
+  - FirebaseStorage (8.8.0):
     - FirebaseCore (~> 8.0)
     - GTMSessionFetcher/Core (~> 1.5)
   - Flutter (1.0.0)
@@ -522,46 +522,59 @@ PODS:
     - SDWebImageWebPCoder
   - flutter_local_notifications (0.0.1):
     - Flutter
+  - flutter_plugin_record (0.0.1):
+    - Flutter
+  - flutter_sound (8.3.9):
+    - Flutter
+    - mobile-ffmpeg-audio (= 4.4.LTS)
+    - tau_core (= 8.3.9)
   - FMDB (2.7.5):
     - FMDB/standard (= 2.7.5)
   - FMDB/standard (2.7.5)
   - gallery_saver (0.0.1):
     - Flutter
-  - GoogleAppMeasurement (8.6.0):
-    - GoogleAppMeasurement/AdIdSupport (= 8.6.0)
+  - GoogleAppMeasurement (8.8.0):
+    - GoogleAppMeasurement/AdIdSupport (= 8.8.0)
     - GoogleUtilities/AppDelegateSwizzler (~> 7.4)
     - GoogleUtilities/MethodSwizzler (~> 7.4)
     - GoogleUtilities/Network (~> 7.4)
     - "GoogleUtilities/NSData+zlib (~> 7.4)"
     - nanopb (~> 2.30908.0)
-  - GoogleAppMeasurement/AdIdSupport (8.6.0):
+  - GoogleAppMeasurement/AdIdSupport (8.8.0):
+    - GoogleAppMeasurement/WithoutAdIdSupport (= 8.8.0)
     - GoogleUtilities/AppDelegateSwizzler (~> 7.4)
     - GoogleUtilities/MethodSwizzler (~> 7.4)
     - GoogleUtilities/Network (~> 7.4)
     - "GoogleUtilities/NSData+zlib (~> 7.4)"
     - nanopb (~> 2.30908.0)
-  - GoogleDataTransport (9.1.0):
+  - GoogleAppMeasurement/WithoutAdIdSupport (8.8.0):
+    - GoogleUtilities/AppDelegateSwizzler (~> 7.4)
+    - GoogleUtilities/MethodSwizzler (~> 7.4)
+    - GoogleUtilities/Network (~> 7.4)
+    - "GoogleUtilities/NSData+zlib (~> 7.4)"
+    - nanopb (~> 2.30908.0)
+  - GoogleDataTransport (9.1.2):
     - GoogleUtilities/Environment (~> 7.2)
     - nanopb (~> 2.30908.0)
     - PromisesObjC (< 3.0, >= 1.2)
-  - GoogleUtilities/AppDelegateSwizzler (7.5.1):
+  - GoogleUtilities/AppDelegateSwizzler (7.6.0):
     - GoogleUtilities/Environment
     - GoogleUtilities/Logger
     - GoogleUtilities/Network
-  - GoogleUtilities/Environment (7.5.1):
+  - GoogleUtilities/Environment (7.6.0):
     - PromisesObjC (< 3.0, >= 1.2)
-  - GoogleUtilities/Logger (7.5.1):
+  - GoogleUtilities/Logger (7.6.0):
     - GoogleUtilities/Environment
-  - GoogleUtilities/MethodSwizzler (7.5.1):
+  - GoogleUtilities/MethodSwizzler (7.6.0):
     - GoogleUtilities/Logger
-  - GoogleUtilities/Network (7.5.1):
+  - GoogleUtilities/Network (7.6.0):
     - GoogleUtilities/Logger
     - "GoogleUtilities/NSData+zlib"
     - GoogleUtilities/Reachability
-  - "GoogleUtilities/NSData+zlib (7.5.1)"
-  - GoogleUtilities/Reachability (7.5.1):
+  - "GoogleUtilities/NSData+zlib (7.6.0)"
+  - GoogleUtilities/Reachability (7.6.0):
     - GoogleUtilities/Logger
-  - GoogleUtilities/UserDefaults (7.5.1):
+  - GoogleUtilities/UserDefaults (7.6.0):
     - GoogleUtilities/Logger
   - "gRPC-C++ (1.28.2)":
     - "gRPC-C++/Implementation (= 1.28.2)"
@@ -587,27 +600,28 @@ PODS:
     - BoringSSL-GRPC (= 0.0.7)
     - gRPC-Core/Interface (= 1.28.2)
   - gRPC-Core/Interface (1.28.2)
-  - GTMSessionFetcher/Core (1.6.1)
+  - GTMSessionFetcher/Core (1.7.0)
   - image_picker (0.0.1):
     - Flutter
   - images_picker (0.0.1):
     - Flutter
-    - ZLPhotoBrowser (= 4.1.5)
+    - ZLPhotoBrowser (= 4.1.9)
   - leveldb-library (1.22.1)
-  - libwebp (1.2.0):
-    - libwebp/demux (= 1.2.0)
-    - libwebp/mux (= 1.2.0)
-    - libwebp/webp (= 1.2.0)
-  - libwebp/demux (1.2.0):
+  - libwebp (1.2.1):
+    - libwebp/demux (= 1.2.1)
+    - libwebp/mux (= 1.2.1)
+    - libwebp/webp (= 1.2.1)
+  - libwebp/demux (1.2.1):
     - libwebp/webp
-  - libwebp/mux (1.2.0):
+  - libwebp/mux (1.2.1):
     - libwebp/demux
-  - libwebp/webp (1.2.0)
+  - libwebp/webp (1.2.1)
   - location (0.0.1):
     - Flutter
   - Mantle (2.1.6):
     - Mantle/extobjc (= 2.1.6)
   - Mantle/extobjc (2.1.6)
+  - mobile-ffmpeg-audio (4.4.LTS)
   - MTBBarcodeScanner (5.0.11)
   - nanopb (2.30908.0):
     - nanopb/decode (= 2.30908.0)
@@ -625,11 +639,9 @@ PODS:
     - Flutter
     - MTBBarcodeScanner
   - Reachability (3.2)
-  - record_mp3 (0.0.1):
-    - Flutter
-  - SDWebImage (5.11.1):
-    - SDWebImage/Core (= 5.11.1)
-  - SDWebImage/Core (5.11.1)
+  - SDWebImage (5.12.1):
+    - SDWebImage/Core (= 5.12.1)
+  - SDWebImage/Core (5.12.1)
   - SDWebImageWebPCoder (0.8.4):
     - libwebp (~> 1.0)
     - SDWebImage/Core (~> 5.10)
@@ -643,6 +655,7 @@ PODS:
   - SwiftyGif (5.4.0)
   - syncfusion_flutter_pdfviewer (0.0.1):
     - Flutter
+  - tau_core (8.3.9)
   - url_launcher (0.0.1):
     - Flutter
   - video_compress (0.3.0):
@@ -651,9 +664,9 @@ PODS:
     - Flutter
   - wakelock (0.0.1):
     - Flutter
-  - ZLPhotoBrowser (4.1.5):
-    - ZLPhotoBrowser/Core (= 4.1.5)
-  - ZLPhotoBrowser/Core (4.1.5)
+  - ZLPhotoBrowser (4.1.9):
+    - ZLPhotoBrowser/Core (= 4.1.9)
+  - ZLPhotoBrowser/Core (4.1.9)
 
 DEPENDENCIES:
   - agora_rtc_engine (from `.symlinks/plugins/agora_rtc_engine/ios`)
@@ -673,6 +686,8 @@ DEPENDENCIES:
   - flutter_email_sender (from `.symlinks/plugins/flutter_email_sender/ios`)
   - flutter_image_compress (from `.symlinks/plugins/flutter_image_compress/ios`)
   - flutter_local_notifications (from `.symlinks/plugins/flutter_local_notifications/ios`)
+  - flutter_plugin_record (from `.symlinks/plugins/flutter_plugin_record/ios`)
+  - flutter_sound (from `.symlinks/plugins/flutter_sound/ios`)
   - gallery_saver (from `.symlinks/plugins/gallery_saver/ios`)
   - image_picker (from `.symlinks/plugins/image_picker/ios`)
   - images_picker (from `.symlinks/plugins/images_picker/ios`)
@@ -681,7 +696,6 @@ DEPENDENCIES:
   - path_provider (from `.symlinks/plugins/path_provider/ios`)
   - permission_handler (from `.symlinks/plugins/permission_handler/ios`)
   - qr_code_scanner (from `.symlinks/plugins/qr_code_scanner/ios`)
-  - record_mp3 (from `.symlinks/plugins/record_mp3/ios`)
   - share (from `.symlinks/plugins/share/ios`)
   - shared_preferences (from `.symlinks/plugins/shared_preferences/ios`)
   - sqflite (from `.symlinks/plugins/sqflite/ios`)
@@ -719,6 +733,7 @@ SPEC REPOS:
     - leveldb-library
     - libwebp
     - Mantle
+    - mobile-ffmpeg-audio
     - MTBBarcodeScanner
     - nanopb
     - PromisesObjC
@@ -726,6 +741,7 @@ SPEC REPOS:
     - SDWebImage
     - SDWebImageWebPCoder
     - SwiftyGif
+    - tau_core
     - ZLPhotoBrowser
 
 EXTERNAL SOURCES:
@@ -763,6 +779,10 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/flutter_image_compress/ios"
   flutter_local_notifications:
     :path: ".symlinks/plugins/flutter_local_notifications/ios"
+  flutter_plugin_record:
+    :path: ".symlinks/plugins/flutter_plugin_record/ios"
+  flutter_sound:
+    :path: ".symlinks/plugins/flutter_sound/ios"
   gallery_saver:
     :path: ".symlinks/plugins/gallery_saver/ios"
   image_picker:
@@ -779,8 +799,6 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/permission_handler/ios"
   qr_code_scanner:
     :path: ".symlinks/plugins/qr_code_scanner/ios"
-  record_mp3:
-    :path: ".symlinks/plugins/record_mp3/ios"
   share:
     :path: ".symlinks/plugins/share/ios"
   shared_preferences:
@@ -804,48 +822,51 @@ SPEC CHECKSUMS:
   AgoraRtcEngine_iOS: ff8e085161ea98c917173783a899882f884dd9ef
   audioplayers: 455322b54050b30ea4b1af7cd9e9d105f74efa8c
   BoringSSL-GRPC: 8edf627ee524575e2f8d19d56f068b448eea3879
-  camera: b9eb73c055259c6f808a9da4a0d43780f6645281
-  cloud_firestore: bb4fcf1d62a2bf48586fad7a7e9612f20a719cda
+  camera: fe33292aff715a981eb34d7ce7b35b54337ff34c
+  cloud_firestore: 814002a5be7dc955deaa18216ebe8c2e8be15d10
   connectivity_plus: 5f0eb61093bec56935f21a1699dd2758bc895587
   DKImagePickerController: b5eb7f7a388e4643264105d648d01f727110fc3d
   DKPhotoGallery: fdfad5125a9fdda9cc57df834d49df790dbb4179
   file_picker: 3e6c3790de664ccf9b882732d9db5eaf6b8d4eb1
-  Firebase: 21ac9f28b09a8bdfc005f34c984fca84e7e8786d
-  firebase_analytics: 039357074df292fb8a58e119206762d10483a8ec
-  firebase_auth: a5da789c2876fda3ad7407bd2828e502dfeebc42
-  firebase_core: c21ac09a8d23afd3594b56ed786bad12e5266bba
-  firebase_database: 34059efd45170b983afe5b870a6716cacc3f50c4
-  firebase_dynamic_links: ef0989cdc7e7d2aaed5814a81f7ca0ec7a6028ee
-  firebase_messaging: 0fddeca6fcfee0bed23c66210391d782af8f8d0e
-  firebase_storage: 75fc62b16cfbb268ea4e90729be5729e3dc38b1e
-  FirebaseAnalytics: 8f32ae54ad42754f503354782575c4ddfc1425c3
-  FirebaseAuth: 223adeeb2262b417532e89bf06a960e3a0a1e9e4
-  FirebaseCore: 620b677f70f5470a8e59cb77f3ddc666f6f09785
-  FirebaseCoreDiagnostics: 3721920bde3a9a6d5aa093c1d25e9d3e47f694af
-  FirebaseDatabase: 917fbeed577a68eb1ba0eb48c52a3aa10ac13f92
-  FirebaseDynamicLinks: 406d67290fd123e133641f93a333b4957af22c09
-  FirebaseFirestore: 7b8bd72aff4d3ad91498343e81fdbaa994ce8abe
-  FirebaseInstallations: 0ede6ffcd215b8f93c19d9b06c1c54e2d4107e98
-  FirebaseMessaging: ce0a5ee974f7bfe83b6cc5acce88c2d969e37c41
-  FirebaseStorage: 2765944230981e63f8bd2938d9d5819158b7c34c
+  Firebase: 629510f1a9ddb235f3a7c5c8ceb23ba887f0f814
+  firebase_analytics: bd5bd37e6c1cfebb065466ecfdc044664ed6f01d
+  firebase_auth: 0b7168e2db1bff6e5b40a7dc268447b8dedb59c1
+  firebase_core: 3b4c707f5a8eff38f52fd5580895bcd89357bf42
+  firebase_database: d9d5900772784fdf95ffa71769f0b6859c33625e
+  firebase_dynamic_links: 5d4d23a9d2390256b3c88aef0031493b82438074
+  firebase_messaging: c2570c4b5aeb1b9dc1b40a3b4a246e246cd583a8
+  firebase_storage: aee188c71bcc3c68fa6a9efa2625b92f677991be
+  FirebaseAnalytics: 5506ea8b867d8423485a84b4cd612d279f7b0b8a
+  FirebaseAuth: bcf0adeff88bda5dcb3beeabe5760f1226ab7b2f
+  FirebaseCore: 98b29e3828f0a53651c363937a7f7d92a19f1ba2
+  FirebaseCoreDiagnostics: 5daa63f1c1409d981a2d5007daa100b36eac6a34
+  FirebaseDatabase: bc4610ff3a816dcc680c1dbccf7f9f4bd94ac07d
+  FirebaseDynamicLinks: cf76a46274569da2d4491548a39ef35f3c1a992d
+  FirebaseFirestore: 29baf05d5e7e0d5003eb34e5805d92b9858b36d4
+  FirebaseInstallations: caa7c8e0d3e2345b8829d2fa9ca1b4dfbf2fcc85
+  FirebaseMessaging: 419b5c9d84f294a753c6501d8cfb9ced1ce37304
+  FirebaseStorage: 54ff752ecbd27f1c354c3f5e8c55f6ad5783699b
   Flutter: 50d75fe2f02b26cc09d224853bb45737f8b3214a
   flutter_email_sender: 02d7443217d8c41483223627972bfdc09f74276b
   flutter_image_compress: fd2b476345226e1a10ea352fa306af95704642c1
   flutter_local_notifications: 0c0b1ae97e741e1521e4c1629a459d04b9aec743
+  flutter_plugin_record: 562ded56f3a109d769e72c3ef52ef20d835493d4
+  flutter_sound: 91c069f33d811a4c98b9aa7cec9cd1dbfd1786d9
   FMDB: 2ce00b547f966261cd18927a3ddb07cb6f3db82a
   gallery_saver: 9fc173c9f4fcc48af53b2a9ebea1b643255be542
-  GoogleAppMeasurement: 2c0c6e2a7ab3fe730ade6379f732bdefb46f50b0
-  GoogleDataTransport: 85fd18ff3019bb85d3f2c551d04c481dedf71fc9
-  GoogleUtilities: 3df19e3c24f7bbc291d8b5809aa6b0d41e642437
+  GoogleAppMeasurement: 5ba1164e3c844ba84272555e916d0a6d3d977e91
+  GoogleDataTransport: 629c20a4d363167143f30ea78320d5a7eb8bd940
+  GoogleUtilities: 684ee790a24f73ebb2d1d966e9711c203f2a4237
   "gRPC-C++": 13d8ccef97d5c3c441b7e3c529ef28ebee86fad2
   gRPC-Core: 4afa11bfbedf7cdecd04de535a9e046893404ed5
-  GTMSessionFetcher: 36689134877faeb055b27dfa4ccc9ceaa42e029e
+  GTMSessionFetcher: 43748f93435c2aa068b1cbe39655aaf600652e91
   image_picker: 9aa50e1d8cdacdbed739e925b7eea16d014367e6
-  images_picker: 634f7663456c00364e7d1a16116c2cc2562ff50f
+  images_picker: 7326dd6463f772a69f68bc228ebfabd7db3917c4
   leveldb-library: 50c7b45cbd7bf543c81a468fe557a16ae3db8729
-  libwebp: e90b9c01d99205d03b6bb8f2c8c415e5a4ef66f0
+  libwebp: 98a37e597e40bfdb4c911fc98f2c53d0b12d05fc
   location: 3a2eed4dd2fab25e7b7baf2a9efefe82b512d740
   Mantle: 4c0ed6ce47c96eccc4dc3bb071deb3def0e2c3be
+  mobile-ffmpeg-audio: 1e0a053f8a6de57114e50ff48b3a85ff1c60f902
   MTBBarcodeScanner: f453b33c4b7dfe545d8c6484ed744d55671788cb
   nanopb: a0ba3315591a9ae0a16a309ee504766e90db0c96
   open_file: 02eb5cb6b21264bd3a696876f5afbfb7ca4f4b7d
@@ -854,20 +875,20 @@ SPEC CHECKSUMS:
   PromisesObjC: 68159ce6952d93e17b2dfe273b8c40907db5ba58
   qr_code_scanner: bb67d64904c3b9658ada8c402e8b4d406d5d796e
   Reachability: 33e18b67625424e47b6cde6d202dce689ad7af96
-  record_mp3: b842d3900f65a0707e4064d9bcfac6323dea0b4f
-  SDWebImage: a7f831e1a65eb5e285e3fb046a23fcfbf08e696d
+  SDWebImage: 4dc3e42d9ec0c1028b960a33ac6b637bb432207b
   SDWebImageWebPCoder: f93010f3f6c031e2f8fb3081ca4ee6966c539815
   share: 0b2c3e82132f5888bccca3351c504d0003b3b410
   shared_preferences: 5033afbb22d372e15aff8ff766df9021b845f273
   sqflite: 6d358c025f5b867b29ed92fc697fd34924e11904
   SwiftyGif: 5d4af95df24caf1c570dbbcb32a3b8a0763bc6d7
   syncfusion_flutter_pdfviewer: bb9998884b864cfedf72628df3503bdf57e397c0
+  tau_core: f7bbd1c6a632f52c2fa7c14feea385ab966b1e45
   url_launcher: b6e016d912f04be9f5bf6e8e82dc599b7ba59649
   video_compress: fce97e4fb1dfd88175aa07d2ffc8a2f297f87fbe
   video_player: ecd305f42e9044793efd34846e1ce64c31ea6fcb
   wakelock: d0fc7c864128eac40eba1617cb5264d9c940b46f
-  ZLPhotoBrowser: 809878607ea92e9411c580797ce1be23896b8d7f
+  ZLPhotoBrowser: 320aec37f64b0f58d40abd852956c64530011ea4
 
 PODFILE CHECKSUM: 4e8f8b2be68aeea4c0d5beb6ff1e79fface1d048
 
-COCOAPODS: 1.10.2
+COCOAPODS: 1.11.2

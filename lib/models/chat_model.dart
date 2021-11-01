@@ -3,7 +3,7 @@ import 'package:Dana/models/user_model.dart';
 
 class Chat {
   final String? id, admin;
-  final String? groupName;
+  final String? groupName, groupUrl;
   final String? recentMessage;
   final String? recentSender;
   final Timestamp? recentTimestamp;
@@ -20,18 +20,20 @@ class Chat {
       this.memberIds,
       this.memberInfo,
       this.readStatus,
+      this.groupUrl,
       this.groupName});
 
   factory Chat.fromDoc(DocumentSnapshot doc) {
     return Chat(
       id: doc.id,
-      admin: doc['admin'] ?? null,
+      admin: doc['admin'] ?? '',
       recentMessage: doc['recentMessage'],
       recentSender: doc['recentSender'],
       recentTimestamp: doc['recentTimestamp'],
       memberIds: doc['memberIds'],
       readStatus: doc['readStatus'],
-      groupName: doc['groupName'] ?? null,
+      groupName: doc['groupName'] ?? 'null',
+      groupUrl: doc['groupUrl'] ?? '',
     );
   }
 }

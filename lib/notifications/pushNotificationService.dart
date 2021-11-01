@@ -81,7 +81,7 @@ class PushNotificationService {
     const AndroidNotificationChannel channel = AndroidNotificationChannel(
       'high_importance_channel', // id
       'High Importance Notifications', // title
-      'This channel is used for important notifications.', // description
+      // 'This channel is used for important notifications.', // description
       importance: Importance.max,
     );
 
@@ -125,8 +125,7 @@ class PushNotificationService {
           notification.title,
           notification.body,
           NotificationDetails(
-            android: AndroidNotificationDetails(
-                channel.id, channel.name, channel.description,
+            android: AndroidNotificationDetails(channel.id, channel.name,
                 color: lightColor
                 // icon: android.smallIcon,
                 // other properties...

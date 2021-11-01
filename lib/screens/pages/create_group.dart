@@ -10,10 +10,13 @@ import 'package:Dana/utilities/constants.dart';
 import 'package:Dana/utilities/themes.dart';
 import 'package:Dana/utils/constants.dart';
 import 'package:Dana/widgets/contact_tile.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
+import 'package:uuid/uuid.dart';
 
 class CreateGroup extends StatefulWidget {
   final SearchFrom searchFrom;
@@ -37,11 +40,14 @@ class _CreateGroupState extends State<CreateGroup> {
   int _followingCount = 0;
   bool _isLoading = false;
   bool _selectAll = false;
+  File? _profileImage;
+  final picker = ImagePicker();
+  String? _imagePath, imageUrl;
 
   final TextEditingController textEditingController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
 
-  Future<Chat> createGroup() async {
+  Future<Chat> startGroup() async {
     _selectedUsers.add(widget.currentUser);
 
     Timestamp timestamp = Timestamp.now();
@@ -54,12 +60,12 @@ class _CreateGroupState extends State<CreateGroup> {
     }
 
     String groupName = textEditingController.text;
+    // _profileImageUrl
 
     DocumentReference res = await chatsRef.add({
       'groupName': groupName,
       'admin': widget.currentUser!.id,
-      // 'photoUrl': groupPhoto,
-
+      'groupUrl': imageUrl,
       'memberIds': _selectedUsers.map((item) => item!.id).toList(),
       'recentMessage': 'Chat Created',
       'recentSender': '',
@@ -72,6 +78,7 @@ class _CreateGroupState extends State<CreateGroup> {
       recentMessage: 'Chat Created',
       admin: widget.currentUser!.id,
       groupName: groupName,
+      groupUrl: imageUrl,
       recentSender: '',
       recentTimestamp: timestamp,
       memberIds: _selectedUsers.map((item) => item!.id).toList(),
@@ -83,14 +90,12 @@ class _CreateGroupState extends State<CreateGroup> {
   void dispose() {
     textEditingController.dispose();
     _selectedUsers.clear();
-
     super.dispose();
   }
 
   @override
   void initState() {
     super.initState();
-
     _setupAll();
   }
 
@@ -139,71 +144,17 @@ class _CreateGroupState extends State<CreateGroup> {
     });
   }
 
-  Widget _buildUserTile(AppUser user) {
-    return ListTile(
-      leading: CircleAvatar(
-        backgroundColor: Colors.grey,
-        radius: 20.0,
-        backgroundImage: (user.profileImageUrl!.isEmpty
-                ? AssetImage(placeHolderImageRef)
-                : CachedNetworkImageProvider(user.profileImageUrl!))
-            as ImageProvider<Object>?,
-      ),
-      title: Text(user.name!,
-          style: TextStyle(
-              color: Colors.white, fontWeight: FontWeight.w600, fontSize: 18)),
-      subtitle:
-          Text(user.pin!, style: TextStyle(color: Colors.grey, fontSize: 12)),
-      trailing: widget.searchFrom == SearchFrom.createStoryScreen
-          ? FlatButton(
-              child: Text(
-                'Send',
-                style: kFontSize18TextStyle.copyWith(color: Colors.white),
-              ),
-              color: Colors.blue,
-              onPressed: () => {
-                // Navigator.push(
-                //   context,
-                //   MaterialPageRoute(
-                //     builder: (_) => ChatScreen(
-                //       receiverUser: user,
-                //       imageFile: widget.imageFile,
-                //     ),
-                //   ),
-                // ),
-              },
-            )
-          : SizedBox.shrink(),
-      // onTap: widget.searchFrom == SearchFrom.homeScreen
-      //     ? () => Navigator.push(
-      //           context,
-      //           MaterialPageRoute(
-      //             builder: (_) => UserProfile(
-      //               // goToCameraScreen: () =>
-      //               //     CustomNavigation.navigateToHomeScreen(
-      //               //         context,
-      //               //         Provider.of<UserData>(context, listen: false)
-      //               //             .currentUserId,
-      //               //         initialPage: 0),
-      //               // isCameFromBottomNavigation: false,
-      //               userId: user.id,
-      //               currentUserId: Provider.of<UserData>(context, listen: false)
-      //                   .currentUserId,
-      //             ),
-      //           ),
-      //         )
-      //     : widget.searchFrom == SearchFrom.messagesScreen
-      //         ? () => Navigator.push(
-      //               context,
-      //               MaterialPageRoute(
-      //                 builder: (_) => ChatScreen(
-      //                   receiverUser: user,
-      //                   imageFile: widget.imageFile,
-      //                 ),
-      //               ),
-      //             )
-      //         : null,
-    );
+  Future pickImageFromGallery() async {
+    final pickedFile =
+        await picker.pickImage(source: ImageSource.gallery, imageQuality: 30);
+
+    if (pickedFile != null) {
+      // _userRegistration.localProfilePhotoPath = pickedFile.path;
+      print(pickedFile.path);
+      setState(() {
+        _profileImage = File(pickedFile.path);
+      });
+    }
   }
 
   @override
@@ -266,8 +217,14 @@ class _CreateGroupState extends State<CreateGroup> {
               backgroundColor: lightColor,
               child: const Icon(Icons.done),
               mini: true,
-              onPressed: () {
-                createGroup();
+              onPressed: () async {
+                imageUrl =
+                    await StroageService.uploadMessageImage(_profileImage!);
+
+                if (imageUrl != null) {
+                  startGroup();
+                }
+
                 Navigator.pop(context);
               },
               elevation: 5,
@@ -278,6 +235,56 @@ class _CreateGroupState extends State<CreateGroup> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  Padding(
+                    padding: const EdgeInsets.all(15),
+                    child: Center(
+                      child: Stack(
+                        children: [
+                          Container(
+                            height: 70,
+                            width: 70,
+                            child: _profileImage == null
+                                ? Container(
+                                    child: CircleAvatar(
+                                      radius: 25.0,
+                                      backgroundColor: Colors.grey,
+                                      backgroundImage:
+                                          AssetImage(placeHolderImageRef),
+                                    ),
+                                  )
+                                : Container(
+                                    child: CircleAvatar(
+                                      radius: 25.0,
+                                      backgroundColor: Colors.grey,
+                                      backgroundImage:
+                                          FileImage(_profileImage!),
+                                    ),
+                                  ),
+                          ),
+                          Positioned.fill(
+                            child: Align(
+                                alignment: Alignment.bottomRight,
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                      color: Colors.white,
+                                      borderRadius: BorderRadius.all(
+                                          Radius.circular(250))),
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(4),
+                                    child: InkWell(
+                                        onTap: () {
+                                          pickImageFromGallery();
+                                          print(_imagePath);
+                                        },
+                                        child: Icon(Icons.camera_alt_outlined,
+                                            size: 20)),
+                                  ),
+                                )),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 10.0),
                     child: TextField(

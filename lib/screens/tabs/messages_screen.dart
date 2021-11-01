@@ -66,7 +66,7 @@ class _MessagesScreenState extends State<MessagesScreen> {
       for (var doc in q.docs) {
         Chat chatFromDoc = Chat.fromDoc(doc);
         List<dynamic> memberIds = chatFromDoc.memberIds!;
-        late int receiverIndex;
+       int? receiverIndex;
 
         // Getting receiver index
         memberIds.forEach((userId) {
@@ -78,7 +78,7 @@ class _MessagesScreenState extends State<MessagesScreen> {
         List<AppUser?> membersInfo = [];
 
         AppUser? receiverUser =
-            await DatabaseService.getUserWithId(memberIds[receiverIndex]);
+            await DatabaseService.getUserWithId(memberIds[receiverIndex!]);
 
         if (memberIds.length > 2) {
           for (String? userId in memberIds) {
@@ -99,6 +99,7 @@ class _MessagesScreenState extends State<MessagesScreen> {
             recentSender: chatFromDoc.recentSender,
             recentTimestamp: chatFromDoc.recentTimestamp,
             admin: chatFromDoc.admin,
+            groupUrl: chatFromDoc.groupUrl,
             groupName: chatFromDoc.groupName);
 
         dataToReturn.removeWhere((chat) => chat.id == chatWithUserInfo.id);
@@ -198,8 +199,16 @@ class _MessagesScreenState extends State<MessagesScreen> {
     return ListTile(
         leading: Container(
           height: 40,
-          child: (chat.memberIds!.length > 2)
-              ? Icon(Icons.group, color: Colors.white, size: 35)
+          child: (chat.groupName != '')
+              ? CircleAvatar(
+                  backgroundColor: Colors.white,
+                  radius: 28.0,
+                  backgroundImage:
+                      (chat.groupUrl == ''
+                          ? AssetImage(placeHolderImageRef)
+                          : CachedNetworkImageProvider(chat
+                              .groupUrl!)) as ImageProvider<Object>?,
+                )
               : CircleAvatar(
                   backgroundColor: Colors.white,
                   radius: 28.0,
@@ -212,7 +221,7 @@ class _MessagesScreenState extends State<MessagesScreen> {
                 ),
         ),
         title: Text(
-            (chat.memberIds!.length > 2)
+            (chat.groupName != '')
                 ? chat.groupName!
                 : chat.memberInfo![receiverIndex]!.name!,
             style: TextStyle(
@@ -221,7 +230,7 @@ class _MessagesScreenState extends State<MessagesScreen> {
                 fontSize: 18)),
         subtitle: chat.recentSender!.isEmpty
             ? Text(
-                (chat.memberIds!.length > 2)
+                (chat.groupName != '')
                     ? S.of(context)!.youadd
                     : S.of(context)!.chatcreated,
                 overflow: TextOverflow.ellipsis,
@@ -255,7 +264,7 @@ class _MessagesScreenState extends State<MessagesScreen> {
                       groupMembers: chat.memberInfo,
                       admin: chat.admin,
                       chat: chat,
-                      isGroup: (chat.memberIds!.length > 2) ? true : false,
+                      isGroup: (chat.groupName != '') ? true : false,
                       groupName: chat.groupName)));
         });
   }
@@ -368,7 +377,7 @@ class _MessagesScreenState extends State<MessagesScreen> {
 
                                                 await chatsRef
                                                     .doc(chat.id)
-                                                    .collection('messages')
+                                                    .collection( (chat.groupName != '') ? 'groupMessages' : 'messages')
                                                     .get()
                                                     .then((docs) {
                                                   docs.docs.forEach((element) {

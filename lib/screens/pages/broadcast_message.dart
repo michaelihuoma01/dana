@@ -101,7 +101,7 @@ class _BroadcastMessageState extends State<BroadcastMessage> {
         isLiked: false,
       );
 
-      ChatService.sendChatMessage(_chat, message, element, context);
+      ChatService.sendChatMessage(_chat, message, element, context, false);
       chatsRef.doc(_chat.id).update({
         'readStatus.${element.id}': false,
         'readStatus.${widget.currentUser!.id}': true

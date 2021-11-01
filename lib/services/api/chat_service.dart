@@ -26,6 +26,7 @@ class ChatService {
       'recentSender': '',
       'admin': '',
       'groupName': '',
+      'groupUrl': '',
       'recentTimestamp': timestamp,
       'memberIds': userIds,
       'readStatus': readStatus,
@@ -44,20 +45,34 @@ class ChatService {
     );
   }
 
-  static void sendChatMessage(
-      Chat chat, Message message, AppUser receiverUser, context) async {
-    chatsRef.doc(chat.id).collection('messages').add({
-      'senderId': message.senderId,
-      'text': message.text,
-      'imageUrl': message.imageUrl,
-      'audioUrl': message.audioUrl,
-      'videoUrl': message.videoUrl,
-      'fileUrl': message.fileUrl,
-      'fileName': message.fileName,
-      'timestamp': message.timestamp,
-      'isLiked': message.isLiked ?? false,
-      'giphyUrl': message.giphyUrl,
-    });
+  static void sendChatMessage(Chat chat, Message message, AppUser receiverUser,
+      context, bool isGroup) async {
+    (isGroup == true)
+        ? chatsRef.doc(chat.id).collection('groupMessages').add({
+            'senderId': message.senderId,
+            'text': message.text,
+            'imageUrl': message.imageUrl,
+            'audioUrl': message.audioUrl,
+            'videoUrl': message.videoUrl,
+            'fileUrl': message.fileUrl,
+            'fileName': message.fileName,
+            'timestamp': message.timestamp,
+            'isLiked': message.isLiked ?? false,
+            'giphyUrl': message.giphyUrl,
+          })
+        : chatsRef.doc(chat.id).collection('messages').add({
+            'senderId': message.senderId,
+            'text': message.text,
+            'imageUrl': message.imageUrl,
+            'audioUrl': message.audioUrl,
+            'videoUrl': message.videoUrl,
+            'fileUrl': message.fileUrl,
+            'fileName': message.fileName,
+            'timestamp': message.timestamp,
+            'isLiked': message.isLiked ?? false,
+            'giphyUrl': message.giphyUrl,
+          });
+    ;
 
     chatsRef.doc(chat.id).update({
       'recentMessage': message.text,

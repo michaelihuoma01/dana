@@ -30,6 +30,8 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_plugin_record/flutter_plugin_record.dart';
+import 'package:flutter_sound/public/flutter_sound_recorder.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:http/http.dart';
 import 'package:image_picker/image_picker.dart';
@@ -42,7 +44,7 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 import 'package:auto_direction/auto_direction.dart';
 import 'package:giphy_get/giphy_get.dart';
-import 'package:record_mp3/record_mp3.dart';
+// import 'package:record_mp3/record_mp3.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
 class ChatScreen extends StatefulWidget {
@@ -79,21 +81,35 @@ class _ChatScreenState extends State<ChatScreen> {
   bool isPlayingMsg = false, isRecording = false, isSending = false;
   String? recordFilePath;
   var cameras;
+  bool isRemoved = false;
+  bool _mRecorderIsInited = false;
+  FlutterSoundRecorder? _myRecorder;
+  // FlutterPluginRecord? recordPlugin;
 
   @override
   void initState() {
     super.initState();
-
     _setup();
-    print('===============${widget.receiverUser!.status}');
-    print(
-        '===============${timeago.format(widget.receiverUser!.lastSeenOnline!.toDate())}');
-    print(
-        '===============${timeago.format(widget.receiverUser!.lastSeenOffline!.toDate())}');
+  }
+
+  @override
+  void dispose() {
+    // _myRecorder!.closeAudioSession();
+
+    super.dispose();
   }
 
   _setup() async {
     setState(() => _isLoading = true);
+    _myRecorder = new FlutterSoundRecorder();
+    _myRecorder!.setSubscriptionDuration(Duration(seconds: 1));
+
+    _myRecorder!.openAudioSession().then((value) {
+      setState(() {
+        _mRecorderIsInited = true;
+      });
+    });
+    // recordPlugin = new FlutterPluginRecord();
 
     cameras = await availableCameras();
 
@@ -101,12 +117,26 @@ class _ChatScreenState extends State<ChatScreen> {
         Provider.of<UserData>(context, listen: false).currentUser!;
 
     List<String?> userIds = [];
-    userIds.add(currentUser.id);
-    userIds.add(widget.receiverUser!.id);
+    if (widget.isGroup!) {
+      widget.chat!.memberInfo!.forEach((element) {
+        userIds.add(element!.id);
+      });
+      // userIds.add(currentUser.id);
+
+    } else {
+      userIds.add(currentUser.id);
+      userIds.add(widget.receiverUser!.id);
+    }
 
     List<AppUser>? users = [];
-    users.add(currentUser);
-    users.add(widget.receiverUser!);
+    if (widget.isGroup!) {
+      widget.chat!.memberInfo!.forEach((element) {
+        users.add(element!);
+      });
+    } else {
+      users.add(currentUser);
+      users.add(widget.receiverUser!);
+    }
 
     Chat? chat = await ChatService.getChatByUsers(userIds);
 
@@ -140,11 +170,13 @@ class _ChatScreenState extends State<ChatScreen> {
       setState(() {
         _chat = chatWithMemberInfo;
       });
+      print(_chat!.id);
     } else {
       if (widget.isGroup == true) {
         setState(() {
           _chat = widget.chat;
         });
+        print(_chat!.id);
       }
     }
 
@@ -161,11 +193,10 @@ class _ChatScreenState extends State<ChatScreen> {
 
   uploadAudio() {
     final Reference firebaseStorageRef = FirebaseStorage.instance.ref().child(
-        'audio/messages/${_currentUser!.id}/audio${DateTime.now().millisecondsSinceEpoch.toString()}.mp3');
+        'audio/messages/${_currentUser!.id}/audio${DateTime.now().millisecondsSinceEpoch.toString()}.aac');
 
     UploadTask task = firebaseStorageRef.putFile(File(recordFilePath!));
     task.then((value) async {
-      print('##############done#########');
       var audioURL = await value.ref.getDownloadURL();
       String strVal = audioURL.toString();
 
@@ -191,7 +222,8 @@ class _ChatScreenState extends State<ChatScreen> {
     if (!d.existsSync()) {
       d.createSync(recursive: true);
     }
-    return sdPath + "/test_${i++}.mp3";
+    print(sdPath);
+    return sdPath + "/test_${i++}.aac";
   }
 
   Future<bool> checkPermission() async {
@@ -204,32 +236,50 @@ class _ChatScreenState extends State<ChatScreen> {
     return true;
   }
 
-  void startRecord() async {
-    // bool hasPermission = await checkPermission();
-    // if (hasPermission) {
+  // void startRecord() async {
+  //   bool hasPermission = await checkPermission();
+  //   if (hasPermission) {
+  //     recordFilePath = await getFilePath();
 
+  // RecordMp3.instance.start(recordFilePath!, (type) {
+  //   setState(() {});
+  // });
+  //   } else {}
+  // }
+
+  Future<void> startRecord() async {
     recordFilePath = await getFilePath();
 
-    RecordMp3.instance.start(recordFilePath!, (type) {
-      setState(() {});
+    await _myRecorder!.startRecorder(toFile: recordFilePath);
+  }
+
+  Future<void> stopRecord() async {
+    // recordPlugin!.stop();
+
+    await _myRecorder!.stopRecorder();
+    setState(() {
+      isSending = true;
     });
-    // } else {}
-    setState(() {});
+    await uploadAudio();
+
+    setState(() {
+      isPlayingMsg = false;
+    });
   }
 
-  void stopRecord() async {
-    bool s = RecordMp3.instance.stop();
-    if (s) {
-      setState(() {
-        isSending = true;
-      });
-      await uploadAudio();
+  // void stopRecord() async {
+  // bool s = RecordMp3.instance.stop();
+  // if (s) {
+  //   setState(() {
+  //     isSending = true;
+  //   });
+  //   await uploadAudio();
 
-      setState(() {
-        isPlayingMsg = false;
-      });
-    }
-  }
+  //   setState(() {
+  //     isPlayingMsg = false;
+  //   });
+  // }
+  // }
 
   checkForImage() {
     if (widget.imageFile != null) {
@@ -312,400 +362,430 @@ class _ChatScreenState extends State<ChatScreen> {
   }
 
   Container _buildMessageTF() {
-    return Container(
-      child: Column(
-        children: [
-          BrandDivider(),
-          isSending
-              ? LinearProgressIndicator(
-                  backgroundColor: Colors.grey[100],
-                  valueColor: AlwaysStoppedAnimation<Color>(lightColor),
-                )
-              : SizedBox(),
-          Row(
-            children: <Widget>[
-              Row(
-                children: [
-                  GestureDetector(
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 5),
-                        child: Icon(Icons.add, color: lightColor, size: 28),
-                      ),
-                      onTap: () async {
-                        showModalBottomSheet(
-                            context: context,
-                            builder: (context) {
-                              return Container(
-                                color: darkColor,
-                                height: 120,
-                                child: Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceEvenly,
-                                  children: <Widget>[
-                                    GestureDetector(
-                                      onTap: () async {
-                                        Navigator.pop(context);
+    return (isRemoved)
+        ? Container(
+            child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Center(
+                child: Text('You cannot send message',
+                    style: TextStyle(color: Colors.white))),
+          ))
+        : Container(
+            child: Column(
+              children: [
+                BrandDivider(),
+                isSending
+                    ? LinearProgressIndicator(
+                        backgroundColor: Colors.grey[100],
+                        valueColor: AlwaysStoppedAnimation<Color>(lightColor),
+                      )
+                    : SizedBox(),
+                Row(
+                  children: <Widget>[
+                    Row(
+                      children: [
+                        GestureDetector(
+                            child: Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 5),
+                              child:
+                                  Icon(Icons.add, color: lightColor, size: 28),
+                            ),
+                            onTap: () async {
+                              showModalBottomSheet(
+                                  context: context,
+                                  builder: (context) {
+                                    return Container(
+                                      color: darkColor,
+                                      height: 120,
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceEvenly,
+                                        children: <Widget>[
+                                          GestureDetector(
+                                            onTap: () async {
+                                              Navigator.pop(context);
 
-                                        List<Media>? res =
-                                            await (ImagesPicker.pick(
-                                          language: Language.English,
-                                          count: 5,
-                                          pickType: PickType.image,
-                                          gif: true,
-                                          cropOpt: CropOption(
-                                            aspectRatio: CropAspectRatio.custom,
-                                            cropType: CropType
-                                                .rect, // currently for android
-                                          ),
-                                        ));
-                                        setState(() => isSending = true);
+                                              List<Media>? res =
+                                                  await (ImagesPicker.pick(
+                                                language: Language.English,
+                                                count: 5,
+                                                pickType: PickType.image,
+                                                gif: true,
+                                                cropOpt: CropOption(
+                                                  aspectRatio:
+                                                      CropAspectRatio.custom,
+                                                  cropType: CropType
+                                                      .rect, // currently for android
+                                                ),
+                                              ));
+                                              setState(() => isSending = true);
 
-                                        res?.forEach((element) async {
-                                          File imageFile = File(element.path);
+                                              res?.forEach((element) async {
+                                                File imageFile =
+                                                    File(element.path);
 
-                                          if (imageFile != null) {
-                                            String imageUrl =
-                                                await StroageService
-                                                    .uploadMessageImage(
-                                                        imageFile);
-                                            _sendMessage(
-                                                text: null,
-                                                imageUrl: imageUrl,
-                                                giphyUrl: null,
-                                                audioUrl: null,
-                                                videoUrl: null,
-                                                fileName: null,
-                                                fileUrl: null);
-                                          }
-                                        });
+                                                if (imageFile != null) {
+                                                  String imageUrl =
+                                                      await StroageService
+                                                          .uploadMessageImage(
+                                                              imageFile);
+                                                  _sendMessage(
+                                                      text: null,
+                                                      imageUrl: imageUrl,
+                                                      giphyUrl: null,
+                                                      audioUrl: null,
+                                                      videoUrl: null,
+                                                      fileName: null,
+                                                      fileUrl: null);
+                                                }
+                                              });
 
-                                        setState(() => isSending = false);
-                                      },
-                                      child: Padding(
-                                        padding: const EdgeInsets.only(top: 20),
-                                        child: Column(children: [
-                                          Container(
-                                              decoration: BoxDecoration(
-                                                  shape: BoxShape.circle,
-                                                  color: lightColor,
-                                                  boxShadow: [
-                                                    BoxShadow(
-                                                        color: isRecording
-                                                            ? Colors.white
-                                                                .withOpacity(
-                                                                    0.4)
-                                                            : Colors
-                                                                .transparent,
-                                                        spreadRadius: 12)
-                                                  ]),
-                                              padding: const EdgeInsets.all(10),
-                                              child: Icon(Icons.photo)),
-                                          SizedBox(height: 5),
-                                          Text('Photos',
-                                              style: TextStyle(
-                                                  color: Colors.white))
-                                        ]),
-                                      ),
-                                    ),
-                                    GestureDetector(
-                                      onTap: () async {
-                                        Navigator.pop(context);
-
-                                        var pickedFile =
-                                            await (ImagePicker().pickVideo(
-                                          source: ImageSource.gallery,
-                                        ));
-                                        File imageFile = File(pickedFile!.path);
-                                        setState(() => isSending = true);
-
-                                        if (imageFile != null) {
-                                          String videoUrl = await StroageService
-                                              .uploadMessageVideo(imageFile);
-
-                                          _sendMessage(
-                                              text: null,
-                                              imageUrl: null,
-                                              giphyUrl: null,
-                                              audioUrl: null,
-                                              videoUrl: videoUrl,
-                                              fileName: null,
-                                              fileUrl: null);
-                                        }
-                                        setState(() => isSending = false);
-                                      },
-                                      child: Padding(
-                                        padding: const EdgeInsets.only(top: 20),
-                                        child: Column(children: [
-                                          Container(
-                                              decoration: BoxDecoration(
-                                                  shape: BoxShape.circle,
-                                                  color: lightColor,
-                                                  boxShadow: [
-                                                    BoxShadow(
-                                                        color: isRecording
-                                                            ? Colors.white
-                                                                .withOpacity(
-                                                                    0.4)
-                                                            : Colors
-                                                                .transparent,
-                                                        spreadRadius: 9)
-                                                  ]),
-                                              padding: const EdgeInsets.all(10),
-                                              child: new Icon(Icons.videocam)),
-                                          SizedBox(height: 5),
-                                          new Text('Videos',
-                                              style: TextStyle(
-                                                  color: Colors.white)),
-                                        ]),
-                                      ),
-                                    ),
-                                    GestureDetector(
-                                      onTap: () async {
-                                        Navigator.pop(context);
-
-                                        FilePickerResult? result =
-                                            await FilePicker.platform
-                                                .pickFiles();
-
-                                        if (result != null) {
-                                          Uint8List? fileBytes =
-                                              result.files.first.bytes;
-                                          String fileName =
-                                              result.files.first.name;
-
-                                          String mimeStr = lookupMimeType(
-                                              result.paths.first!)!;
-                                          var fileType = mimeStr.split('/');
-                                          print(
-                                              'file type ${result.files.first.size}');
-                                          print(
-                                              'file type ${result.files.first.extension}');
-                                          setState(() => isSending = true);
-
-                                          String fileUrl = await StroageService
-                                              .uploadMessageFile(
-                                                  File(
-                                                      result.files.first.path!),
-                                                  result.files.first.extension);
-                                          String fileNamePath =
-                                              result.files.first.name;
-                                          print(
-                                              "============================$fileUrl");
-                                          _sendMessage(
-                                              text: null,
-                                              imageUrl: null,
-                                              giphyUrl: null,
-                                              audioUrl: null,
-                                              videoUrl: null,
-                                              fileName: fileNamePath,
-                                              fileUrl: fileUrl);
-                                        }
-                                        setState(() => isSending = false);
-                                      },
-                                      child: Padding(
-                                        padding: const EdgeInsets.only(top: 20),
-                                        child: Column(
-                                          children: [
-                                            Container(
-                                              decoration: BoxDecoration(
-                                                  shape: BoxShape.circle,
-                                                  color: lightColor,
-                                                  boxShadow: [
-                                                    BoxShadow(
-                                                        color: isRecording
-                                                            ? Colors.white
-                                                                .withOpacity(
-                                                                    0.4)
-                                                            : Colors
-                                                                .transparent,
-                                                        spreadRadius: 9)
-                                                  ]),
-                                              padding: const EdgeInsets.all(12),
-                                              child: new Icon(
-                                                  FontAwesomeIcons.file,
-                                                  size: 20),
+                                              setState(() => isSending = false);
+                                            },
+                                            child: Padding(
+                                              padding: const EdgeInsets.only(
+                                                  top: 20),
+                                              child: Column(children: [
+                                                Container(
+                                                    decoration: BoxDecoration(
+                                                        shape: BoxShape.circle,
+                                                        color: lightColor,
+                                                        boxShadow: [
+                                                          BoxShadow(
+                                                              color: isRecording
+                                                                  ? Colors.white
+                                                                      .withOpacity(
+                                                                          0.4)
+                                                                  : Colors
+                                                                      .transparent,
+                                                              spreadRadius: 12)
+                                                        ]),
+                                                    padding:
+                                                        const EdgeInsets.all(
+                                                            10),
+                                                    child: Icon(Icons.photo)),
+                                                SizedBox(height: 5),
+                                                Text('Photos',
+                                                    style: TextStyle(
+                                                        color: Colors.white))
+                                              ]),
                                             ),
-                                            SizedBox(height: 5),
-                                            new Text('Documents',
-                                                style: TextStyle(
-                                                    color: Colors.white)),
-                                          ],
-                                        ),
+                                          ),
+                                          GestureDetector(
+                                            onTap: () async {
+                                              Navigator.pop(context);
+
+                                              var pickedFile =
+                                                  await (ImagePicker()
+                                                      .pickVideo(
+                                                source: ImageSource.gallery,
+                                              ));
+                                              File imageFile =
+                                                  File(pickedFile!.path);
+                                              setState(() => isSending = true);
+
+                                              if (imageFile != null) {
+                                                String videoUrl =
+                                                    await StroageService
+                                                        .uploadMessageVideo(
+                                                            imageFile);
+
+                                                _sendMessage(
+                                                    text: null,
+                                                    imageUrl: null,
+                                                    giphyUrl: null,
+                                                    audioUrl: null,
+                                                    videoUrl: videoUrl,
+                                                    fileName: null,
+                                                    fileUrl: null);
+                                              }
+                                              setState(() => isSending = false);
+                                            },
+                                            child: Padding(
+                                              padding: const EdgeInsets.only(
+                                                  top: 20),
+                                              child: Column(children: [
+                                                Container(
+                                                    decoration: BoxDecoration(
+                                                        shape: BoxShape.circle,
+                                                        color: lightColor,
+                                                        boxShadow: [
+                                                          BoxShadow(
+                                                              color: isRecording
+                                                                  ? Colors.white
+                                                                      .withOpacity(
+                                                                          0.4)
+                                                                  : Colors
+                                                                      .transparent,
+                                                              spreadRadius: 9)
+                                                        ]),
+                                                    padding:
+                                                        const EdgeInsets.all(
+                                                            10),
+                                                    child: new Icon(
+                                                        Icons.videocam)),
+                                                SizedBox(height: 5),
+                                                new Text('Videos',
+                                                    style: TextStyle(
+                                                        color: Colors.white)),
+                                              ]),
+                                            ),
+                                          ),
+                                          GestureDetector(
+                                            onTap: () async {
+                                              Navigator.pop(context);
+
+                                              FilePickerResult? result =
+                                                  await FilePicker.platform
+                                                      .pickFiles();
+
+                                              if (result != null) {
+                                                Uint8List? fileBytes =
+                                                    result.files.first.bytes;
+                                                String fileName =
+                                                    result.files.first.name;
+
+                                                String mimeStr = lookupMimeType(
+                                                    result.paths.first!)!;
+                                                var fileType =
+                                                    mimeStr.split('/');
+                                                print(
+                                                    'file type ${result.files.first.size}');
+                                                print(
+                                                    'file type ${result.files.first.extension}');
+                                                setState(
+                                                    () => isSending = true);
+
+                                                String fileUrl =
+                                                    await StroageService
+                                                        .uploadMessageFile(
+                                                            File(result.files
+                                                                .first.path!),
+                                                            result.files.first
+                                                                .extension);
+                                                String fileNamePath =
+                                                    result.files.first.name;
+                                                _sendMessage(
+                                                    text: null,
+                                                    imageUrl: null,
+                                                    giphyUrl: null,
+                                                    audioUrl: null,
+                                                    videoUrl: null,
+                                                    fileName: fileNamePath,
+                                                    fileUrl: fileUrl);
+                                              }
+                                              setState(() => isSending = false);
+                                            },
+                                            child: Padding(
+                                              padding: const EdgeInsets.only(
+                                                  top: 20),
+                                              child: Column(
+                                                children: [
+                                                  Container(
+                                                    decoration: BoxDecoration(
+                                                        shape: BoxShape.circle,
+                                                        color: lightColor,
+                                                        boxShadow: [
+                                                          BoxShadow(
+                                                              color: isRecording
+                                                                  ? Colors.white
+                                                                      .withOpacity(
+                                                                          0.4)
+                                                                  : Colors
+                                                                      .transparent,
+                                                              spreadRadius: 9)
+                                                        ]),
+                                                    padding:
+                                                        const EdgeInsets.all(
+                                                            12),
+                                                    child: new Icon(
+                                                        FontAwesomeIcons.file,
+                                                        size: 20),
+                                                  ),
+                                                  SizedBox(height: 5),
+                                                  new Text('Documents',
+                                                      style: TextStyle(
+                                                          color: Colors.white)),
+                                                ],
+                                              ),
+                                            ),
+                                          ),
+                                        ],
                                       ),
-                                    ),
-                                  ],
-                                ),
-                              );
-                            });
-                      }),
-                  GestureDetector(
-                    child: Padding(
-                      padding: const EdgeInsets.only(right: 12),
-                      child: Icon(Icons.insert_emoticon,
-                          color: lightColor, size: 22),
+                                    );
+                                  });
+                            }),
+                        GestureDetector(
+                          child: Padding(
+                            padding: const EdgeInsets.only(right: 12),
+                            child: Icon(Icons.insert_emoticon,
+                                color: lightColor, size: 22),
+                          ),
+                          onTap: () async {
+                            GiphyGif? gif = await GiphyGet.getGif(
+                              context: context,
+                              apiKey:
+                                  'XTqy1ONihK1xvtVZauKuaFt5zxUaoGaQ', //YOUR API KEY HERE
+                              lang: GiphyLanguage.spanish,
+                            );
+                            if (gif != null && mounted) {
+                              _sendMessage(
+                                  text: null,
+                                  imageUrl: null,
+                                  giphyUrl: gif.images!.original!.url,
+                                  audioUrl: null,
+                                  videoUrl: null,
+                                  fileName: null,
+                                  fileUrl: null);
+                            }
+                          },
+                        ),
+                      ],
                     ),
-                    onTap: () async {
-                      GiphyGif? gif = await GiphyGet.getGif(
-                        context: context,
-                        apiKey:
-                            'XTqy1ONihK1xvtVZauKuaFt5zxUaoGaQ', //YOUR API KEY HERE
-                        lang: GiphyLanguage.spanish,
-                      );
-                      if (gif != null && mounted) {
-                        _sendMessage(
-                            text: null,
-                            imageUrl: null,
-                            giphyUrl: gif.images!.original!.url,
-                            audioUrl: null,
-                            videoUrl: null,
-                            fileName: null,
-                            fileUrl: null);
-                      }
-                    },
-                  ),
-                ],
-              ),
-              Expanded(
-                child: AutoDirection(
-                  text: _messageController.text,
-                  child: TextField(
-                    minLines: 1,
-                    maxLines: 3,
-                    style: TextStyle(color: Colors.white),
-                    cursorColor: lightColor,
-                    controller: _messageController,
-                    textCapitalization: TextCapitalization.sentences,
-                    onChanged: (messageText) {
-                      setState(
-                          () => _isComposingMessage = messageText.isNotEmpty);
-                    },
-                    decoration: InputDecoration(
-                        focusedBorder: InputBorder.none,
-                        enabledBorder: InputBorder.none,
-                        hintStyle: TextStyle(color: Colors.grey),
-                        hintText: S.of(context)!.entermsg),
-                  ),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.only(left: 10, right: 10),
-                child: GestureDetector(
-                    onTap: () async {
-                      var result = await Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) =>
-                                  ChatCameraScreen(cameras: cameras)));
-                      print(
-                          '=====================================================================================$result');
-
-                      File imageFile = File(result);
-                      String mimeStr = lookupMimeType(result)!;
-                      var fileType = mimeStr.split('/');
-
-                      setState(() => isSending = true);
-
-                      if (fileType.first.contains('image')) {
-                        print('file type is image');
-                        String imageUrl =
-                            await StroageService.uploadMessageImage(imageFile);
-                        _sendMessage(
-                            text: null,
-                            imageUrl: imageUrl,
-                            giphyUrl: null,
-                            audioUrl: null,
-                            videoUrl: null,
-                            fileName: null,
-                            fileUrl: null);
-                      } else {
-                        print('file type is video');
-                        String videoUrl =
-                            await StroageService.uploadMessageVideo(imageFile);
-                        _sendMessage(
-                            text: null,
-                            imageUrl: null,
-                            audioUrl: null,
-                            giphyUrl: null,
-                            videoUrl: videoUrl,
-                            fileName: null,
-                            fileUrl: null);
-                        setState(() => isSending = false);
-                      }
-                    },
-                    child: Icon(Icons.camera_alt_outlined,
-                        color: lightColor, size: 22)),
-              ),
-              SizedBox(width: 10),
-              if (!_isComposingMessage)
-                GestureDetector(
-                  onLongPress: () {
-                    print('start recording');
-
-                    startRecord();
-                    setState(() {
-                      isRecording = true;
-                    });
-                  },
-                  onLongPressEnd: (details) {
-                    print('end recording');
-
-                    stopRecord();
-                    setState(() {
-                      isRecording = false;
-                    });
-                  },
-                  child: Padding(
-                    padding: const EdgeInsets.only(right: 10, left: 10),
-                    child: Container(
-                      decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: lightColor,
-                          boxShadow: [
-                            BoxShadow(
-                                color: isRecording
-                                    ? lightColor.withOpacity(0.8)
-                                    : Colors.transparent,
-                                spreadRadius: 10)
-                          ]),
-                      padding:
-                          isRecording ? EdgeInsets.all(15) : EdgeInsets.all(5),
-                      // width: 30.0,
-                      child:
-                          Icon(Icons.mic_outlined, color: darkColor, size: 18),
-                    ),
-                  ),
-                ),
-              if (_isComposingMessage)
-                GestureDetector(
-                  onTap: _isComposingMessage && !isSending
-                      ? () => _sendMessage(
-                          text: _messageController.text.trim(),
-                          imageUrl: null,
-                          giphyUrl: null,
-                          audioUrl: null,
-                          videoUrl: null,
-                          fileName: null,
-                          fileUrl: null)
-                      : null,
-                  child: Padding(
-                    padding: const EdgeInsets.only(right: 8.0),
-                    child: Container(
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: lightColor,
-                      ),
-                      child: Padding(
-                        padding: const EdgeInsets.all(6),
-                        child: Icon(Ionicons.send, color: darkColor, size: 15),
+                    Expanded(
+                      child: AutoDirection(
+                        text: _messageController.text,
+                        child: TextField(
+                          minLines: 1,
+                          maxLines: 3,
+                          style: TextStyle(color: Colors.white),
+                          cursorColor: lightColor,
+                          controller: _messageController,
+                          textCapitalization: TextCapitalization.sentences,
+                          onChanged: (messageText) {
+                            setState(() =>
+                                _isComposingMessage = messageText.isNotEmpty);
+                          },
+                          decoration: InputDecoration(
+                              focusedBorder: InputBorder.none,
+                              enabledBorder: InputBorder.none,
+                              hintStyle: TextStyle(color: Colors.grey),
+                              hintText: S.of(context)!.entermsg),
+                        ),
                       ),
                     ),
-                  ),
-                )
-            ],
-          ),
-        ],
-      ),
-    );
+                    Padding(
+                      padding: const EdgeInsets.only(left: 10, right: 10),
+                      child: GestureDetector(
+                          onTap: () async {
+                            var result = await Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) =>
+                                        ChatCameraScreen(cameras: cameras)));
+
+                            File imageFile = File(result);
+                            String mimeStr = lookupMimeType(result)!;
+                            var fileType = mimeStr.split('/');
+
+                            setState(() => isSending = true);
+
+                            if (fileType.first.contains('image')) {
+                              print('file type is image');
+                              String imageUrl =
+                                  await StroageService.uploadMessageImage(
+                                      imageFile);
+                              _sendMessage(
+                                  text: null,
+                                  imageUrl: imageUrl,
+                                  giphyUrl: null,
+                                  audioUrl: null,
+                                  videoUrl: null,
+                                  fileName: null,
+                                  fileUrl: null);
+                            } else {
+                              print('file type is video');
+                              String videoUrl =
+                                  await StroageService.uploadMessageVideo(
+                                      imageFile);
+                              _sendMessage(
+                                  text: null,
+                                  imageUrl: null,
+                                  audioUrl: null,
+                                  giphyUrl: null,
+                                  videoUrl: videoUrl,
+                                  fileName: null,
+                                  fileUrl: null);
+                              setState(() => isSending = false);
+                            }
+                          },
+                          child: Icon(Icons.camera_alt_outlined,
+                              color: lightColor, size: 22)),
+                    ),
+                    SizedBox(width: 10),
+                    if (!_isComposingMessage)
+                      GestureDetector(
+                        onLongPress: () {
+                          print('start recording');
+
+                          startRecord();
+                          setState(() {
+                            isRecording = true;
+                          });
+                        },
+                        onLongPressEnd: (details) {
+                          print('end recording');
+
+                          stopRecord();
+                          setState(() {
+                            isRecording = false;
+                          });
+                        },
+                        child: Padding(
+                          padding: const EdgeInsets.only(right: 10, left: 10),
+                          child: Container(
+                            decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: lightColor,
+                                boxShadow: [
+                                  BoxShadow(
+                                      color: isRecording
+                                          ? lightColor.withOpacity(0.8)
+                                          : Colors.transparent,
+                                      spreadRadius: 10)
+                                ]),
+                            padding: isRecording
+                                ? EdgeInsets.all(15)
+                                : EdgeInsets.all(5),
+                            // width: 30.0,
+                            child: Icon(Icons.mic_outlined,
+                                color: darkColor, size: 18),
+                          ),
+                        ),
+                      ),
+                    if (_isComposingMessage)
+                      GestureDetector(
+                        onTap: _isComposingMessage && !isSending
+                            ? () => _sendMessage(
+                                text: _messageController.text.trim(),
+                                imageUrl: null,
+                                giphyUrl: null,
+                                audioUrl: null,
+                                videoUrl: null,
+                                fileName: null,
+                                fileUrl: null)
+                            : null,
+                        child: Padding(
+                          padding: const EdgeInsets.only(right: 8.0),
+                          child: Container(
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: lightColor,
+                            ),
+                            child: Padding(
+                              padding: const EdgeInsets.all(6),
+                              child: Icon(Ionicons.send,
+                                  color: darkColor, size: 15),
+                            ),
+                          ),
+                        ),
+                      )
+                  ],
+                ),
+              ],
+            ),
+          );
   }
 
   _sendMessage(
@@ -752,7 +832,7 @@ class _ChatScreenState extends State<ChatScreen> {
       );
 
       ChatService.sendChatMessage(
-          _chat!, message, widget.receiverUser!, context);
+          _chat!, message, widget.receiverUser!, context, widget.isGroup!);
       chatsRef
           .doc(_chat!.id)
           .update({'readStatus.${widget.receiverUser!.id}': false});
@@ -762,12 +842,19 @@ class _ChatScreenState extends State<ChatScreen> {
 
   _buildMessagesStream() {
     return StreamBuilder(
-      stream: chatsRef
-          .doc(_chat!.id)
-          .collection('messages')
-          .orderBy('timestamp', descending: true)
-          .limit(20)
-          .snapshots(),
+      stream: (widget.isGroup!)
+          ? chatsRef
+              .doc(_chat!.id)
+              .collection('groupMessages')
+              .orderBy('timestamp', descending: true)
+              .limit(20)
+              .snapshots()
+          : chatsRef
+              .doc(_chat!.id)
+              .collection('messages')
+              .orderBy('timestamp', descending: true)
+              .limit(20)
+              .snapshots(),
       builder: (BuildContext contex, AsyncSnapshot snapshot) {
         if (!snapshot.hasData) {
           return SizedBox.shrink();
@@ -797,7 +884,7 @@ class _ChatScreenState extends State<ChatScreen> {
 
     messages.data!.docs.forEach((doc) {
       Message message = Message.fromDoc(doc);
-      print(_chat!.id);
+
       MessageBubble messageBubble = MessageBubble(
         user: message.senderId == _currentUser!.id
             ? _currentUser
@@ -887,39 +974,57 @@ class _ChatScreenState extends State<ChatScreen> {
                         );
                       },
                       child: (widget.isGroup == true)
-                          ? Icon(Icons.group)
+                          ? CircleAvatar(
+                              radius: 15,
+                              backgroundColor: Colors.grey,
+                              backgroundImage: (widget.chat!.groupUrl! == '')
+                                  ? AssetImage(placeHolderImageRef)
+                                  : CachedNetworkImageProvider(
+                                          widget.chat!.groupUrl!)
+                                      as ImageProvider<Object>?,
+                            )
                           : CircleAvatar(
                               radius: 15,
                               backgroundColor: Colors.grey,
-                              backgroundImage:
-                                  (widget.receiverUser!.profileImageUrl!.isEmpty
-                                          ? AssetImage(placeHolderImageRef)
-                                          : CachedNetworkImageProvider(widget
-                                              .receiverUser!.profileImageUrl!))
+                              backgroundImage: (widget
+                                      .receiverUser!.profileImageUrl!.isEmpty)
+                                  ? AssetImage(placeHolderImageRef)
+                                  : CachedNetworkImageProvider(
+                                          widget.receiverUser!.profileImageUrl!)
                                       as ImageProvider<Object>?,
                             ),
                     ),
                     SizedBox(width: 15.0),
                     GestureDetector(
-                        onTap: () {
-                          widget.isGroup!
-                              ? Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (_) => GroupInfo(
-                                      currentUser: _currentUser,
-                                      groupUsers: groupMembers,
-                                      groupUserIds: widget.userIds,
-                                      admin: widget.admin,
-                                    ),
-                                  ),
-                                )
-                              : CustomNavigation.navigateToUserProfile(
-                                  context: context,
-                                  userId: widget.receiverUser!.id,
-                                  currentUserId: _currentUser!.id,
-                                  isCameFromBottomNavigation: false,
-                                );
+                        onTap: () async {
+                          print(_chat!.id);
+                          if (widget.isGroup!) {
+                            var result = await Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => GroupInfo(
+                                    currentUser: _currentUser,
+                                    groupUsers: groupMembers,
+                                    groupUserIds: widget.userIds,
+                                    admin: widget.admin,
+                                    chatID: _chat!.id,
+                                    groupName: widget.groupName),
+                              ),
+                            );
+                            print('============$result');
+                            if (result == 'isRemoved') {
+                              setState(() {
+                                isRemoved = true;
+                              });
+                            }
+                          } else {
+                            CustomNavigation.navigateToUserProfile(
+                              context: context,
+                              userId: widget.receiverUser!.id,
+                              currentUserId: _currentUser!.id,
+                              isCameFromBottomNavigation: false,
+                            );
+                          }
                         },
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
