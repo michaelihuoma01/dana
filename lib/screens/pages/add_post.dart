@@ -1,4 +1,5 @@
 import 'package:Dana/calls/callscreens/pickup/pickup_layout.dart';
+import 'package:Dana/widgets/BrandDivider.dart';
 import 'package:camera/camera.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:Dana/generated/l10n.dart';
@@ -32,7 +33,7 @@ class AddPost extends StatefulWidget {
 
 class _AddPostState extends State<AddPost> {
   AppUser? _currentUser;
-  List<CameraDescription>? _cameras; 
+  List<CameraDescription>? _cameras;
   CameraConsumer _cameraConsumer = CameraConsumer.post;
 
   TextEditingController _captionController = TextEditingController();
@@ -43,6 +44,7 @@ class _AddPostState extends State<AddPost> {
   Post? _post;
   final _formKey = GlobalKey<FormState>();
   bool _isLoading = false;
+  bool isPublic = false;
 
   @override
   void initState() {
@@ -142,7 +144,11 @@ class _AddPostState extends State<AddPost> {
         commentsAllowed: true,
       );
 
-      DatabaseService.createPost(post);
+      if (isPublic == true) {
+        DatabaseService.createPublicPost(post);
+      } else {
+        DatabaseService.createPost(post);
+      }
     }
     _goToHomeScreen();
   }
@@ -157,34 +163,35 @@ class _AddPostState extends State<AddPost> {
     // Size screenSize = MediaQuery.of(context).size;
 
     return PickupLayout(
-         currentUser: _currentUser,
+      currentUser: _currentUser,
       scaffold: Scaffold(
         backgroundColor: darkColor,
         appBar: PreferredSize(
             preferredSize: const Size.fromHeight(50),
             child: AddPostAppbar(
               isTab: false,
-              title:  S.of(context)!.cam,
+              title: S.of(context)!.cam,
               isPost: true,
-              backToHomeScreenFromCameraScreen: _backToHomeScreenFromCameraScreen,
+              backToHomeScreenFromCameraScreen:
+                  _backToHomeScreenFromCameraScreen,
               cameras: _cameras,
               cameraConsumer: _cameraConsumer,
               bgColor:
                   (_caption != '') ? lightColor : lightColor.withOpacity(0.5),
               onTap: (_caption != '')
                   ? () {
-                      _submit(); 
+                      _submit();
                     }
                   : null,
             )),
         body: SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                TextField(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: TextField(
                   style: TextStyle(color: Colors.white, fontSize: 18),
                   maxLines: null,
                   controller: _captionController,
@@ -195,7 +202,7 @@ class _AddPostState extends State<AddPost> {
                   },
                   decoration: InputDecoration(
                     border: UnderlineInputBorder(borderSide: BorderSide.none),
-                    hintText:  S.of(context)!.happening,
+                    hintText: S.of(context)!.happening,
                     focusedBorder:
                         UnderlineInputBorder(borderSide: BorderSide.none),
                     enabledBorder:
@@ -214,8 +221,34 @@ class _AddPostState extends State<AddPost> {
                   ),
                   cursorColor: Colors.white,
                 ),
-              ],
-            ),
+              ),
+              SizedBox(height: 10),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 15),
+                child: Divider(color: Colors.grey),
+              ),
+              Theme(
+                  data: ThemeData(unselectedWidgetColor: lightColor),
+                  child: CheckboxListTile(
+                      value: isPublic,
+                      checkColor: darkColor,
+                      activeColor: lightColor,
+                      selectedTileColor: lightColor,
+                      title: Text('Share to public',
+                          maxLines: 3,
+                          style: TextStyle(color: Colors.white, fontSize: 18)),
+                      onChanged: (value) {
+                        if (isPublic == false) {
+                          setState(() {
+                            isPublic = true;
+                          });
+                        } else {
+                          setState(() {
+                            isPublic = false;
+                          });
+                        }
+                      })),
+            ],
           ),
         ),
       ),

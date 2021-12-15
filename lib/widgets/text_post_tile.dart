@@ -12,6 +12,7 @@ import 'package:Dana/utilities/custom_navigation.dart';
 import 'package:Dana/utilities/themes.dart';
 import 'package:Dana/utils/constants.dart';
 import 'package:Dana/widgets/BrandDivider.dart';
+import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
@@ -117,22 +118,58 @@ class _TextPostState extends State<TextPost> {
     );
   }
 
+  Future<Uri> createDynamicLink(
+    String? code, {
+    // String route = '/invite',
+    String param = 'id',
+    bool short = true,
+  }) async {
+    final DynamicLinkParameters parameters = DynamicLinkParameters(
+      uriPrefix: 'https://danasocial.page.link', //$route',
+      link: Uri.parse(
+          'https://danasocial.page.link/?$param=$code'), //$route?code=$code'),
+      androidParameters: AndroidParameters(
+          packageName: 'com.michaelihuoma.dana', minimumVersion: 1),
+      iosParameters: IosParameters(
+          bundleId: 'com.dubaitechnologydesign.dana',
+          minimumVersion: '1',
+          appStoreId: '1589760284'),
+      navigationInfoParameters:
+          NavigationInfoParameters(forcedRedirectEnabled: true),
+    );
+
+    Uri dynamicUrl = short
+        ? (await parameters.buildShortLink()).shortUrl
+        : (await parameters.buildUrl());
+
+    return dynamicUrl;
+  }
+
   _showMenuDialog() {
-    return  _androidDialog();
+    return _androidDialog();
   }
 
   _saveAndShareFile() async {
-    final RenderBox box = context.findRenderObject() as RenderBox;
+    // final RenderBox box = context.findRenderObject() as RenderBox;
+    var documentDirectory;
+
+    Uri dynamicLink = await createDynamicLink(widget.post!.id);
 
     var response = await get(Uri.parse(widget.post!.imageUrl!));
-    final documentDirectory = (await getExternalStorageDirectory())!.path;
+    if (Platform.isAndroid) {
+      documentDirectory = (await getExternalStorageDirectory())!.path;
+    } else {
+      documentDirectory = (await getApplicationDocumentsDirectory()).path;
+    }
+
     File imgFile = new File('$documentDirectory/${widget.post!.id}.png');
     imgFile.writeAsBytesSync(response.bodyBytes);
 
     Share.shareFiles([imgFile.path],
         subject: 'Have a look at ${widget.author!.name} post!',
-        text: '${widget.author!.name} : ${widget.post!.caption}',
-        sharePositionOrigin: box.localToGlobal(Offset.zero) & box.size);
+        text:
+            'Have a look at ${widget.author!.name} post: ${widget.post!.caption} \n${dynamicLink.toString()}');
+    // sharePositionOrigin: box.localToGlobal(Offset.zero) & box.size);
   }
 
   _iosBottomSheet() {
@@ -169,13 +206,13 @@ class _TextPostState extends State<TextPost> {
           return SimpleDialog(
             // title: Text('Add Photo'),
             children: <Widget>[
-              // SimpleDialogOption(
-              //   child: Text('Share Post'),
-              //   onPressed: () {
-              //     _saveAndShareFile();
-              //     Navigator.pop(context);
-              //   },
-              // ),
+              SimpleDialogOption(
+                child: Text('Share Post'),
+                onPressed: () {
+                  _saveAndShareFile();
+                  Navigator.pop(context);
+                },
+              ),
               // _post.authorId == widget.currentUserId &&
               //         widget.postStatus != PostStatus.archivedPost
               //     ? SimpleDialogOption(
@@ -296,15 +333,15 @@ class _TextPostState extends State<TextPost> {
                             style: TextStyle(color: Colors.grey, fontSize: 12)),
                       ]),
                 ]),
-                if (widget.author!.id == widget.currentUserId)
-                  Padding(
-                      padding: const EdgeInsets.all(0),
-                      child: GestureDetector(
-                        child: Icon(Icons.more_vert, color: Colors.white),
-                        onTap: () {
-                          _showMenuDialog();
-                        },
-                      )),
+                // if (widget.author!.id == widget.currentUserId)
+                Padding(
+                    padding: const EdgeInsets.all(0),
+                    child: GestureDetector(
+                      child: Icon(Icons.more_vert, color: Colors.white),
+                      onTap: () {
+                        _showMenuDialog();
+                      },
+                    )),
               ],
             ),
           ),

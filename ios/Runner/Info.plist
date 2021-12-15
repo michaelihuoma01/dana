@@ -18,6 +18,19 @@
 	<string>$(FLUTTER_BUILD_NAME)</string>
 	<key>CFBundleSignature</key>
 	<string>????</string>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleURLName</key>
+			<string>Bundle Id</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>com.dubaitechnologydesign.dana</string>
+			</array>
+		</dict>
+	</array>
 	<key>CFBundleVersion</key>
 	<string>$(FLUTTER_BUILD_NUMBER)</string>
 	<key>LSRequiresIPhoneOS</key>
@@ -30,22 +43,15 @@
 	<key>NSAppleMusicUsageDescription</key>
 	<string>Dana needs access to music</string>
 	<key>NSCameraUsageDescription</key>
-	<string>$(PRODUCT_NAME) needs access to camera.</string>
-	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
-	<string>Dana needs access to location when open and in the background</string>
-	<key>NSLocationAlwaysUsageDescription</key>
-	<string>Dana needs access to location when in the background</string>
-	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>Dana needs access to location</string>
+	<string>$(PRODUCT_NAME) needs access to camera take pictures.</string>
 	<key>NSMicrophoneUsageDescription</key>
-	<string>Dana needs to use the mic</string>
+	<string>Dana needs access to microphone for audio/video calls</string>
 	<key>NSPhotoLibraryUsageDescription</key>
-	<string>Dana needs access to photos.</string>
+	<string>Dana needs access to photos to share images.</string>
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>audio</string>
 		<string>fetch</string>
-		<string>location</string>
 		<string>remote-notification</string>
 		<string>voip</string>
 	</array>

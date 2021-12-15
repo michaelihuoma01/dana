@@ -1,3 +1,4 @@
+import 'package:Dana/calls/call.dart';
 import 'package:Dana/models/user_data.dart';
 import 'package:Dana/notifications/helperMethods.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -56,6 +57,82 @@ class DatabaseService {
     return users;
   }
 
+  // static Future<QuerySnapshot>? searchCalls(
+  //     String? name, String? currentUserID, bool isCaller) {
+  //   Future<QuerySnapshot>? users;
+  //   try {
+  //     users = callsRef
+  //         .doc(currentUserID)
+  //         .collection('callHistory')
+  //         .where('caller_name', isEqualTo: name).get();
+
+  //         // users = callsRef
+  //         // .doc(currentUserID)
+  //         // .collection('callHistory')
+  //         // .where( 'receiver_name', isEqualTo: name).get();
+  //   } on FirebaseException catch (e) {
+  //     print(e);
+  //   }
+  //   return users;
+  // }
+
+  static Future<Map<String, Call>>? searchCalls(
+      String? name, String? currentUserID, bool isCaller) async {
+    Map<String, Call>? calls = {}; 
+
+    try {
+      await callsRef
+          .doc(currentUserID)
+          .collection('callHistory')
+          .where('caller_name', isEqualTo: name)
+          .get()
+          .then((value) {
+        for (var q in value.docs) {
+          Call call = Call.fromMap(q);
+
+          calls[call.id!] = call;
+        }
+      });
+
+       await callsRef
+          .doc(currentUserID)
+          .collection('callHistory')
+          .where('receiver_name', isEqualTo: name)
+          .get()
+          .then((value) {
+        for (var q in value.docs) {
+          Call call = Call.fromMap(q);
+
+          calls[call.id!] = call;
+        }
+      });
+
+      // users = callsRef
+      // .doc(currentUserID)
+      // .collection('callHistory')
+      // .where( 'receiver_name', isEqualTo: name).get();
+    } on FirebaseException catch (e) {
+      print(e);
+    }
+    return calls;
+  }
+
+  // static Future<QuerySnapshot>? searchCalls2(
+  //     String? name, String? currentUserID) {
+  //   Future<QuerySnapshot>? users;
+  //   try {
+  //     users = callsRef
+  //         .doc(currentUserID)
+  //         .collection('callHistory')
+  //         // .where('name', isGreaterThanOrEqualTo: name)
+  //         .where('receiver_name', isEqualTo: name)
+  //         .get();
+  //   } on FirebaseException catch (e) {
+  //     print(e);
+  //   }
+  //   return users;
+  // }
+
   static void createPost(Post post) {
     try {
       postsRef.doc(post.authorId).collection('userPosts').add({
@@ -74,6 +151,26 @@ class DatabaseService {
             .collection('userPosts')
             .doc(value.id)
             .update({'id': value.id});
+      });
+    } catch (e) {
+      print(e);
+    }
+  }
+
+  static void createPublicPost(Post post) {
+    try {
+      publicPostsRef.add({
+        'imageUrl': post.imageUrl,
+        'videoUrl': post.videoUrl,
+        'caption': post.caption,
+        'likeCount': post.likeCount,
+        'commentCount': post.commentCount,
+        'authorId': post.authorId,
+        'location': post.location,
+        'commentsAllowed': post.commentsAllowed,
+        'timestamp': post.timestamp
+      }).then((value) {
+        publicPostsRef.doc(value.id).update({'id': value.id});
       });
     } catch (e) {
       print(e);
@@ -203,10 +300,10 @@ class DatabaseService {
       recieverToken: receiverToken,
     );
 
-    AppUser user = await getUserWithId(currentUserId); 
-      HelperMethods.sendNotification(receiverToken, context, userId,   
-          '${user.name} added you as a friend');
-    
+    AppUser user = await getUserWithId(currentUserId);
+    HelperMethods.sendNotification(
+        receiverToken, context, userId, '${user.name} added you as a friend');
+
     print('notification sent');
   }
 
@@ -342,7 +439,8 @@ class DatabaseService {
   }
 
   static Future<List<Post>> getAllFeedPosts(context) async {
-    List<Post> allPosts = [];
+    List<Post> posts = [];
+    List<Post> publicPosts = [];
 
     // QuerySnapshot usersSnapshot = await usersRef.get();
     AppUser? currentUser =
@@ -360,11 +458,24 @@ class DatabaseService {
           .orderBy('timestamp', descending: true)
           .get();
 
+      // feedSnapshot.map((event) {
+      //   for (var postDoc in event.docs) {
+      //     Post post = Post.fromDoc(postDoc);
+      //     allPosts.add(post);
+      //   }
+      // });
+
       for (var postDoc in feedSnapshot.docs) {
         Post post = Post.fromDoc(postDoc);
-        allPosts.add(post);
+        posts.add(post);
       }
     }
+
+    QuerySnapshot postSnapshot = await publicPostsRef.get();
+    publicPosts = postSnapshot.docs.map((doc) => Post.fromDoc(doc)).toList();
+
+    var allPosts = [...posts, ...publicPosts].toSet().toList();
+
     return allPosts;
   }
 
@@ -395,6 +506,18 @@ class DatabaseService {
         userPostsSnapshot.docs.map((doc) => Post.fromDoc(doc)).toList();
     return posts;
   }
+
+  //   static Future<List<Post>> getPost(String? postId, String? userId) async {
+  //   QuerySnapshot userPostsSnapshot = await postsRef
+  //       .doc(userId)
+  //       .collection('userPosts')
+  //       .doc(postId)
+  //       // .orderBy('timestamp', descending: true)
+  //       .get();
+  //   List<Post> posts =
+  //       userPostsSnapshot.docs.map((doc) => Post.fromDoc(doc)).toList();
+  //   return posts;
+  // }
 
   static Future<AppUser> getUserWithId(String? userId) async {
     DocumentSnapshot userDocSnapshot = await usersRef.doc(userId).get();
@@ -431,8 +554,8 @@ class DatabaseService {
 
     AppUser user = await getUserWithId(currentUserId);
 
-    HelperMethods.sendNotification(receiverToken, context, post.authorId,
-     '${user.name} liked your post');
+    HelperMethods.sendNotification(
+        receiverToken, context, post.authorId, '${user.name} liked your post');
 
     print('notification sent');
   }
@@ -512,9 +635,7 @@ class DatabaseService {
     AppUser user = await getUserWithId(currentUserId);
 
     HelperMethods.sendNotification(recieverToken, context, post.authorId,
-          '${user.name} commented on your post');
-
-      
+        '${user.name} commented on your post');
   }
 
   static void addActivityItem({

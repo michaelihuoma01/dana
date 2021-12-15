@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:Dana/screens/pages/user_post.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:Dana/generated/l10n.dart';
@@ -71,11 +72,11 @@ class _FeedsScreenState extends State<FeedsScreen> {
     print(userId);
     setState(() => _isLoadingFeed = true);
 
-    // List<Post> posts = await DatabaseService.getFeedPosts(
-    //   widget.currentUser.id,
+    List<Post> posts = await DatabaseService.getAllFeedPosts(context);
+    //  List<Post> posts = await DatabaseService.getAllFeedPosts(
+    //   widget.currentUser!.id
     // );
 
-    List<Post> posts = await DatabaseService.getAllFeedPosts(context);
     posts.sort((a, b) => b.timestamp!.compareTo(a.timestamp!));
 
     setState(() {
@@ -83,12 +84,8 @@ class _FeedsScreenState extends State<FeedsScreen> {
       _isLoadingFeed = false;
     });
 
-    stream = usersRef
-        .doc(widget.currentUser!.id)
-        // .where('memberIds', arrayContains: widget.currentUser.id)
-        // .orderBy('recentTimestamp', descending: true)
-        .snapshots()
-        .listen((snapshot) {
+    stream =
+        usersRef.doc(widget.currentUser!.id).snapshots().listen((snapshot) {
       AppUser user = AppUser.fromDoc(snapshot);
       if (user.isVerified == true) {
         setState(() {
@@ -242,6 +239,12 @@ class _FeedsScreenState extends State<FeedsScreen> {
                           MaterialPageRoute(
                               builder: (context) => AddPost(
                                   currentUserId: widget.currentUser!.id)));
+                          // Navigator.push(
+                          // context,
+                          // MaterialPageRoute(
+                          //     builder: (context) => UserPost(
+                          //         currentUserId: widget.currentUser!.id)));
+ 
                     },
                     child: Padding(
                       padding: const EdgeInsets.only(bottom: 5),
@@ -314,13 +317,7 @@ class _FeedsScreenState extends State<FeedsScreen> {
                               )
                             : StoriesWidget(
                                 _followingUsersWithStories, _goToCameraScreen),
-                        // SizedBox(height: 30),
-                        // BrandDivider(),
-                        // SizedBox(height: 30),
-                        // TextPost(),
-                        // PostTile(),
                         SizedBox(height: 15),
-
                         ListView.builder(
                           physics: NeverScrollableScrollPhysics(),
                           shrinkWrap: true,

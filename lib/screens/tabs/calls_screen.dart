@@ -14,6 +14,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:intl/intl.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
 class CallsScreen extends StatefulWidget {
@@ -26,70 +27,60 @@ class CallsScreen extends StatefulWidget {
 }
 
 class _CallsScreenState extends State<CallsScreen> {
-  late AppUser receiverUser; 
+  AppUser? receiverUser;
+  String _searchText = '';
+  TextEditingController _searchController = TextEditingController();
+  Future<Map<String, Call>>? _users;
+  bool isCaller = false;
+  List<String>? callerID = [];
 
   Stream<List<Call>> getCalls() async* {
     // try {
-      List<Call> dataToReturn = [];
+    List<Call> dataToReturn = [];
 
-      Stream<QuerySnapshot> stream = FirebaseFirestore.instance
-          .collection('calls')
-          .doc(widget.currentUser!.id)
-          .collection('callHistory') 
-          .snapshots();
+    Stream<QuerySnapshot> stream = FirebaseFirestore.instance
+        .collection('calls')
+        .doc(widget.currentUser!.id)
+        .collection('callHistory')
+        .snapshots();
 
-      await for (QuerySnapshot q in stream) {
-        for (var doc in q.docs) {
-          Call callFromDoc = Call.fromMap(doc);
+    await for (QuerySnapshot q in stream) {
+      for (var doc in q.docs) {
+        Call callFromDoc = Call.fromMap(doc);
 
-          // duration = doc['duration'];
-          // timestamp = doc['timestamp'];
-          receiverUser =
-              await DatabaseService.getUserWithId(callFromDoc.receiverId);
+        // duration = doc['duration'];
+        // timestamp = doc['timestamp'];
+        receiverUser =
+            await DatabaseService.getUserWithId(callFromDoc.receiverId);
 
-          Call callWithUserInfo = Call(
-              callerId: callFromDoc.callerId,
-              callerName: callFromDoc.callerName,
-              callerPic: callFromDoc.callerPic,
-              channelId: callFromDoc.channelId,
-              receiverId: callFromDoc.receiverId,
-              receiverName: callFromDoc.receiverName,
-              receiverPic: callFromDoc.receiverPic,
-              hasDialled: callFromDoc.hasDialled,
-              isMissed: callFromDoc.isMissed,
-              timestamp: callFromDoc.timestamp,
-              duration: callFromDoc.duration,
-              isAudio: callFromDoc.isAudio);
+        Call callWithUserInfo = Call(
+            callerId: callFromDoc.callerId,
+            callerName: callFromDoc.callerName,
+            callerPic: callFromDoc.callerPic,
+            channelId: callFromDoc.channelId,
+            receiverId: callFromDoc.receiverId,
+            receiverName: callFromDoc.receiverName,
+            receiverPic: callFromDoc.receiverPic,
+            hasDialled: callFromDoc.hasDialled,
+            isMissed: callFromDoc.isMissed,
+            timestamp: callFromDoc.timestamp,
+            duration: callFromDoc.duration,
+            isAudio: callFromDoc.isAudio);
 
-          // dataToReturn.removeWhere((call) => call. == callWithUserInfo.id);
+        // dataToReturn.removeWhere((call) => call. == callWithUserInfo.id);
 
-          dataToReturn.add(callWithUserInfo);
-        }
-    dataToReturn.sort((a, b) => b.timestamp!.compareTo(a.timestamp!));
-
-        yield dataToReturn;
+        dataToReturn.add(callWithUserInfo);
       }
+      dataToReturn.sort((a, b) => b.timestamp!.compareTo(a.timestamp!));
+
+      yield dataToReturn;
+    }
     // } catch (err) {
     //   print('////$err');
     // }
   }
 
   _buildCall(Call call, String? currentUserId) {
-    // final bool isRead = chat.readStatus[currentUserId];
-    // widget.isReadIcon = isRead;
-    // final TextStyle readStyle = TextStyle(
-    //     color: isRead ? Colors.white : lightColor,
-    //     fontSize: 12,
-    //     fontWeight: isRead ? FontWeight.w400 : FontWeight.bold);
-
-    // users = chat.memberInfo;
-    // int receiverIndex =
-    //     chat.memberInfo.indexWhere((user) => user.id != widget.currentUser.id);
-    // int senderIndex =
-    //     chat.memberInfo.indexWhere((user) => user.id == chat.recentSender);
-
-    // userName = chat.memberInfo[receiverIndex].name;
-
     return ListTile(
         leading: Container(
           height: 40,
@@ -97,11 +88,12 @@ class _CallsScreenState extends State<CallsScreen> {
             backgroundColor: Colors.white,
             radius: 28.0,
             backgroundImage: (call.receiverPic!.isEmpty
-                    ? AssetImage(placeHolderImageRef)
-                    : CachedNetworkImageProvider( (call.receiverName! == widget.currentUser?.name)
-                ? call.callerPic!
-                : call.receiverPic!,))
-                as ImageProvider<Object>?,
+                ? AssetImage(placeHolderImageRef)
+                : CachedNetworkImageProvider(
+                    (call.receiverName! == widget.currentUser?.name)
+                        ? call.callerPic!
+                        : call.receiverPic!,
+                  )) as ImageProvider<Object>?,
           ),
         ),
         title: Text(
@@ -135,7 +127,7 @@ class _CallsScreenState extends State<CallsScreen> {
             try {
               CallUtils.dial(
                   from: widget.currentUser!,
-                  to: receiverUser,
+                  to: receiverUser!,
                   context: context,
                   isAudio: true);
             } catch (e) {
@@ -145,7 +137,7 @@ class _CallsScreenState extends State<CallsScreen> {
             try {
               CallUtils.dial(
                   from: widget.currentUser!,
-                  to: receiverUser,
+                  to: receiverUser!,
                   context: context,
                   isAudio: false);
             } catch (e) {
@@ -157,6 +149,15 @@ class _CallsScreenState extends State<CallsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    void _clearSearch() {
+      WidgetsBinding.instance!
+          .addPostFrameCallback((_) => _searchController.clear());
+      setState(() {
+        _users = null;
+        _searchText = '';
+      });
+    }
+
     return Stack(children: [
       Container(
         height: double.infinity,
@@ -185,56 +186,116 @@ class _CallsScreenState extends State<CallsScreen> {
               elevation: 0,
               brightness: Brightness.dark,
             )),
-        body: StreamBuilder(
-            stream: getCalls(),
-            builder: (BuildContext context, AsyncSnapshot snapshot) {
-              if (!snapshot.hasData) {
-                return Center(
-                  child: SpinKitWanderingCubes(color: Colors.white, size: 40),
-                );
-              }
+        body: Column(
+          children: [
+            TextField(
+              controller: _searchController,
+              decoration: InputDecoration(
+                  focusedBorder: InputBorder.none,
+                  enabledBorder: InputBorder.none,
+                  hintText: 'Search',
+                  suffixIcon: _searchText.trim().isEmpty
+                      ? null
+                      : GestureDetector(
+                          onTap: _clearSearch,
+                          child: Icon(Icons.clear, color: Colors.white),
+                        ),
+                  hintStyle: TextStyle(color: Colors.grey),
+                  prefixIcon: Icon(Icons.search, color: Colors.white)),
+              style: TextStyle(color: Colors.white),
+              cursorColor: Colors.white,
+              onChanged: (value) {
+                if (value.trim().isNotEmpty) {
+                  setState(() {
+                    _searchText = value;
+                    String? sentence = toBeginningOfSentenceCase(value);
 
-              return Padding(
-                padding:
-                    const EdgeInsets.symmetric(vertical: 10, horizontal: 0),
-                child: Column(
-                  // crossAxisAlignment: CrossAxisAlignment.start,
-                  // mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Expanded(
-                        child: Align(
-                          alignment: Alignment.topCenter,
-                          child: ListView.builder(
-                            // reverse: true,
-                            // shrinkWrap: true,
-                                              itemBuilder: (BuildContext context, int index) {
-                          Call call = snapshot.data[index];
-                          print(
-                              '=\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\${call.channelId}');
-                        
-                          return _buildCall(call, widget.currentUser!.id);
-                                              },
-                                              itemCount: snapshot.data.length,
-                                            ),
-                        )),
-                  ],
-                ),
-              );
-            }),
+                    if (callerID!.contains(widget.currentUser!.id)) {
+                      isCaller = true;
+                      print('============+++++Truueeeeeee');
+                    } else {
+                      isCaller = false;
+                      print('============+++++Falseeeeee');
+                    }
 
-        // Padding(
-        //   padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
-        //   child: Column(
-        //     crossAxisAlignment: CrossAxisAlignment.start,
-        //     mainAxisSize: MainAxisSize.min,
-        //     children: [
-        //       SizedBox(height: 10),
-        //       CallTile(audio: false, missed: true),
-        //       CallTile(audio: true, missed: false),
-        //       CallTile(audio: false, missed: false),
-        //     ],
-        //   ),
-        // ),
+                    _users = DatabaseService.searchCalls(
+                        sentence, widget.currentUser!.id, isCaller);
+                  });
+                }
+              },
+              onSubmitted: (input) {
+                if (input.trim().isNotEmpty) {
+                  setState(() {
+                    _searchText = input;
+                    String? sentence = toBeginningOfSentenceCase(input);
+
+                    _users = DatabaseService.searchCalls(
+                        sentence, widget.currentUser!.id, isCaller);
+                  });
+                }
+              },
+            ),
+            (_users == null)
+                ? Expanded(
+                    child: Container(
+                      child: StreamBuilder(
+                          stream: getCalls(),
+                          builder:
+                              (BuildContext context, AsyncSnapshot snapshot) {
+                            if (!snapshot.hasData) {
+                              return Center(
+                                child: SpinKitWanderingCubes(
+                                    color: Colors.white, size: 40),
+                              );
+                            }
+
+                            return Expanded(
+                                child: ListView.builder(
+                              itemBuilder: (BuildContext context, int index) {
+                                Call call = snapshot.data[index];
+
+                                return _buildCall(call, widget.currentUser!.id);
+                              },
+                              itemCount: snapshot.data.length,
+                            ));
+                          }),
+                    ),
+                  )
+                : FutureBuilder(
+                    future: _users,
+                    builder: (BuildContext context, AsyncSnapshot snapshot) {
+                      if (!snapshot.hasData) {
+                        return Center(
+                          child: SpinKitWanderingCubes(
+                              color: Colors.white, size: 40),
+                        );
+                      }
+
+                      if ((snapshot.data!).length == 0) {
+                        return Center(
+                          child: Text('No record!',
+                              style: TextStyle(color: Colors.white)),
+                        );
+                      }
+
+                      return Expanded(
+                          child: Align(
+                        alignment: Alignment.topCenter,
+                        child: ListView.builder(
+                          itemCount: (snapshot.data!).length,
+                          itemBuilder: (BuildContext context, int index) {
+                            // Call call = snapshot.data[index];
+
+                            Call call =
+                              (snapshot.data!).values.elementAt(index); 
+                              
+                            return _buildCall(call, widget.currentUser!.id);
+                          },
+                        ),
+                      ));
+                    }),
+          ],
+        ),
       ),
     ]);
   }

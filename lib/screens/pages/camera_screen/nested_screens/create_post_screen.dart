@@ -42,7 +42,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
 
   String? _caption = '';
   bool _isLoading = false;
-  bool isVideo = false;
+  bool isVideo = false, isPublic = false;
   Post? _post;
   String? _currentUserId;
 
@@ -139,7 +139,11 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
                 timestamp: Timestamp.fromDate(DateTime.now()),
                 commentsAllowed: true);
 
-            DatabaseService.createPost(post);
+            if (isPublic == true) {
+              DatabaseService.createPublicPost(post);
+            } else {
+              DatabaseService.createPost(post);
+            }
           } else {
             print(widget.imageFile);
             String videoUrl =
@@ -158,7 +162,11 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
                 timestamp: Timestamp.fromDate(DateTime.now()),
                 commentsAllowed: true);
 
-            DatabaseService.createPost(post);
+           if (isPublic == true) {
+              DatabaseService.createPublicPost(post);
+            } else {
+              DatabaseService.createPost(post);
+            }
           }
         } catch (e) {
           print('/////////========///////////$e');
@@ -166,20 +174,18 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
       }
 
       if (widget.post == null) {
-         Navigator.push(
-          context,
-          MaterialPageRoute(
-              builder: (context) =>
-                  HomeScreen(currentUserId: _currentUserId)));
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) =>
+                    HomeScreen(currentUserId: _currentUserId)));
       } else {
-         Navigator.push(
-          context,
-          MaterialPageRoute(
-              builder: (context) =>
-                  HomeScreen(currentUserId: widget.post!.authorId)));
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) =>
+                    HomeScreen(currentUserId: widget.post!.authorId)));
       }
-
-     
     }
   }
 
@@ -269,6 +275,28 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
                       //   screenSize: screenSize,
                       //   controller: _locationController,
                       // ),
+                      Theme(
+                          data: ThemeData(unselectedWidgetColor: lightColor),
+                          child: CheckboxListTile(
+                              value: isPublic,
+                              checkColor: darkColor,
+                              activeColor: lightColor,
+                              selectedTileColor: lightColor,
+                              title: Text('Share to public',
+                                  maxLines: 3,
+                                  style: TextStyle(
+                                      color: Colors.white, fontSize: 18)),
+                              onChanged: (value) {
+                                if (isPublic == false) {
+                                  setState(() {
+                                    isPublic = true;
+                                  });
+                                } else {
+                                  setState(() {
+                                    isPublic = false;
+                                  });
+                                }
+                              })),
                     ],
                   ),
                 ),

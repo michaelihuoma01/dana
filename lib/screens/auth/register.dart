@@ -59,7 +59,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   String _dob = '';
 
   File? _profileImage;
- Locale? myLocale;
+  Locale? myLocale;
 
   @override
   void initState() {
@@ -194,7 +194,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   @override
   Widget build(BuildContext context) {
-    myLocale = Localizations.localeOf(context); 
+    myLocale = Localizations.localeOf(context);
     return Stack(
       children: [
         Container(
@@ -215,7 +215,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
               child: Padding(
                 padding: const EdgeInsets.only(bottom: 30, left: 20, right: 20),
                 child: ButtonWidget(
-                  title:  S.of(context)!.continueBtn,
+                  title: S.of(context)!.continueBtn,
                   onPressed: () {
                     if ((_name.length) < 3) {
                       Utility.showMessage(
@@ -243,30 +243,30 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     //       message: 'Passwords do not match');
                     //   return;
                     // }
-                    if (_bio == '') {
-                      Utility.showMessage(context,
-                          bgColor: Colors.red,
-                          type: MessageTypes.error,
-                          pulsate: false,
-                          message: 'Please fill all fields');
-                      return;
-                    }
-                    if (_gender == '') {
-                      Utility.showMessage(context,
-                          bgColor: Colors.red,
-                          type: MessageTypes.error,
-                          pulsate: false,
-                          message: 'Please fill all fields');
-                      return;
-                    }
-                    if (_dob == '') {
-                      Utility.showMessage(context,
-                          bgColor: Colors.red,
-                          type: MessageTypes.error,
-                          pulsate: false,
-                          message: 'Please fill all fields');
-                      return;
-                    }
+                    // if (_bio == '') {
+                    //   Utility.showMessage(context,
+                    //       bgColor: Colors.red,
+                    //       type: MessageTypes.error,
+                    //       pulsate: false,
+                    //       message: 'Please fill all fields');
+                    //   return;
+                    // }
+                    // if (_gender == '') {
+                    //   Utility.showMessage(context,
+                    //       bgColor: Colors.red,
+                    //       type: MessageTypes.error,
+                    //       pulsate: false,
+                    //       message: 'Please fill all fields');
+                    //   return;
+                    // }
+                    // if (_dob == '') {
+                    //   Utility.showMessage(context,
+                    //       bgColor: Colors.red,
+                    //       type: MessageTypes.error,
+                    //       pulsate: false,
+                    //       message: 'Please fill all fields');
+                    //   return;
+                    // }
                     // if (_profileImage == null) {
                     //   Utility.showMessage(context,
                     //       bgColor: Colors.red,

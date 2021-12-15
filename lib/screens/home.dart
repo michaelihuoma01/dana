@@ -80,7 +80,7 @@ class _HomeScreenState extends State<HomeScreen>
   bool isFollowingUser = false;
   bool isFriends = false;
   bool isRequest = false;
-  late StreamSubscription<ConnectivityResult> subscription;
+ StreamSubscription<ConnectivityResult>? subscription;
 
   @override
   void initState() {
@@ -119,7 +119,7 @@ class _HomeScreenState extends State<HomeScreen>
   @override
   void dispose() {
     _pageController?.dispose();
-    subscription.cancel();
+    subscription?.cancel();
     super.dispose();
   }
 

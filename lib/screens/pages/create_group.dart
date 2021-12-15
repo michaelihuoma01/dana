@@ -319,83 +319,59 @@ class _CreateGroupState extends State<CreateGroup> {
                           AppUser? filteritem = _selectedUsers.firstWhere(
                               (item) => item!.id == follower.id,
                               orElse: () => null);
-                          return GestureDetector(
-                              // onTap: () => Navigator.push(
-                              //     context,
-                              //     MaterialPageRoute(
-                              //       builder: (_) => UserProfile(
-                              //         // goToCameraScreen: () =>
-                              //         //     CustomNavigation.navigateToHomeScreen(
-                              //         //         context,
-                              //         //         Provider.of<UserData>(context, listen: false)
-                              //         //             .currentUserId,
-                              //         //         initialPage: 0),
-                              //         // isCameFromBottomNavigation: false,
-                              //         userId: follower.id,
-                              //         currentUserId:
-                              //             Provider.of<UserData>(
-                              //                     context,
-                              //                     listen: false)
-                              //                 .currentUserId,
-                              //       ),
-                              //     )),
-                              child: Theme(
+                          return Theme(
                             data: ThemeData(unselectedWidgetColor: lightColor),
                             child: CheckboxListTile(
-                              value: (_selectAll == true)
-                                  ? true
-                                  : filteritem != null,
-                              checkColor: darkColor,
-                              activeColor: lightColor,
-                              selectedTileColor: lightColor,
-                              title: Row(children: [
-                                Container(
-                                  height: 40,
-                                  width: 40,
-                                  child: CircleAvatar(
-                                    radius: 25.0,
-                                    backgroundColor: Colors.grey,
-                                    backgroundImage: (follower
-                                                .profileImageUrl!.isEmpty
-                                            ? AssetImage(placeHolderImageRef)
-                                            : CachedNetworkImageProvider(
-                                                follower.profileImageUrl!))
-                                        as ImageProvider<Object>?,
-                                  ),
-                                ),
-                                SizedBox(width: 15),
-                                Flexible(
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text(follower.name!,
-                                          style: TextStyle(
-                                              color: Colors.white,
-                                              fontSize: 18)),
-                                      Text('PIN: ${follower.pin}',
-                                          maxLines: 3,
-                                          style: TextStyle(color: Colors.grey)),
-                                    ],
-                                  ),
-                                )
-                              ]),
-                              onChanged: (value) {
-                                setState(() {
-                                  if (value == true) {
-                                    _selectedUsers.add(follower);
-                                  } else {
-                                    _selectedUsers.removeWhere(
-                                        (item) => item!.id == follower.id);
-                                  }
-                                });
-                              },
+                          value: (_selectAll == true)
+                              ? true
+                              : filteritem != null,
+                          checkColor: darkColor,
+                          activeColor: lightColor,
+                          selectedTileColor: lightColor,
+                          title: Row(children: [
+                            Container(
+                              height: 40,
+                              width: 40,
+                              child: CircleAvatar(
+                                radius: 25.0,
+                                backgroundColor: Colors.grey,
+                                backgroundImage: (follower
+                                            .profileImageUrl!.isEmpty
+                                        ? AssetImage(placeHolderImageRef)
+                                        : CachedNetworkImageProvider(
+                                            follower.profileImageUrl!))
+                                    as ImageProvider<Object>?,
+                              ),
                             ),
-                          )
-
-                              //
-
-                              );
+                            SizedBox(width: 15),
+                            Flexible(
+                              child: Column(
+                                crossAxisAlignment:
+                                    CrossAxisAlignment.start,
+                                children: [
+                                  Text(follower.name!,
+                                      style: TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 18)),
+                                  Text('PIN: ${follower.pin}',
+                                      maxLines: 3,
+                                      style: TextStyle(color: Colors.grey)),
+                                ],
+                              ),
+                            )
+                          ]),
+                          onChanged: (value) {
+                            setState(() {
+                              if (value == true) {
+                                _selectedUsers.add(follower);
+                              } else {
+                                _selectedUsers.removeWhere(
+                                    (item) => item!.id == follower.id);
+                              }
+                            });
+                          },
+                            ),
+                          );
                         },
                       ),
                     ),

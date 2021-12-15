@@ -9,6 +9,7 @@ class Call {
   String? receiverPic;
   String? channelId;
   String? duration;
+  String? id;
   Timestamp? timestamp;
   bool? hasDialled;
   bool? isMissed;
@@ -26,6 +27,7 @@ class Call {
       this.duration,
       this.isMissed,
       this.timestamp,
+      this.id,
       this.isAudio});
 
   // to map
@@ -43,6 +45,7 @@ class Call {
     callMap["timestamp"] = call.timestamp;
     callMap["isMissed"] = call.isMissed;
     callMap["isAudio"] = call.isAudio;
+    callMap["id"] = call.id;
 
     return callMap;
   }
@@ -60,5 +63,7 @@ class Call {
     this.isMissed = callMap["isMissed"];
     this.timestamp = callMap["timestamp"];
     this.isAudio = callMap["isAudio"];
+    this.id = callMap["id"];
+
   }
 }
