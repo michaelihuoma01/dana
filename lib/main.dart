@@ -75,7 +75,7 @@ class _MyAppState extends State<MyApp> {
     PushNotificationService pushNotificationService = PushNotificationService();
 
     pushNotificationService.initialize(context);
-    pushNotificationService.getToken();
+    pushNotificationService.getToken(context);
     _listenToNotifications();
 
     super.initState();
@@ -107,6 +107,7 @@ class _MyAppState extends State<MyApp> {
         if (snapshot.hasData && _isTimerDone) {
           Provider.of<UserData>(context, listen: false).currentUserId =
               snapshot.data!.uid;
+
           return HomeScreen(
             currentUserId: snapshot.data!.uid,
           );

@@ -1,3 +1,6 @@
 -keep class androidx.lifecycle.DefaultLifecycleObserver
 
--keep class com.luck.picture.lib.** { *; }
+-keep class com.luck.picture.lib.** { *; } 
+-dontwarn com.yalantis.ucrop**
+-keep class com.yalantis.ucrop** { *; }
+-keep interface com.yalantis.ucrop** { *; }

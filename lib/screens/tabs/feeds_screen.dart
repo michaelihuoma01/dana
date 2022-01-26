@@ -9,7 +9,6 @@ import 'package:Dana/models/user_model.dart';
 import 'package:Dana/screens/auth/login.dart';
 import 'package:Dana/screens/pages/add_post.dart';
 import 'package:Dana/screens/pages/notifications_screen.dart';
-import 'package:Dana/screens/pages/story_screen.dart';
 import 'package:Dana/services/services.dart';
 import 'package:Dana/utilities/constants.dart';
 import 'package:Dana/utils/constants.dart';
@@ -39,7 +38,7 @@ class FeedsScreen extends StatefulWidget {
 }
 
 class _FeedsScreenState extends State<FeedsScreen> {
-  List<Post> _posts = [];
+  List<Post?> _posts = [];
   bool _isLoadingFeed = false;
   bool _isLoadingStories = false;
   List<AppUser> _followingUsersWithStories = [];
@@ -54,7 +53,7 @@ class _FeedsScreenState extends State<FeedsScreen> {
   @override
   void initState() {
     super.initState();
-    _getCurrentUser();
+    // _getCurrentUser();
     _setupFeed();
   }
 
@@ -67,20 +66,20 @@ class _FeedsScreenState extends State<FeedsScreen> {
   _setupFeed() async {
     _setupStories();
 
-    String? userId = await SharedPreferencesUtil.getUserId();
+    // String? userId = await SharedPreferencesUtil.getUserId();
 
-    print(userId);
+    // print(userId);
     setState(() => _isLoadingFeed = true);
 
-    List<Post> posts = await DatabaseService.getAllFeedPosts(context);
+    // List<Post> posts = await DatabaseService.getAllFeedPosts(context);
     //  List<Post> posts = await DatabaseService.getAllFeedPosts(
     //   widget.currentUser!.id
     // );
 
-    posts.sort((a, b) => b.timestamp!.compareTo(a.timestamp!));
+    // posts.sort((a, b) => b.timestamp!.compareTo(a.timestamp!));
 
     setState(() {
-      _posts = posts;
+      _posts = Provider.of<UserData>(context, listen: false).feeds;
       _isLoadingFeed = false;
     });
 
@@ -102,49 +101,10 @@ class _FeedsScreenState extends State<FeedsScreen> {
     List<AppUser> followingUsers =
         await DatabaseService.getUserFollowingUsers(widget.currentUser?.id);
 
-    print(widget.currentUser!.id);
-
-    // AppUser currentUser =
-    //     Provider.of<UserData>(context, listen: false).currentUser;
-
     List<Story>? currentUserStories =
         await StoriesService.getStoriesByUserId(widget.currentUser?.id, true);
 
-    // Add current user to the first story circle
-    // followingUsers.insert(0, widget.currentUser);
-
-    // followingUsers.add(widget.currentUser);
-
     if (currentUserStories != null) {}
-
-    /* A method to add Admin stories to each user */
-    // if (widget.currentUser?.id != 'kAdminUId') {
-    //   bool isFollowingAdmin = false;
-
-    //   for (AppUser user in followingUsers) {
-    //     if (user != null) {
-    //       if (user.id == 'kAdminUId') {
-    //         isFollowingAdmin = true;
-    //       }
-    //     }
-    //   }
-    //   // if current user doesn't follow admin
-    //   if (!isFollowingAdmin) {
-    //     // get admin stories
-    //     List<Story> adminStories =
-    //         await StoriesService.getStoriesByUserId('kAdminUId', true);
-    //     if (!mounted) return;
-    //     // if there is admin stories
-    //     if (adminStories != null && adminStories.isNotEmpty) {
-    //       // get admin user
-    //       AppUser adminUser = await DatabaseService.getUserWithId('kAdminUId');
-    //       if (!mounted) return;
-    //       // add admin to story circle list
-    //       followingUsers.insert(0, adminUser);
-    //     }
-    //   }
-    // }
-    /* End of method to add Admin stories to each user */
 
     if (mounted) {
       setState(() {
@@ -157,14 +117,9 @@ class _FeedsScreenState extends State<FeedsScreen> {
   void _getCurrentUser() async {
     print('i have the current user now  ');
 
-    // String userId = await SharedPreferencesUtil.getUserId();
-
     if (widget.currentUser!.name == null) {
       AuthService.logout(context);
     }
-    // print('i have the current user now $userId ');
-    // setState(() => _currentUser = currentUser);
-    // AuthService.updateTokenWithUser(currentUser);
   }
 
   @override
@@ -239,12 +194,11 @@ class _FeedsScreenState extends State<FeedsScreen> {
                           MaterialPageRoute(
                               builder: (context) => AddPost(
                                   currentUserId: widget.currentUser!.id)));
-                          // Navigator.push(
-                          // context,
-                          // MaterialPageRoute(
-                          //     builder: (context) => UserPost(
-                          //         currentUserId: widget.currentUser!.id)));
- 
+                      // Navigator.push(
+                      // context,
+                      // MaterialPageRoute(
+                      //     builder: (context) => UserPost(
+                      //         currentUserId: widget.currentUser!.id)));
                     },
                     child: Padding(
                       padding: const EdgeInsets.only(bottom: 5),
@@ -311,7 +265,7 @@ class _FeedsScreenState extends State<FeedsScreen> {
                             ? Container(
                                 height: 88,
                                 child: Center(
-                                  child: SpinKitWanderingCubes(
+                                  child: SpinKitCircle(
                                       color: Colors.white, size: 40),
                                 ),
                               )
@@ -334,11 +288,11 @@ class _FeedsScreenState extends State<FeedsScreen> {
                               );
                             }
 
-                            Post post = _posts[index];
+                            Post? post = _posts[index];
 
                             return FutureBuilder(
                               future:
-                                  DatabaseService.getUserWithId(post.authorId),
+                                  DatabaseService.getUserWithId(post!.authorId),
                               builder: (BuildContext context,
                                   AsyncSnapshot snapshot) {
                                 if (!snapshot.hasData) {
@@ -379,7 +333,7 @@ class _FeedsScreenState extends State<FeedsScreen> {
               )
             : Center(
                 // If posts is loading
-                child: SpinKitWanderingCubes(color: Colors.white, size: 40),
+                child: SpinKitCircle(color: Colors.white, size: 40),
               ),
       ),
     ]);

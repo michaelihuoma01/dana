@@ -7,7 +7,6 @@ import 'package:Dana/models/models.dart';
 import 'package:Dana/models/user_data.dart';
 import 'package:Dana/models/user_model.dart';
 import 'package:Dana/screens/home.dart';
-import 'package:Dana/screens/pages/camera_screen/widgets/location_form.dart';
 import 'package:Dana/screens/pages/post_audience.dart';
 import 'package:Dana/services/api/auth_service.dart';
 import 'package:Dana/services/api/database_service.dart';

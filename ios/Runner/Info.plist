@@ -27,7 +27,7 @@
 			<string>Bundle Id</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>com.dubaitechnologydesign.dana</string>
+				<string>com.michaelihuoma.dana</string>
 			</array>
 		</dict>
 	</array>

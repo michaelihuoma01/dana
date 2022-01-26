@@ -287,8 +287,8 @@ class _CallsScreenState extends State<CallsScreen> {
                             // Call call = snapshot.data[index];
 
                             Call call =
-                              (snapshot.data!).values.elementAt(index); 
-                              
+                                (snapshot.data!).values.elementAt(index);
+
                             return _buildCall(call, widget.currentUser!.id);
                           },
                         ),

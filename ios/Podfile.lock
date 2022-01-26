@@ -352,7 +352,7 @@ PODS:
   - BoringSSL-GRPC/Interface (0.0.7)
   - camera (0.0.1):
     - Flutter
-  - cloud_firestore (2.5.4):
+  - cloud_firestore (3.1.5):
     - Firebase/Firestore (= 8.9.0)
     - firebase_core
     - Flutter
@@ -418,30 +418,30 @@ PODS:
   - Firebase/Storage (8.9.0):
     - Firebase/CoreOnly
     - FirebaseStorage (~> 8.9.0)
-  - firebase_analytics (8.3.4):
+  - firebase_analytics (9.0.4):
     - Firebase/Analytics (= 8.9.0)
     - firebase_core
     - Flutter
-  - firebase_auth (3.3.0):
+  - firebase_auth (3.3.4):
     - Firebase/Auth (= 8.9.0)
     - firebase_core
     - Flutter
-  - firebase_core (1.10.2):
+  - firebase_core (1.10.6):
     - Firebase/CoreOnly (= 8.9.0)
     - Flutter
-  - firebase_database (8.2.0):
+  - firebase_database (9.0.4):
     - Firebase/Database (= 8.9.0)
     - firebase_core
     - Flutter
-  - firebase_dynamic_links (3.0.2):
+  - firebase_dynamic_links (4.0.3):
     - Firebase/DynamicLinks (= 8.9.0)
     - firebase_core
     - Flutter
-  - firebase_messaging (10.0.9):
+  - firebase_messaging (11.2.4):
     - Firebase/Messaging (= 8.9.0)
     - firebase_core
     - Flutter
-  - firebase_storage (10.2.0):
+  - firebase_storage (10.2.4):
     - Firebase/Storage (= 8.9.0)
     - firebase_core
     - Flutter
@@ -513,8 +513,6 @@ PODS:
     - FirebaseCore (~> 8.0)
     - GTMSessionFetcher/Core (~> 1.5)
   - Flutter (1.0.0)
-  - flutter_email_sender (0.0.1):
-    - Flutter
   - flutter_image_compress (0.0.1):
     - Flutter
     - Mantle
@@ -522,12 +520,6 @@ PODS:
     - SDWebImageWebPCoder
   - flutter_local_notifications (0.0.1):
     - Flutter
-  - flutter_plugin_record (0.0.1):
-    - Flutter
-  - flutter_sound (8.3.9):
-    - Flutter
-    - mobile-ffmpeg-audio (= 4.4.LTS)
-    - tau_core (= 8.3.9)
   - FMDB (2.7.5):
     - FMDB/standard (= 2.7.5)
   - FMDB/standard (2.7.5)
@@ -616,12 +608,9 @@ PODS:
   - libwebp/mux (1.2.1):
     - libwebp/demux
   - libwebp/webp (1.2.1)
-  - location (0.0.1):
-    - Flutter
   - Mantle (2.1.6):
     - Mantle/extobjc (= 2.1.6)
   - Mantle/extobjc (2.1.6)
-  - mobile-ffmpeg-audio (4.4.LTS)
   - MTBBarcodeScanner (5.0.11)
   - nanopb (2.30908.0):
     - nanopb/decode (= 2.30908.0)
@@ -639,6 +628,8 @@ PODS:
     - Flutter
     - MTBBarcodeScanner
   - ReachabilitySwift (5.0.0)
+  - record (0.0.1):
+    - Flutter
   - SDWebImage (5.12.1):
     - SDWebImage/Core (= 5.12.1)
   - SDWebImage/Core (5.12.1)
@@ -655,10 +646,7 @@ PODS:
   - SwiftyGif (5.4.0)
   - syncfusion_flutter_pdfviewer (0.0.1):
     - Flutter
-  - tau_core (8.3.9)
   - url_launcher_ios (0.0.1):
-    - Flutter
-  - video_compress (0.3.0):
     - Flutter
   - video_player (0.0.1):
     - Flutter
@@ -683,25 +671,21 @@ DEPENDENCIES:
   - firebase_messaging (from `.symlinks/plugins/firebase_messaging/ios`)
   - firebase_storage (from `.symlinks/plugins/firebase_storage/ios`)
   - Flutter (from `Flutter`)
-  - flutter_email_sender (from `.symlinks/plugins/flutter_email_sender/ios`)
   - flutter_image_compress (from `.symlinks/plugins/flutter_image_compress/ios`)
   - flutter_local_notifications (from `.symlinks/plugins/flutter_local_notifications/ios`)
-  - flutter_plugin_record (from `.symlinks/plugins/flutter_plugin_record/ios`)
-  - flutter_sound (from `.symlinks/plugins/flutter_sound/ios`)
   - gallery_saver (from `.symlinks/plugins/gallery_saver/ios`)
   - image_picker (from `.symlinks/plugins/image_picker/ios`)
   - images_picker (from `.symlinks/plugins/images_picker/ios`)
-  - location (from `.symlinks/plugins/location/ios`)
   - open_file (from `.symlinks/plugins/open_file/ios`)
   - path_provider_ios (from `.symlinks/plugins/path_provider_ios/ios`)
   - permission_handler (from `.symlinks/plugins/permission_handler/ios`)
   - qr_code_scanner (from `.symlinks/plugins/qr_code_scanner/ios`)
+  - record (from `.symlinks/plugins/record/ios`)
   - share (from `.symlinks/plugins/share/ios`)
   - shared_preferences_ios (from `.symlinks/plugins/shared_preferences_ios/ios`)
   - sqflite (from `.symlinks/plugins/sqflite/ios`)
   - syncfusion_flutter_pdfviewer (from `.symlinks/plugins/syncfusion_flutter_pdfviewer/ios`)
   - url_launcher_ios (from `.symlinks/plugins/url_launcher_ios/ios`)
-  - video_compress (from `.symlinks/plugins/video_compress/ios`)
   - video_player (from `.symlinks/plugins/video_player/ios`)
   - wakelock (from `.symlinks/plugins/wakelock/ios`)
 
@@ -733,7 +717,6 @@ SPEC REPOS:
     - leveldb-library
     - libwebp
     - Mantle
-    - mobile-ffmpeg-audio
     - MTBBarcodeScanner
     - nanopb
     - PromisesObjC
@@ -741,7 +724,6 @@ SPEC REPOS:
     - SDWebImage
     - SDWebImageWebPCoder
     - SwiftyGif
-    - tau_core
     - ZLPhotoBrowser
 
 EXTERNAL SOURCES:
@@ -773,24 +755,16 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/firebase_storage/ios"
   Flutter:
     :path: Flutter
-  flutter_email_sender:
-    :path: ".symlinks/plugins/flutter_email_sender/ios"
   flutter_image_compress:
     :path: ".symlinks/plugins/flutter_image_compress/ios"
   flutter_local_notifications:
     :path: ".symlinks/plugins/flutter_local_notifications/ios"
-  flutter_plugin_record:
-    :path: ".symlinks/plugins/flutter_plugin_record/ios"
-  flutter_sound:
-    :path: ".symlinks/plugins/flutter_sound/ios"
   gallery_saver:
     :path: ".symlinks/plugins/gallery_saver/ios"
   image_picker:
     :path: ".symlinks/plugins/image_picker/ios"
   images_picker:
     :path: ".symlinks/plugins/images_picker/ios"
-  location:
-    :path: ".symlinks/plugins/location/ios"
   open_file:
     :path: ".symlinks/plugins/open_file/ios"
   path_provider_ios:
@@ -799,6 +773,8 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/permission_handler/ios"
   qr_code_scanner:
     :path: ".symlinks/plugins/qr_code_scanner/ios"
+  record:
+    :path: ".symlinks/plugins/record/ios"
   share:
     :path: ".symlinks/plugins/share/ios"
   shared_preferences_ios:
@@ -809,8 +785,6 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/syncfusion_flutter_pdfviewer/ios"
   url_launcher_ios:
     :path: ".symlinks/plugins/url_launcher_ios/ios"
-  video_compress:
-    :path: ".symlinks/plugins/video_compress/ios"
   video_player:
     :path: ".symlinks/plugins/video_player/ios"
   wakelock:
@@ -823,19 +797,19 @@ SPEC CHECKSUMS:
   audioplayers: 455322b54050b30ea4b1af7cd9e9d105f74efa8c
   BoringSSL-GRPC: 8edf627ee524575e2f8d19d56f068b448eea3879
   camera: fe33292aff715a981eb34d7ce7b35b54337ff34c
-  cloud_firestore: 0c744725c0d1544d77db2c8eb35ef919cb19a176
+  cloud_firestore: 338122a6149c14ca376ad363626b5bf3037a5056
   connectivity_plus: 413a8857dd5d9f1c399a39130850d02fe0feaf7e
   DKImagePickerController: b5eb7f7a388e4643264105d648d01f727110fc3d
   DKPhotoGallery: fdfad5125a9fdda9cc57df834d49df790dbb4179
   file_picker: 3e6c3790de664ccf9b882732d9db5eaf6b8d4eb1
   Firebase: 13d8d96499e2635428d5bf0ec675df21f95d9a95
-  firebase_analytics: 7a7528bb2abf4ca22cff7a57bbf909dcab73e13d
-  firebase_auth: 9b2e9b08f1d64fcf861f0409ac909a5cf9aa52dc
-  firebase_core: 6d1a5e12a83b6d9419ecb8f2a53d876e7b4695da
-  firebase_database: 61be02aa72266665cc73b1f267f21d19ba9b939e
-  firebase_dynamic_links: d79118550dc36eccc182e4990ed5d4342d5ab900
-  firebase_messaging: 1109f5449638254c47fb5904d24e11a4d7736c77
-  firebase_storage: 61f69613ac9897d37baa6690500f309a15454c14
+  firebase_analytics: cc1ab30e479b7089c0a952c0cae7ba286d464c68
+  firebase_auth: e875a50b81aefb20f305dfede425647e9675c19e
+  firebase_core: c263d7daf1dc92fcd9895e6abdc04872b0ee07ff
+  firebase_database: 7538bfd20724e08e710f43b6fd2059b88b30b5c9
+  firebase_dynamic_links: 32d0fe83b4c6252e6e62f8355e8d60672b1ddccf
+  firebase_messaging: dff5cd08781ee1de988565a83c977e435405cd7e
+  firebase_storage: 2ed331c6bd5bfa6d64f1a6c57f01151f4f146c16
   FirebaseAnalytics: 4ab446ce08a3fe52e8a4303dd997cf26276bf968
   FirebaseAuth: 2b78b2a32c07b3ecfa4970bdf1d3632b8304099b
   FirebaseCore: 599ee609343eaf4941bd188f85e3aa077ffe325b
@@ -847,11 +821,8 @@ SPEC CHECKSUMS:
   FirebaseMessaging: 82c4a48638f53f7b184f3cc9f6cd2cbe533ab316
   FirebaseStorage: 452c98c31ccb40b819764bf3039426c4388d9939
   Flutter: 50d75fe2f02b26cc09d224853bb45737f8b3214a
-  flutter_email_sender: 02d7443217d8c41483223627972bfdc09f74276b
   flutter_image_compress: fd2b476345226e1a10ea352fa306af95704642c1
   flutter_local_notifications: 0c0b1ae97e741e1521e4c1629a459d04b9aec743
-  flutter_plugin_record: 562ded56f3a109d769e72c3ef52ef20d835493d4
-  flutter_sound: 91c069f33d811a4c98b9aa7cec9cd1dbfd1786d9
   FMDB: 2ce00b547f966261cd18927a3ddb07cb6f3db82a
   gallery_saver: 9fc173c9f4fcc48af53b2a9ebea1b643255be542
   GoogleAppMeasurement: 837649ad3987936c232f6717c5680216f6243d24
@@ -864,9 +835,7 @@ SPEC CHECKSUMS:
   images_picker: 8508f4097cec731ab87d47564ed964aa3fe942c7
   leveldb-library: 50c7b45cbd7bf543c81a468fe557a16ae3db8729
   libwebp: 98a37e597e40bfdb4c911fc98f2c53d0b12d05fc
-  location: 3a2eed4dd2fab25e7b7baf2a9efefe82b512d740
   Mantle: 4c0ed6ce47c96eccc4dc3bb071deb3def0e2c3be
-  mobile-ffmpeg-audio: 1e0a053f8a6de57114e50ff48b3a85ff1c60f902
   MTBBarcodeScanner: f453b33c4b7dfe545d8c6484ed744d55671788cb
   nanopb: a0ba3315591a9ae0a16a309ee504766e90db0c96
   open_file: 02eb5cb6b21264bd3a696876f5afbfb7ca4f4b7d
@@ -875,6 +844,7 @@ SPEC CHECKSUMS:
   PromisesObjC: 68159ce6952d93e17b2dfe273b8c40907db5ba58
   qr_code_scanner: bb67d64904c3b9658ada8c402e8b4d406d5d796e
   ReachabilitySwift: 985039c6f7b23a1da463388634119492ff86c825
+  record: 7ee2393532f8553bbb09fa19e95478323b7c0a99
   SDWebImage: 4dc3e42d9ec0c1028b960a33ac6b637bb432207b
   SDWebImageWebPCoder: f93010f3f6c031e2f8fb3081ca4ee6966c539815
   share: 0b2c3e82132f5888bccca3351c504d0003b3b410
@@ -882,9 +852,7 @@ SPEC CHECKSUMS:
   sqflite: 6d358c025f5b867b29ed92fc697fd34924e11904
   SwiftyGif: 5d4af95df24caf1c570dbbcb32a3b8a0763bc6d7
   syncfusion_flutter_pdfviewer: bb9998884b864cfedf72628df3503bdf57e397c0
-  tau_core: f7bbd1c6a632f52c2fa7c14feea385ab966b1e45
   url_launcher_ios: 02f1989d4e14e998335b02b67a7590fa34f971af
-  video_compress: fce97e4fb1dfd88175aa07d2ffc8a2f297f87fbe
   video_player: ecd305f42e9044793efd34846e1ce64c31ea6fcb
   wakelock: d0fc7c864128eac40eba1617cb5264d9c940b46f
   ZLPhotoBrowser: 602d505d4f2cf7f309ce973c4353d33e85216d58

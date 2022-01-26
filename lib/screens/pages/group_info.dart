@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:Dana/calls/callscreens/pickup/pickup_layout.dart';
 import 'package:Dana/screens/home.dart';
 import 'package:Dana/screens/tabs/messages_screen.dart';
+import 'package:Dana/utils/utility.dart';
 import 'package:Dana/widgets/custom_modal_progress_hud.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -15,7 +16,6 @@ import 'package:Dana/widgets/contact_tile.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:rflutter_alert/rflutter_alert.dart';
 
 class GroupInfo extends StatefulWidget {
   final File? imageFile;
@@ -43,13 +43,12 @@ class _GroupInfoState extends State<GroupInfo> {
   String _searchText = '';
   List<AppUser> _userFollowing = [];
   List<AppUser?> _selectedUsers = [];
+  List<AppUser?> _friends = [];
+  bool isFriends = false;
 
-  List<bool> _userFollowingState = [];
-  int _followingCount = 0;
   bool _isLoading = false;
 
-  final TextEditingController textEditingController = TextEditingController();
-  final _formKey = GlobalKey<FormState>();
+  TextEditingController textEditingController = TextEditingController();
 
   Future<Chat> createGroup() async {
     _selectedUsers.add(widget.currentUser);
@@ -124,36 +123,165 @@ class _GroupInfoState extends State<GroupInfo> {
       _isLoading = true;
     });
 
-    int userFollowingCount =
-        await DatabaseService.numFollowing(widget.currentUser!.id);
-    if (!mounted) return;
-    setState(() {
-      _followingCount = userFollowingCount;
-    });
-
-    List<String> userFollowingIds =
-        await DatabaseService.getUserFollowingIds(widget.currentUser!.id);
-
     List<AppUser> userFollowing = [];
 
-    List<bool> userFollowingState = [];
-
     for (String? userId in widget.groupUserIds!) {
+      
+
       AppUser user = await DatabaseService.getUserWithId(userId);
-      userFollowingState.add(true);
+
       userFollowing.add(user);
+       
     }
     setState(() {
-      _userFollowingState = userFollowingState;
       _userFollowing = userFollowing;
-      _followingCount = userFollowing.length;
-      if (_followingCount != _followingCount) {
-        setState(() => _followingCount = _followingCount);
-      }
     });
+
+    List<String?> followingUsers =
+        await DatabaseService.getUserFollowingIds(widget.currentUser?.id);
+
+    List<String?> followerUsers =
+        await DatabaseService.getUserFollowersIds(widget.currentUser?.id);
+
+    var friendList = [...followingUsers, ...followerUsers].toSet().toList();
+
+    for (String? userId in friendList) {
+      var isFollowing = await DatabaseService.isUserFollower(
+        currentUserId: widget.currentUser!.id,
+        userId: userId,
+      );
+
+      var isFollower = await DatabaseService.isUserFollower(
+        currentUserId: userId,
+        userId: widget.currentUser!.id,
+      );
+
+      var friends = await DatabaseService.getUserWithId(userId);
+
+      if (isFollower == true && isFollowing == true) {
+        if (!widget.groupUserIds!.contains(friends.id)) {
+          setState(() {
+            isFriends = true;
+            _friends.add(friends);
+          });
+        }
+      }
+    }
+
     setState(() {
       _isLoading = false;
     });
+  }
+
+  addFriend() {
+    print('|||||||||||||||${_friends.length}');
+
+    showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return Padding(
+            padding: const EdgeInsets.all(20),
+            child: Dialog(
+              elevation: 0.0,
+              backgroundColor: Colors.transparent,
+              child: Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(10.0),
+                  color: darkColor,
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(10),
+                  child: Column(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.all(20),
+                        child: Text('Choose Friends',
+                            style: TextStyle(color: lightColor, fontSize: 20)),
+                      ),
+                      Expanded(
+                        child: ListView.builder(
+                          itemCount: _friends.length,
+                          itemBuilder: (BuildContext context, int index) {
+                            AppUser? follower = _friends[index];
+                            AppUser? filteritem = _selectedUsers.firstWhere(
+                                (item) => item!.id == follower!.id,
+                                orElse: () => null);
+                            return Theme(
+                              data:
+                                  ThemeData(unselectedWidgetColor: lightColor),
+                              child: GestureDetector(
+                                onTap: () async {
+                                  await chatsRef.doc(widget.chatID).update({
+                                    'memberIds':
+                                        FieldValue.arrayUnion([follower!.id])
+                                  }).then((value) {
+                                    Navigator.pop(context);
+
+                                    Utility.showMessage(context,
+                                        pulsate: false,
+                                        bgColor: Colors.green,
+                                        message: 'You added ${follower.name}');
+                                  });
+                                },
+                                child: ListTile(
+                                  title: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Expanded(
+                                          child: Row(children: [
+                                            Container(
+                                              height: 40,
+                                              width: 40,
+                                              child: CircleAvatar(
+                                                radius: 25.0,
+                                                backgroundColor: Colors.grey,
+                                                backgroundImage: (follower!
+                                                            .profileImageUrl!
+                                                            .isEmpty
+                                                        ? AssetImage(
+                                                            placeHolderImageRef)
+                                                        : CachedNetworkImageProvider(
+                                                            follower
+                                                                .profileImageUrl!))
+                                                    as ImageProvider<Object>?,
+                                              ),
+                                            ),
+                                            SizedBox(width: 15),
+                                            Flexible(
+                                              child: Column(
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.start,
+                                                children: [
+                                                  Text(follower.name!,
+                                                      style: TextStyle(
+                                                          color: Colors.white,
+                                                          fontSize: 18)),
+                                                  Text('PIN: ${follower.pin}',
+                                                      maxLines: 3,
+                                                      style: TextStyle(
+                                                          color: Colors.grey)),
+                                                ],
+                                              ),
+                                            )
+                                          ]),
+                                        ),
+                                        Icon(Icons.add_sharp,
+                                            color: lightColor, size: 22),
+                                      ]),
+                                ),
+                              ),
+                            );
+                          },
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          );
+        });
   }
 
   @override
@@ -190,6 +318,17 @@ class _GroupInfoState extends State<GroupInfo> {
                     automaticallyImplyLeading: true,
                     iconTheme: IconThemeData(color: Colors.white),
                     brightness: Brightness.dark,
+                    actions: [
+                      GestureDetector(
+                        onTap: () {
+                          addFriend();
+                        },
+                        child: Padding(
+                          padding: const EdgeInsets.all(10),
+                          child: Icon(Icons.person_add, color: lightColor),
+                        ),
+                      )
+                    ],
                   )),
               floatingActionButton: new FloatingActionButton(
                 backgroundColor: lightColor,
@@ -266,12 +405,34 @@ class _GroupInfoState extends State<GroupInfo> {
                                                     style: TextStyle(
                                                         color: lightColor,
                                                         fontSize: 15))
-                                                : Text(follower.pin!,
+                                                : Text('PIN: ${follower.pin!}',
                                                     style: TextStyle(
                                                         color: Colors.white,
                                                         fontSize: 15))
                                           ]),
                                       Spacer(),
+                                      if (widget.admin ==
+                                          widget.currentUser!.id)
+                                        GestureDetector(
+                                          onTap: () async {
+                                            await chatsRef
+                                                .doc(widget.chatID)
+                                                .update({
+                                              'admin': follower.id
+                                            }).then((value) {
+                                              Utility.showMessage(context,
+                                                  pulsate: false,
+                                                  bgColor: Colors.green,
+                                                  message:
+                                                      '${follower.name} is now the group admin');
+                                            });
+                                          },
+                                          child: Icon(
+                                              Icons.admin_panel_settings,
+                                              color: lightColor,
+                                              size: 23),
+                                        ),
+                                      SizedBox(width: 10),
                                       if (widget.admin ==
                                           widget.currentUser!.id)
                                         GestureDetector(
@@ -290,7 +451,7 @@ class _GroupInfoState extends State<GroupInfo> {
                                             });
                                           },
                                           child: Icon(Icons.delete,
-                                              color: Colors.red, size: 20),
+                                              color: Colors.red, size: 23),
                                         ),
                                     ],
                                   ),

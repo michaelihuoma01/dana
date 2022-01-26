@@ -7,7 +7,6 @@ import 'package:camera/camera.dart';
 import 'package:Dana/generated/l10n.dart';
 import 'package:Dana/screens/pages/camera_screen/nested_screens/create_post_screen.dart';
 import 'package:Dana/services/core/filtered_image_converter.dart';
-import 'package:Dana/services/core/liquid_swipe_pages.dart';
 import 'package:Dana/utilities/filters.dart';
 import 'package:Dana/utils/constants.dart';
 import 'package:Dana/widgets/crop_key.dart';

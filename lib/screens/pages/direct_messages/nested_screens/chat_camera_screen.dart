@@ -109,17 +109,17 @@ class _ChatCameraScreenState extends State<ChatCameraScreen>
               ),
             ),
           ),
-            Align(
+          Align(
             alignment: Alignment.centerRight,
             child: Container(
               height: 300,
-              width: 50, 
+              width: 50,
               child: RotatedBox(
                 quarterTurns: 3,
                 child: Slider(
                   activeColor: Colors.white,
                   inactiveColor: Colors.grey,
-                  value: zoom, 
+                  value: zoom,
                   label: zoom.toString(),
                   onChanged: (value) {
                     print(value);
@@ -415,7 +415,7 @@ class _ChatCameraScreenState extends State<ChatCameraScreen>
           Navigator.push(
               context,
               MaterialPageRoute(
-                  builder: (_) => CreateStoryScreen(File(imagePath!))));
+                  builder: (_) => CreateStoryScreen(File(imagePath!), false)));
         } else {
           Utility.showMessage(context,
               bgColor: Colors.red,
@@ -434,7 +434,7 @@ class _ChatCameraScreenState extends State<ChatCameraScreen>
     var fileType = mimeStr.split('/');
     print('file type $fileType');
     // if (fileType.first.contains('video')) {
-      Navigator.pop(context, imagePath);
+    Navigator.pop(context, imagePath);
     // } else {
     //   var croppedImage = await _cropImage(File(imagePath!));
 

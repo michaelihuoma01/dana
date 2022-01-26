@@ -40,7 +40,7 @@ class _CameraScreenState extends State<CameraScreen>
   CameraConsumer? _cameraConsumer = CameraConsumer.post;
   bool fromCamera = false;
   bool isRecording = false;
-  double zoom = 0.0; 
+  double zoom = 0.0;
   bool isInitialize = false;
 
   @override
@@ -56,7 +56,7 @@ class _CameraScreenState extends State<CameraScreen>
     }
 
     super.initState();
-  } 
+  }
 
   @override
   void dispose() {
@@ -116,13 +116,13 @@ class _CameraScreenState extends State<CameraScreen>
             alignment: Alignment.centerRight,
             child: Container(
               height: 300,
-              width: 50, 
+              width: 50,
               child: RotatedBox(
                 quarterTurns: 3,
                 child: Slider(
                   activeColor: Colors.white,
                   inactiveColor: Colors.grey,
-                  value: zoom, 
+                  value: zoom,
                   label: zoom.toString(),
                   onChanged: (value) {
                     print(value);
@@ -365,6 +365,7 @@ class _CameraScreenState extends State<CameraScreen>
   // }
 
   void getGalleryImage() async {
+    
     var pickedFile = await A.ImagesPicker.pick(
       language: A.Language.English,
       pickType: A.PickType.all,
@@ -418,13 +419,17 @@ class _CameraScreenState extends State<CameraScreen>
           Navigator.push(
               context,
               MaterialPageRoute(
-                  builder: (_) => CreateStoryScreen(File(imagePath!))));
+                  builder: (_) => CreateStoryScreen(File(imagePath!), false)));
         } else {
-          Utility.showMessage(context,
-              bgColor: Colors.red,
-              message: 'Videos cannot be added to story',
-              pulsate: false,
-              type: MessageTypes.error);
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (_) => CreateStoryScreen(File(imagePath!), true)));
+          // Utility.showMessage(context,
+          //     bgColor: Colors.red,
+          //     message: 'Videos cannot be added to story',
+          //     pulsate: false,
+          //     type: MessageTypes.error);
         }
       }
     } else {
@@ -466,13 +471,17 @@ class _CameraScreenState extends State<CameraScreen>
         Navigator.push(
             context,
             MaterialPageRoute(
-                builder: (_) => CreateStoryScreen(File(imagePath!))));
+                builder: (_) => CreateStoryScreen(File(imagePath!), false)));
       } else {
-        Utility.showMessage(context,
-            bgColor: Colors.red,
-            message: 'Videos cannot be added to story',
-            pulsate: false,
-            type: MessageTypes.error);
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (_) => CreateStoryScreen(File(imagePath!), true)));
+        // Utility.showMessage(context,
+        //     bgColor: Colors.red,
+        //     message: 'Videos cannot be added to story',
+        //     pulsate: false,
+        //     type: MessageTypes.error);
       }
     }
   }

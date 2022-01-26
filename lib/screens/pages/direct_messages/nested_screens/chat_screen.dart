@@ -3,7 +3,7 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:Dana/screens/pages/direct_messages/nested_screens/chat_camera_screen.dart';
-import 'package:audioplayers/audioplayers.dart';
+import 'package:auto_direction/auto_direction.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:camera/camera.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -30,8 +30,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_plugin_record/flutter_plugin_record.dart';
-import 'package:flutter_sound/public/flutter_sound_recorder.dart';
+// import 'package:flutter_sound/public/flutter_sound_recorder.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:http/http.dart';
 import 'package:image_picker/image_picker.dart';
@@ -40,11 +39,9 @@ import 'package:ionicons/ionicons.dart';
 import 'package:mime/mime.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
-// import 'package:instagram/utilities/repo_const.dart';
 import 'package:provider/provider.dart';
-import 'package:auto_direction/auto_direction.dart';
 import 'package:giphy_get/giphy_get.dart';
-// import 'package:record_mp3/record_mp3.dart';
+import 'package:record/record.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
 class ChatScreen extends StatefulWidget {
@@ -83,8 +80,8 @@ class _ChatScreenState extends State<ChatScreen> {
   var cameras;
   bool isRemoved = false;
   bool _mRecorderIsInited = false;
-  FlutterSoundRecorder? _myRecorder;
-  // FlutterPluginRecord? recordPlugin;
+  // FlutterSoundRecorder? _myRecorder;
+  Record? recordPlugin;
 
   @override
   void initState() {
@@ -101,15 +98,15 @@ class _ChatScreenState extends State<ChatScreen> {
 
   _setup() async {
     setState(() => _isLoading = true);
-    _myRecorder = new FlutterSoundRecorder();
-    _myRecorder!.setSubscriptionDuration(Duration(seconds: 1));
+    // _myRecorder = new FlutterSoundRecorder();
+    // _myRecorder!.setSubscriptionDuration(Duration(seconds: 1));
 
-    _myRecorder!.openAudioSession().then((value) {
-      setState(() {
-        _mRecorderIsInited = true;
-      });
-    });
-    // recordPlugin = new FlutterPluginRecord();
+    // _myRecorder!.openAudioSession().then((value) {
+    //   setState(() {
+    //     _mRecorderIsInited = true;
+    //   });
+    // });
+    recordPlugin = new Record();
 
     cameras = await availableCameras();
 
@@ -250,13 +247,17 @@ class _ChatScreenState extends State<ChatScreen> {
   Future<void> startRecord() async {
     recordFilePath = await getFilePath();
 
-    await _myRecorder!.startRecorder(toFile: recordFilePath);
+    // await _myRecorder!.startRecorder(toFile: recordFilePath);
+    await recordPlugin!.start(
+        path: recordFilePath, // required
+        encoder: AudioEncoder.AAC // by default
+        );
   }
 
   Future<void> stopRecord() async {
-    // recordPlugin!.stop();
+    recordPlugin!.stop();
 
-    await _myRecorder!.stopRecorder();
+    // await _myRecorder!.stopRecorder();
     setState(() {
       isSending = true;
     });
@@ -965,13 +966,26 @@ class _ChatScreenState extends State<ChatScreen> {
                   children: [
                     GestureDetector(
                       onTap: () {
-                        CustomNavigation.navigateToUserProfile(
-                          context: context,
-                          appUser: widget.receiverUser,
-                          userId: widget.receiverUser!.id,
-                          currentUserId: _currentUser!.id,
-                          isCameFromBottomNavigation: false,
-                        );
+                        (widget.isGroup == true)
+                            ? Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) => GroupInfo(
+                                      currentUser: _currentUser,
+                                      groupUsers: groupMembers,
+                                      groupUserIds: widget.userIds,
+                                      admin: widget.admin,
+                                      chatID: _chat!.id,
+                                      groupName: widget.groupName),
+                                ),
+                              )
+                            : CustomNavigation.navigateToUserProfile(
+                                context: context,
+                                appUser: widget.receiverUser,
+                                userId: widget.receiverUser!.id,
+                                currentUserId: _currentUser!.id,
+                                isCameFromBottomNavigation: false,
+                              );
                       },
                       child: (widget.isGroup == true)
                           ? CircleAvatar(

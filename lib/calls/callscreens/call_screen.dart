@@ -379,8 +379,6 @@ class _CallScreenState extends State<CallScreen> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
-          SizedBox(width: 20),
-
           GestureDetector(
               onTap: _onToggleMute,
               child: Container(
@@ -394,19 +392,7 @@ class _CallScreenState extends State<CallScreen> {
                       color:
                           muted ? Colors.black.withOpacity(0.7) : Colors.white,
                       size: 20.0))),
-          // RawMaterialButton(
-          //   onPressed: _onToggleMute,
-          //   child: Icon(
-          //     muted ? Icons.mic : Icons.mic_off,
-          //     color: muted ? Colors.white : Colors.white,
-          //     size: 20.0,
-          //   ),
-          //   shape: CircleBorder(),
-          //   fillColor: muted ? lightColor : Colors.white.withOpacity(0.5),
-          //   padding: const EdgeInsets.all(12.0),
-          // ),
           SizedBox(width: 20),
-
           GestureDetector(
               onTap: () async {
                 await _engine.leaveChannel().then((value) {
@@ -433,20 +419,22 @@ class _CallScreenState extends State<CallScreen> {
                   // width: 30.0,
                   child:
                       Icon(Icons.call_end, color: Colors.white, size: 20.0))),
-
-          // SizedBox(width: 20),
-
+          SizedBox(width: 20),
           (widget.isAudio == false)
-              ? RawMaterialButton(
-                  onPressed: _onSwitchCamera,
-                  child: Icon(
-                    Icons.flip_camera_ios_rounded,
-                    color: Colors.white,
-                    size: 20.0,
+              ? GestureDetector(
+                  onTap: _onSwitchCamera,
+                  child: Container(
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: Colors.white.withOpacity(0.3),
+                    ),
+                    child: Icon(
+                      Icons.flip_camera_ios_rounded,
+                      color: Colors.white,
+                      size: 20.0,
+                    ),
+                    padding: const EdgeInsets.all(15.0),
                   ),
-                  shape: CircleBorder(),
-                  fillColor: Colors.white.withOpacity(0.3),
-                  padding: const EdgeInsets.all(12.0),
                 )
               : GestureDetector(
                   onTap: _enableSpeaker,
@@ -503,14 +491,12 @@ class _CallScreenState extends State<CallScreen> {
                                   style: TextStyle(color: Colors.white)),
                             ),
                           ),
-
                     Positioned(
                       top: 30,
                       right: 10,
                       child: GestureDetector(
                         onTap: () {
                           if (height == 180 && width == 120) {
-                            print('tapopopop');
                             setState(() {
                               height = 570;
                               width = 350;
@@ -528,7 +514,6 @@ class _CallScreenState extends State<CallScreen> {
                             child: Center(child: rtc_local_view.SurfaceView())),
                       ),
                     ),
-
                     if (start == true)
                       Positioned(
                           top: 10,
@@ -545,25 +530,6 @@ class _CallScreenState extends State<CallScreen> {
                               _getResendVerificationButton()
                             ],
                           )),
-
-                    // Stack(
-                    //   children: <Widget>[
-                    //     // _viewRows(),
-                    //     Center(
-                    //       child: rtc_remote_view.SurfaceView(uid: _remoteUid),
-                    //     ),
-                    //     Align(
-                    //       alignment: Alignment.topLeft,
-                    //       child: Container(
-                    //         height: 120,
-                    //         width: 150,
-                    //         child: Center(child: rtc_local_view.SurfaceView())
-                    //       ),
-                    //     ),
-                    //     // _panel(),
-                    //     _toolbar(),
-                    //   ],
-                    // ),
                   ],
                 ),
                 bottomNavigationBar: _toolbar(),
@@ -587,20 +553,23 @@ class _CallScreenState extends State<CallScreen> {
                                   ? widget.call.callerPic
                                   : widget.call.receiverPic,
                               isRound: true,
-                              radius: 150,
+                              radius: 100,
                             ),
                           ),
-                          SizedBox(height: 20),
+                          SizedBox(height: 10),
                           Text(
-                            (widget.call.receiverId == widget.currentUserId)
-                                ? widget.call.callerName!
-                                : widget.call.receiverName!,
-                            style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 30,
-                                fontFamily: 'Poppins-Regular',
-                                color: Colors.white),
-                          ),
+                              (widget.call.receiverId == widget.currentUserId)
+                                  ? widget.call.callerName!
+                                  : widget.call.receiverName!,
+                              style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 26,
+                                  fontFamily: 'Poppins-Regular',
+                                  color: Colors.white)),
+                          if (_remoteUid == null)
+                            Text('Connecting...',
+                                style: TextStyle(
+                                    color: Colors.white, fontSize: 18)),
                         ],
                       ),
                       if (start == true)

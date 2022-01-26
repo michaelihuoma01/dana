@@ -34,7 +34,7 @@ class _SplashScreenState extends State<SplashScreen> {
           MaterialPageRoute(
               builder: (context) => HomeScreen(
                     // currentUser: currentUser,
-                    currentUserId:userId,
+                    currentUserId: userId,
                   )),
           (Route<dynamic> route) => false);
     } else {

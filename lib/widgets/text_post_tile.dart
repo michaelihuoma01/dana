@@ -130,7 +130,7 @@ class _TextPostState extends State<TextPost> {
           'https://danasocial.page.link/?$param=$code'), //$route?code=$code'),
       androidParameters: AndroidParameters(
           packageName: 'com.michaelihuoma.dana', minimumVersion: 1),
-      iosParameters: IosParameters(
+      iosParameters: IOSParameters(
           bundleId: 'com.dubaitechnologydesign.dana',
           minimumVersion: '1',
           appStoreId: '1589760284'),
@@ -138,9 +138,18 @@ class _TextPostState extends State<TextPost> {
           NavigationInfoParameters(forcedRedirectEnabled: true),
     );
 
-    Uri dynamicUrl = short
-        ? (await parameters.buildShortLink()).shortUrl
-        : (await parameters.buildUrl());
+    // Uri dynamicUrl = short
+    //     ? (await parameters.buildShortLink()).shortUrl
+    //     : (await parameters.buildUrl());
+
+     Uri dynamicUrl;
+    if (short == true) {
+      dynamicUrl =
+          (await FirebaseDynamicLinks.instance.buildShortLink(parameters))
+              .shortUrl;
+    } else {
+      dynamicUrl = (await FirebaseDynamicLinks.instance.buildLink(parameters));
+    }
 
     return dynamicUrl;
   }

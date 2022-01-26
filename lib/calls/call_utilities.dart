@@ -12,7 +12,11 @@ import 'package:flutter/material.dart';
 class CallUtils {
   static final CallMethods callMethods = CallMethods();
 
-  static dial({required AppUser from, required AppUser to, context, bool? isAudio}) async {
+  static dial(
+      {required AppUser from,
+      required AppUser to,
+      context,
+      bool? isAudio}) async {
     Call call = Call(
       callerId: from.id,
       callerName: from.name,

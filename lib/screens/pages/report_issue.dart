@@ -17,7 +17,6 @@ import 'package:Dana/widgets/appbar_widget.dart';
 import 'package:Dana/widgets/button_widget.dart';
 import 'package:Dana/widgets/textformfield_widget.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_email_sender/flutter_email_sender.dart';
 import 'package:provider/provider.dart';
 
 class ReportScreen extends StatefulWidget {

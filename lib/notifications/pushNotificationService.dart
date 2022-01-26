@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:Dana/models/models.dart';
 import 'package:Dana/models/user_model.dart';
 import 'package:Dana/screens/pages/direct_messages/nested_screens/full_screen_image.dart';
 import 'package:Dana/services/api/auth_service.dart';
@@ -12,6 +13,7 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:provider/provider.dart';
 
 class PushNotificationService {
   final FirebaseMessaging fcm = FirebaseMessaging.instance;
@@ -140,23 +142,24 @@ class PushNotificationService {
     });
   }
 
-  Future<String?> getToken() async {
+  Future<String?> getToken(context) async {
     String? token = await fcm.getToken();
-    print('token: $token');
 
-    final currentUser = _auth.currentUser!;
-
-    final userDoc = await usersRef.doc(currentUser.uid).get();
-    if (userDoc.exists) {
-      AppUser user = AppUser.fromDoc(userDoc);
-      if (token != user.token) {
-        usersRef
-            .doc(currentUser.uid)
-            .set({'token': token}, SetOptions(merge: true));
+    String? currentUserId =
+        Provider.of<UserData>(context, listen: false).currentUserId;
+    if (currentUserId != null) {
+      final userDoc = await usersRef.doc(currentUserId).get();
+      if (userDoc.exists) {
+        AppUser user = AppUser.fromDoc(userDoc);
+        if (token != user.token) {
+          usersRef
+              .doc(currentUserId)
+              .set({'token': token}, SetOptions(merge: true));
+        }
       }
-    }
 
-    fcm.subscribeToTopic('allusers');
+      fcm.subscribeToTopic('allusers');
+    }
   }
 
   static String getuserID(Map<String, dynamic> message) {

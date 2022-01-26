@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:auto_direction/auto_direction.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:chewie/chewie.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:Dana/models/models.dart';
 import 'package:Dana/models/story_model.dart';
@@ -24,6 +25,7 @@ import 'package:ionicons/ionicons.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:timeago/timeago.dart' as timeago;
+import 'package:video_player/video_player.dart';
 
 class StoryScreen extends StatefulWidget {
   final List<Story> stories;
@@ -54,9 +56,28 @@ class _StoryScreenState extends State<StoryScreen>
   bool isSending = false;
   Locale? myLocale;
 
+  VideoPlayerController? _controller;
+
+  ChewieController? chewieController;
+
   @override
   void initState() {
     super.initState();
+
+    _controller =
+        VideoPlayerController.network(widget.stories[_currentIndex!].imageUrl!)
+          ..initialize().then((_) {
+            // Ensure the first frame is shown after the video is initialized, even before the play button has been pressed.
+            setState(() {});
+          });
+
+    chewieController = ChewieController(
+        videoPlayerController: _controller!,
+        autoPlay: false,
+        looping: false,
+        showOptions: false,
+        showControlsOnInitialize: true);
+
     _pageController = PageController();
     _animController = AnimationController(vsync: this);
     setState(() => _seenStories = widget.seenStories);
@@ -93,6 +114,7 @@ class _StoryScreenState extends State<StoryScreen>
   void dispose() {
     _pageController?.dispose();
     _animController?.dispose();
+    _controller!.dispose();
     super.dispose();
   }
 
@@ -166,6 +188,17 @@ class _StoryScreenState extends State<StoryScreen>
     bool isCurrentUser = currentUser!.id == widget.user!.id ? true : false;
     myLocale = Localizations.localeOf(context);
 
+    // if (widget.stories[_currentIndex!].filter == 'true') {
+    //   _controller!.addListener(() {
+    //     if (_controller!.value.isPlaying) {
+    //       _animController!.stop();
+    //       _animController!.reset();
+    //       _animController!.duration =
+    //           Duration(seconds: widget.stories[_currentIndex!].duration ?? 10);
+    //       _animController!.forward();
+    //     }
+    //   });
+    // }
     return Scaffold(
       backgroundColor: Colors.black,
       resizeToAvoidBottomInset: false,
@@ -199,7 +232,6 @@ class _StoryScreenState extends State<StoryScreen>
             },
             onLongPressStart: (details) {
               _animController?.stop();
-              print('long press');
             },
             onLongPressEnd: (details) {
               _animController?.forward();
@@ -363,19 +395,49 @@ class _StoryScreenState extends State<StoryScreen>
                           }
                         }
                       },
-                      child: CachedNetworkImage(
-                        imageUrl: story.imageUrl!,
-                        fit: BoxFit.cover,
-                        fadeInDuration: Duration(milliseconds: 500),
-                        progressIndicatorBuilder:
-                            (context, url, downloadProgress) {
-                          return Center(
-                            child: CircularProgressIndicator(
-                                color: lightColor,
-                                value: downloadProgress.progress),
-                          );
-                        },
-                      ),
+                      child: (story.filter == 'true')
+                          ? Stack(
+                              children: [
+                                Hero(
+                                  tag: story.imageUrl!,
+                                  child: _controller!.value.isInitialized
+                                      ? Chewie(controller: chewieController!)
+                                      : CircularProgressIndicator(
+                                          color: lightColor),
+                                ),
+                                Positioned(
+                                  left: 0,
+                                  bottom: 0,
+                                  top: 0,
+                                  child: Container(
+                                      height: double.infinity,
+                                      width: 140,
+                                      color: Colors.transparent),
+                                ),
+                                Positioned(
+                                  bottom: 0,
+                                  top: 0,
+                                  right: 0,
+                                  child: Container(
+                                      height: double.infinity,
+                                      width: 140,
+                                      color: Colors.transparent),
+                                ),
+                              ],
+                            )
+                          : CachedNetworkImage(
+                              imageUrl: story.imageUrl!,
+                              fit: BoxFit.cover,
+                              fadeInDuration: Duration(milliseconds: 500),
+                              progressIndicatorBuilder:
+                                  (context, url, downloadProgress) {
+                                return Center(
+                                  child: CircularProgressIndicator(
+                                      color: lightColor,
+                                      value: downloadProgress.progress),
+                                );
+                              },
+                            ),
                     ),
                     if (isCurrentUser)
                       Positioned(
@@ -625,9 +687,6 @@ class _StoryScreenState extends State<StoryScreen>
               },
             ),
           ),
-          // GestureDetector(
-          //     onLongPress: () => print('fuck up'),
-          //     child: Container(color: Colors.red)),
         ],
       ),
     );
@@ -709,6 +768,13 @@ class _StoryScreenState extends State<StoryScreen>
   }
 
   void _loadStory({required Story story, bool animateToPage = true}) {
+    // if (story.filter == 'true') {
+    //   if (!_controller!.value.isInitialized) {
+    //     _animController!.stop();
+    //     _animController!.reset();
+    //     _animController!.duration = Duration(seconds: story.duration ?? 10);
+    //   }
+    // } else {
     _animController!.stop();
     _animController!.reset();
     _animController!.duration = Duration(seconds: story.duration ?? 10);
@@ -728,3 +794,4 @@ class _StoryScreenState extends State<StoryScreen>
     });
   }
 }
+// }

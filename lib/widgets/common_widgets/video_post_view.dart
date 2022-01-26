@@ -142,7 +142,7 @@ class _VideoPostViewState extends State<VideoPostView> {
     );
   }
 
-    Future<Uri> createDynamicLink(
+  Future<Uri> createDynamicLink(
     String? code, {
     // String route = '/invite',
     String param = 'id',
@@ -154,17 +154,21 @@ class _VideoPostViewState extends State<VideoPostView> {
           'https://danasocial.page.link/?$param=$code'), //$route?code=$code'),
       androidParameters: AndroidParameters(
           packageName: 'com.michaelihuoma.dana', minimumVersion: 1),
-      iosParameters: IosParameters(
+      iosParameters: IOSParameters(
           bundleId: 'com.dubaitechnologydesign.dana',
           minimumVersion: '1',
           appStoreId: '1589760284'),
       navigationInfoParameters:
           NavigationInfoParameters(forcedRedirectEnabled: true),
     );
-
-    Uri dynamicUrl = short
-        ? (await parameters.buildShortLink()).shortUrl
-        : (await parameters.buildUrl());
+    Uri dynamicUrl;
+    if (short == true) {
+      dynamicUrl =
+          (await FirebaseDynamicLinks.instance.buildShortLink(parameters))
+              .shortUrl;
+    } else {
+      dynamicUrl = (await FirebaseDynamicLinks.instance.buildLink(parameters));
+    }
 
     return dynamicUrl;
   }
@@ -173,16 +177,15 @@ class _VideoPostViewState extends State<VideoPostView> {
     return _androidDialog();
   }
 
-_saveAndShareFile() async {
+  _saveAndShareFile() async {
     // final RenderBox box = context.findRenderObject() as RenderBox;
 
     Uri dynamicLink = await createDynamicLink(widget.post!.id);
 
     var response = await get(Uri.parse(widget.post!.imageUrl!));
-var documentDirectory;
+    var documentDirectory;
 
-
-     if (Platform.isAndroid) {
+    if (Platform.isAndroid) {
       documentDirectory = (await getExternalStorageDirectory())!.path;
     } else {
       documentDirectory = (await getApplicationDocumentsDirectory()).path;
@@ -193,7 +196,8 @@ var documentDirectory;
 
     Share.shareFiles([imgFile.path],
         subject: 'Have a look at ${widget.author!.name} post!',
-        text: 'Have a look at ${widget.author!.name} post: ${widget.post!.caption} \n${dynamicLink.toString()}');
+        text:
+            'Have a look at ${widget.author!.name} post: ${widget.post!.caption} \n${dynamicLink.toString()}');
     // sharePositionOrigin: box.localToGlobal(Offset.zero) & box.size);
   }
 
@@ -456,35 +460,35 @@ var documentDirectory;
                     ),
                   ),
                   // if (widget.author!.id == widget.currentUserId)
-                    (myLocale?.languageCode == 'en')
-                        ? Positioned(
-                            bottom: 0,
-                            right: 0,
-                            child: Padding(
-                                padding: const EdgeInsets.only(
-                                    right: 20, bottom: 10),
-                                child: GestureDetector(
-                                  child: Icon(Icons.more_vert,
-                                      color: Colors.white),
-                                  onTap: () {
-                                    _showMenuDialog();
-                                  },
-                                )),
-                          )
-                        : Positioned(
-                            bottom: 0,
-                            left: 20,
-                            child: Padding(
-                                padding: const EdgeInsets.only(
-                                    right: 20, bottom: 10),
-                                child: GestureDetector(
-                                  child: Icon(Icons.more_vert,
-                                      color: Colors.white),
-                                  onTap: () {
-                                    _showMenuDialog();
-                                  },
-                                )),
-                          )
+                  (myLocale?.languageCode == 'en')
+                      ? Positioned(
+                          bottom: 0,
+                          right: 0,
+                          child: Padding(
+                              padding:
+                                  const EdgeInsets.only(right: 20, bottom: 10),
+                              child: GestureDetector(
+                                child:
+                                    Icon(Icons.more_vert, color: Colors.white),
+                                onTap: () {
+                                  _showMenuDialog();
+                                },
+                              )),
+                        )
+                      : Positioned(
+                          bottom: 0,
+                          left: 20,
+                          child: Padding(
+                              padding:
+                                  const EdgeInsets.only(right: 20, bottom: 10),
+                              child: GestureDetector(
+                                child:
+                                    Icon(Icons.more_vert, color: Colors.white),
+                                onTap: () {
+                                  _showMenuDialog();
+                                },
+                              )),
+                        )
                 ],
               ),
             ),

@@ -66,7 +66,7 @@ class _MessagesScreenState extends State<MessagesScreen> {
       for (var doc in q.docs) {
         Chat chatFromDoc = Chat.fromDoc(doc);
         List<dynamic> memberIds = chatFromDoc.memberIds!;
-       int? receiverIndex;
+        int? receiverIndex;
 
         // Getting receiver index
         memberIds.forEach((userId) {
@@ -203,11 +203,10 @@ class _MessagesScreenState extends State<MessagesScreen> {
               ? CircleAvatar(
                   backgroundColor: Colors.white,
                   radius: 28.0,
-                  backgroundImage:
-                      (chat.groupUrl == ''
+                  backgroundImage: (chat.groupUrl == ''
                           ? AssetImage(placeHolderImageRef)
-                          : CachedNetworkImageProvider(chat
-                              .groupUrl!)) as ImageProvider<Object>?,
+                          : CachedNetworkImageProvider(chat.groupUrl!))
+                      as ImageProvider<Object>?,
                 )
               : CircleAvatar(
                   backgroundColor: Colors.white,
@@ -377,7 +376,10 @@ class _MessagesScreenState extends State<MessagesScreen> {
 
                                                 await chatsRef
                                                     .doc(chat.id)
-                                                    .collection( (chat.groupName != '') ? 'groupMessages' : 'messages')
+                                                    .collection(
+                                                        (chat.groupName != '')
+                                                            ? 'groupMessages'
+                                                            : 'messages')
                                                     .get()
                                                     .then((docs) {
                                                   docs.docs.forEach((element) {

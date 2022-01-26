@@ -7,7 +7,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:Dana/generated/l10n.dart';
 import 'package:Dana/models/post_model.dart';
 import 'package:Dana/models/user_data.dart';
-import 'package:Dana/screens/pages/camera_screen/widgets/location_form.dart';
 import 'package:Dana/screens/pages/camera_screen/widgets/post_caption_form.dart';
 import 'package:Dana/services/api/database_service.dart';
 import 'package:Dana/services/api/storage_service.dart';

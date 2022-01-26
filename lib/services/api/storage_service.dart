@@ -6,7 +6,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:uuid/uuid.dart';
-import 'package:video_compress/video_compress.dart';
 
 class StroageService {
   static Future<String> uploadUserProfileImage(
@@ -47,14 +46,6 @@ class StroageService {
 
   static Future<String> uploadPostVideo(File imageFile) async {
     String imageId = Uuid().v4();
-
-    // await VideoCompress.setLogLevel(0);
-    // MediaInfo mediaInfo = await VideoCompress.compressVideo(
-    //   imageFile.path,
-    //   quality: VideoQuality.LowQuality,
-    //   includeAudio: true,
-    //   deleteOrigin: false, // It's false by default
-    // );
 
     UploadTask uploadTask = storageRef
         .child('videos/posts/post_video$imageId.mp4')
@@ -113,16 +104,21 @@ class StroageService {
     return downloadUrl;
   }
 
-  static Future<String> uploadMessageVideo(File imageFile) async {
+  static Future<String> uploadStoryVideo(File imageFile) async {
     String imageId = Uuid().v4();
 
-    // await VideoCompress.setLogLevel(0);
-    // MediaInfo mediaInfo = await VideoCompress.compressVideo(
-    //   imageFile.path,
-    //   quality: VideoQuality.LowQuality,
-    //   includeAudio: true,
-    //   deleteOrigin: false, // It's false by default
-    // );
+    UploadTask uploadTask = storageRef
+        .child('videos/story/story_video$imageId.mp4')
+        .putFile(imageFile, SettableMetadata(contentType: 'video/mp4'));
+    String downloadUrl = await (await uploadTask)
+        .ref
+        .getDownloadURL()
+        .whenComplete(() => print('successful'));
+    return downloadUrl;
+  }
+
+  static Future<String> uploadMessageVideo(File imageFile) async {
+    String imageId = Uuid().v4();
 
     UploadTask uploadTask = storageRef
         .child('videos/messages/message_video$imageId.mp4')

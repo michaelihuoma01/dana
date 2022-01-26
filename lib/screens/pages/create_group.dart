@@ -15,7 +15,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
-import 'package:rflutter_alert/rflutter_alert.dart';
 import 'package:uuid/uuid.dart';
 
 class CreateGroup extends StatefulWidget {
@@ -42,12 +41,16 @@ class _CreateGroupState extends State<CreateGroup> {
   bool _selectAll = false;
   File? _profileImage;
   final picker = ImagePicker();
-  String? _imagePath, imageUrl;
+  String? _imagePath;
+  String? imageUrl =
+      'https://cdn4.iconfinder.com/data/icons/social-media-3/512/User_Group-512.png';
 
   final TextEditingController textEditingController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
 
   Future<Chat> startGroup() async {
+    imageUrl = await StroageService.uploadMessageImage(_profileImage!);
+    
     _selectedUsers.add(widget.currentUser);
 
     Timestamp timestamp = Timestamp.now();
@@ -72,6 +75,8 @@ class _CreateGroupState extends State<CreateGroup> {
       'recentTimestamp': timestamp,
       'readStatus': readStatus
     });
+
+    Navigator.pop(context);
 
     return Chat(
       id: res.id,
@@ -174,243 +179,207 @@ class _CreateGroupState extends State<CreateGroup> {
         PickupLayout(
           currentUser: widget.currentUser,
           scaffold: Scaffold(
-            backgroundColor: Colors.transparent,
-            appBar: PreferredSize(
-                preferredSize: const Size.fromHeight(50),
-                child: AppBar(
-                  actions: [
-                    GestureDetector(
-                      onTap: () {
-                        if (_selectAll == false) {
-                          _userFollowing.forEach((element) {
-                            setState(() {
-                              _selectedUsers.add(element);
-                              _selectAll = true;
+              backgroundColor: Colors.transparent,
+              appBar: PreferredSize(
+                  preferredSize: const Size.fromHeight(50),
+                  child: AppBar(
+                    actions: [
+                      GestureDetector(
+                        onTap: () {
+                          if (_selectAll == false) {
+                            _userFollowing.forEach((element) {
+                              setState(() {
+                                _selectedUsers.add(element);
+                                _selectAll = true;
+                              });
                             });
-                          });
-                        } else {
-                          _userFollowing.forEach((element) {
-                            setState(() {
-                              _selectedUsers.remove(element);
-                              _selectAll = false;
+                          } else {
+                            _userFollowing.forEach((element) {
+                              setState(() {
+                                _selectedUsers.remove(element);
+                                _selectAll = false;
+                              });
                             });
-                          });
-                        }
-                      },
-                      child: Padding(
-                        padding: const EdgeInsets.only(right: 15, left: 15),
-                        child: Icon(Icons.done_all, color: lightColor),
-                      ),
-                    )
-                  ],
-                  title: Text(S.of(context)!.creategroup,
-                      style: TextStyle(
-                          color: Colors.white, fontFamily: 'Poppins-Regular')),
-                  backgroundColor: darkColor,
-                  centerTitle: true,
-                  elevation: 5,
-                  automaticallyImplyLeading: true,
-                  iconTheme: IconThemeData(color: Colors.white),
-                  brightness: Brightness.dark,
-                )),
-            floatingActionButton: new FloatingActionButton(
-              backgroundColor: lightColor,
-              child: const Icon(Icons.done),
-              mini: true,
-              onPressed: () async {
-                imageUrl =
-                    await StroageService.uploadMessageImage(_profileImage!);
-
-                if (imageUrl != null) {
+                          }
+                        },
+                        child: Padding(
+                          padding: const EdgeInsets.only(right: 15, left: 15),
+                          child: Icon(Icons.done_all, color: lightColor),
+                        ),
+                      )
+                    ],
+                    title: Text(S.of(context)!.creategroup,
+                        style: TextStyle(
+                            color: Colors.white,
+                            fontFamily: 'Poppins-Regular')),
+                    backgroundColor: darkColor,
+                    centerTitle: true,
+                    elevation: 5,
+                    automaticallyImplyLeading: true,
+                    iconTheme: IconThemeData(color: Colors.white),
+                    brightness: Brightness.dark,
+                  )),
+              floatingActionButton: new FloatingActionButton(
+                backgroundColor: lightColor,
+                child: const Icon(Icons.done),
+                mini: true,
+                onPressed: () async {
                   startGroup();
-                }
-
-                Navigator.pop(context);
-              },
-              elevation: 5,
-              isExtended: true,
-            ),
-            body: Padding(
-              padding: const EdgeInsets.all(10),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.all(15),
-                    child: Center(
-                      child: Stack(
-                        children: [
-                          Container(
-                            height: 70,
-                            width: 70,
-                            child: _profileImage == null
-                                ? Container(
+                },
+                elevation: 5,
+                isExtended: true,
+              ),
+              body: Padding(
+                padding: const EdgeInsets.all(10),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.all(15),
+                      child: Center(
+                        child: Stack(
+                          children: [
+                            Container(
+                              height: 70,
+                              width: 70,
+                              child: _profileImage == null
+                                  ? Container(
+                                      child: CircleAvatar(
+                                        radius: 25.0,
+                                        backgroundColor: Colors.grey,
+                                        backgroundImage:
+                                            AssetImage(placeHolderImageRef),
+                                      ),
+                                    )
+                                  : Container(
+                                      child: CircleAvatar(
+                                        radius: 25.0,
+                                        backgroundColor: Colors.grey,
+                                        backgroundImage:
+                                            FileImage(_profileImage!),
+                                      ),
+                                    ),
+                            ),
+                            Positioned.fill(
+                              child: Align(
+                                  alignment: Alignment.bottomRight,
+                                  child: Container(
+                                    decoration: BoxDecoration(
+                                        color: Colors.white,
+                                        borderRadius: BorderRadius.all(
+                                            Radius.circular(250))),
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(4),
+                                      child: InkWell(
+                                          onTap: () {
+                                            pickImageFromGallery();
+                                            print(_imagePath);
+                                          },
+                                          child: Icon(Icons.camera_alt_outlined,
+                                              size: 20)),
+                                    ),
+                                  )),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                      child: TextField(
+                        controller: textEditingController,
+                        decoration: InputDecoration(
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(5),
+                            borderSide: BorderSide(color: lightColor, width: 1),
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(5),
+                            borderSide: BorderSide(color: lightColor, width: 1),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(5),
+                              borderSide:
+                                  BorderSide(color: lightColor, width: 1)),
+                          hintText: 'Group name',
+                          hintStyle: TextStyle(color: Colors.grey),
+                        ),
+                        style: TextStyle(color: Colors.white),
+                        cursorColor: lightColor,
+                      ),
+                    ),
+                    SizedBox(height: 10),
+                    Expanded(
+                      child: Container(
+                        child: ListView.builder(
+                          itemCount: _userFollowing.length,
+                          itemBuilder: (BuildContext context, int index) {
+                            AppUser follower = _userFollowing[index];
+                            AppUser? filteritem = _selectedUsers.firstWhere(
+                                (item) => item!.id == follower.id,
+                                orElse: () => null);
+                            return Theme(
+                              data:
+                                  ThemeData(unselectedWidgetColor: lightColor),
+                              child: CheckboxListTile(
+                                value: (_selectAll == true)
+                                    ? true
+                                    : filteritem != null,
+                                checkColor: darkColor,
+                                activeColor: lightColor,
+                                selectedTileColor: lightColor,
+                                title: Row(children: [
+                                  Container(
+                                    height: 40,
+                                    width: 40,
                                     child: CircleAvatar(
                                       radius: 25.0,
                                       backgroundColor: Colors.grey,
-                                      backgroundImage:
-                                          AssetImage(placeHolderImageRef),
+                                      backgroundImage: (follower
+                                                  .profileImageUrl!.isEmpty
+                                              ? AssetImage(placeHolderImageRef)
+                                              : CachedNetworkImageProvider(
+                                                  follower.profileImageUrl!))
+                                          as ImageProvider<Object>?,
+                                    ),
+                                  ),
+                                  SizedBox(width: 15),
+                                  Flexible(
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(follower.name!,
+                                            style: TextStyle(
+                                                color: Colors.white,
+                                                fontSize: 18)),
+                                        Text('PIN: ${follower.pin}',
+                                            maxLines: 3,
+                                            style:
+                                                TextStyle(color: Colors.grey)),
+                                      ],
                                     ),
                                   )
-                                : Container(
-                                    child: CircleAvatar(
-                                      radius: 25.0,
-                                      backgroundColor: Colors.grey,
-                                      backgroundImage:
-                                          FileImage(_profileImage!),
-                                    ),
-                                  ),
-                          ),
-                          Positioned.fill(
-                            child: Align(
-                                alignment: Alignment.bottomRight,
-                                child: Container(
-                                  decoration: BoxDecoration(
-                                      color: Colors.white,
-                                      borderRadius: BorderRadius.all(
-                                          Radius.circular(250))),
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(4),
-                                    child: InkWell(
-                                        onTap: () {
-                                          pickImageFromGallery();
-                                          print(_imagePath);
-                                        },
-                                        child: Icon(Icons.camera_alt_outlined,
-                                            size: 20)),
-                                  ),
-                                )),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 10.0),
-                    child: TextField(
-                      controller: textEditingController,
-                      decoration: InputDecoration(
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(5),
-                          borderSide: BorderSide(color: lightColor, width: 1),
-                        ),
-                        enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(5),
-                          borderSide: BorderSide(color: lightColor, width: 1),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(5),
-                            borderSide:
-                                BorderSide(color: lightColor, width: 1)),
-                        hintText: 'Group name',
-                        hintStyle: TextStyle(color: Colors.grey),
-                      ),
-                      style: TextStyle(color: Colors.white),
-                      cursorColor: lightColor,
-                    ),
-                  ),
-                  SizedBox(height: 10),
-                  Expanded(
-                    child: Container(
-                      child: ListView.builder(
-                        itemCount: _userFollowing.length,
-                        itemBuilder: (BuildContext context, int index) {
-                          AppUser follower = _userFollowing[index];
-                          AppUser? filteritem = _selectedUsers.firstWhere(
-                              (item) => item!.id == follower.id,
-                              orElse: () => null);
-                          return Theme(
-                            data: ThemeData(unselectedWidgetColor: lightColor),
-                            child: CheckboxListTile(
-                          value: (_selectAll == true)
-                              ? true
-                              : filteritem != null,
-                          checkColor: darkColor,
-                          activeColor: lightColor,
-                          selectedTileColor: lightColor,
-                          title: Row(children: [
-                            Container(
-                              height: 40,
-                              width: 40,
-                              child: CircleAvatar(
-                                radius: 25.0,
-                                backgroundColor: Colors.grey,
-                                backgroundImage: (follower
-                                            .profileImageUrl!.isEmpty
-                                        ? AssetImage(placeHolderImageRef)
-                                        : CachedNetworkImageProvider(
-                                            follower.profileImageUrl!))
-                                    as ImageProvider<Object>?,
+                                ]),
+                                onChanged: (value) {
+                                  setState(() {
+                                    if (value == true) {
+                                      _selectedUsers.add(follower);
+                                    } else {
+                                      _selectedUsers.removeWhere(
+                                          (item) => item!.id == follower.id);
+                                    }
+                                  });
+                                },
                               ),
-                            ),
-                            SizedBox(width: 15),
-                            Flexible(
-                              child: Column(
-                                crossAxisAlignment:
-                                    CrossAxisAlignment.start,
-                                children: [
-                                  Text(follower.name!,
-                                      style: TextStyle(
-                                          color: Colors.white,
-                                          fontSize: 18)),
-                                  Text('PIN: ${follower.pin}',
-                                      maxLines: 3,
-                                      style: TextStyle(color: Colors.grey)),
-                                ],
-                              ),
-                            )
-                          ]),
-                          onChanged: (value) {
-                            setState(() {
-                              if (value == true) {
-                                _selectedUsers.add(follower);
-                              } else {
-                                _selectedUsers.removeWhere(
-                                    (item) => item!.id == follower.id);
-                              }
-                            });
+                            );
                           },
-                            ),
-                          );
-                        },
+                        ),
                       ),
                     ),
-                  ),
-                ],
-              ),
-            ),
-
-            // FutureBuilder(
-            //   future: _users,
-            //   builder: (context, snapshot) {
-            //     if (!snapshot.hasData) {
-            //       return Center(
-            //         child: CircularProgressIndicator(),
-            //       );
-            //     }
-            //     if (snapshot.data.docs.length == 0) {
-            //       return Center(
-            //         child: Text('No Users found! Please try again.',
-            //             style: TextStyle(color: Colors.white)),
-            //       );
-            //     }
-            //     return Container(
-            //       height: 500,
-            //       child: ListView.builder(
-            //           itemCount: snapshot.data.docs.length,
-            //           itemBuilder: (BuildContext context, int index) {
-            //             AppUser user = AppUser.fromDoc(snapshot.data.docs[index]);
-            //             // Prevent current user to send messages to himself
-            //             print(user.profileImageUrl);
-            //             return (widget.searchFrom != SearchFrom.homeScreen &&
-            //                     user.id == _currentUserId)
-            //                 ? SizedBox.shrink()
-            //                 : _buildUserTile(user);
-            //           }),
-            //     );
-            //   },
-            // ),
-          ),
+                  ],
+                ),
+              )),
         ),
       ],
     );

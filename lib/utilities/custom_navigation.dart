@@ -11,7 +11,7 @@ class CustomNavigation {
       {required BuildContext context,
       bool? isCameFromBottomNavigation,
       String? currentUserId,
-      AppUser? appUser, 
+      AppUser? appUser,
       String? userId}) {
     Navigator.push(
       context,

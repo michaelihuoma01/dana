@@ -48,6 +48,9 @@ class _StoryCircleState extends State<StoryCircle> {
   }
 
   void _updateSeenStories(index) {
+    if (index == null) {
+      index = 0;
+    }
     setState(() => _seenStories = index + 1);
   }
 
@@ -91,8 +94,10 @@ class _StoryCircleState extends State<StoryCircle> {
               child: ClipOval(
                 child: Image(
                   image: (widget.user!.profileImageUrl!.isEmpty
-                      ? AssetImage(placeHolderImageRef)
-                      : CachedNetworkImageProvider(widget.user!.profileImageUrl!)) as ImageProvider<Object>,
+                          ? AssetImage(placeHolderImageRef)
+                          : CachedNetworkImageProvider(
+                              widget.user!.profileImageUrl!))
+                      as ImageProvider<Object>,
                   height: widget.size,
                   width: widget.size,
                   fit: BoxFit.cover,

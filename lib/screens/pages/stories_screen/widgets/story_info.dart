@@ -55,11 +55,12 @@ class StoryInfo extends StatelessWidget {
               Row(
                 children: [
                   CircleAvatar(
-                    radius:20.0,
+                    radius: 20.0,
                     backgroundColor: Colors.grey[200],
                     backgroundImage: (user!.profileImageUrl!.isEmpty
                         ? AssetImage(placeHolderImageRef)
-                        : CachedNetworkImageProvider(user!.profileImageUrl!)) as ImageProvider<Object>?,
+                        : CachedNetworkImageProvider(
+                            user!.profileImageUrl!)) as ImageProvider<Object>?,
                   ),
                   const SizedBox(width: 10.0),
                   Column(
@@ -75,20 +76,9 @@ class StoryInfo extends StatelessWidget {
                           // UserBadges(user: user, size: 20),
                         ],
                       ),
-                      Row(
-                        children: [
-                          story.filter != ''
-                              ? Padding(
-                                  padding: const EdgeInsets.only(right: 10.0),
-                                  child: Text('Filter: ${story.filter}',
-                                      style: TextStyle(color: Colors.white)),
-                                )
-                              : SizedBox.shrink(),
-                          Text(
-                            '${timeago.format(story.timeStart!.toDate(), locale: 'en_short')}',
-                            style: TextStyle(color: Colors.white),
-                          ),
-                        ],
+                      Text(
+                        '${timeago.format(story.timeStart!.toDate(), locale: 'en_short')}',
+                        style: TextStyle(color: Colors.white),
                       ),
                       story.location != ''
                           ? Row(

@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:Dana/models/models.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:camera/camera.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -80,7 +81,7 @@ class _HomeScreenState extends State<HomeScreen>
   bool isFollowingUser = false;
   bool isFriends = false;
   bool isRequest = false;
- StreamSubscription<ConnectivityResult>? subscription;
+  StreamSubscription<ConnectivityResult>? subscription;
 
   @override
   void initState() {
@@ -90,19 +91,15 @@ class _HomeScreenState extends State<HomeScreen>
         .onConnectivityChanged
         .listen((ConnectivityResult result) {
       // Got a new connectivity status!
-      print('=================$result');
-      if (result == ConnectivityResult.none) {
-        print('=================No internet');
 
+      if (result == ConnectivityResult.none) {
         Utility.showMessage(context,
             bgColor: Colors.red,
             message: 'No Internet Connection',
             pulsate: false,
             duration: Duration(seconds: 2),
             type: MessageTypes.error);
-      } else {
-        print('================= internet');
-      }
+      } else {}
     });
     _getCurrentUser();
     _getCameras();
@@ -234,20 +231,25 @@ class _HomeScreenState extends State<HomeScreen>
   }
 
   void _getCurrentUser() async {
-    // String userId = await SharedPreferencesUtil.getUserId();
-
     AppUser currentUser =
         await DatabaseService.getUserWithId(widget.currentUserId);
 
-    Provider.of<UserData>(context, listen: false).currentUser = currentUser;
     if (currentUser == null) {
       Navigator.push(
           context, MaterialPageRoute(builder: (context) => LoginScreen()));
     }
-    // print('i have the current user now $userId ');
+
+    List<Post> posts =
+        await DatabaseService.getAllFeedPosts(context, currentUser);
+
+    posts.sort((a, b) => b.timestamp!.compareTo(a.timestamp!));
+
+    Provider.of<UserData>(context, listen: false).feeds = posts;
+
+    Provider.of<UserData>(context, listen: false).currentUser = currentUser;
+
     setState(() => _currentUser = currentUser);
     AuthService.updateTokenWithUser(currentUser);
-    print("=========||||||||||||==========${currentUser.isBanned}");
   }
 
   void _selectPage(int index) {
@@ -281,8 +283,6 @@ class _HomeScreenState extends State<HomeScreen>
     setState(() {
       selectedIndex = index;
       tabController?..index = selectedIndex;
-      print(selectedIndex);
-
       switch (index) {
         case 0:
           isSelected1 = true;

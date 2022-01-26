@@ -11,22 +11,12 @@ xmlns:tools="http://schemas.android.com/tools"
     <uses-permission android:name="android.permission.RECORD_AUDIO" /> 
     <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-
     <!-- The Agora SDK requires Bluetooth permissions in case users are using Bluetooth devices.-->
     <uses-permission android:name="android.permission.BLUETOOTH" />
 
- <queries>
-    <intent>
-      <action android:name="android.intent.action.SENDTO" />
-      <data android:scheme="mailto" />
-    </intent>
-  </queries>
-
- 
    <application
         android:label="Dana"
-        android:icon="@mipmap/launcher_icon"
-        
+        android:icon="@mipmap/launcher_icon" 
         tools:replace="android:label">
 
         <meta-data
@@ -39,12 +29,13 @@ xmlns:tools="http://schemas.android.com/tools"
           android:resource="@drawable/logo"
           />
           <meta-data
-    android:name="com.google.firebase.messaging.default_notification_color"
-    android:resource="@color/appColor" />
+          android:name="com.google.firebase.messaging.default_notification_color"
+          android:resource="@color/appColor" />
 
         <activity
             android:name=".MainActivity"
             android:launchMode="singleTop"
+            android:exported="true"
             android:theme="@style/LaunchTheme"
             android:configChanges="orientation|keyboardHidden|keyboard|screenSize|smallestScreenSize|locale|layoutDirection|fontScale|screenLayout|density|uiMode"
             android:hardwareAccelerated="true"
@@ -68,17 +59,9 @@ xmlns:tools="http://schemas.android.com/tools"
               android:name="io.flutter.embedding.android.SplashScreenDrawable"
               android:resource="@drawable/launch_background"
               />
-           
             <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
-                <category android:name="android.intent.category.LAUNCHER"/>
-                <action android:name="android.intent.action.VIEW" />
-  <category android:name="android.intent.category.DEFAULT" />
-  <category android:name="android.intent.category.BROWSABLE" />
-  <!-- Accepts URIs that begin with YOUR_SCHEME://YOUR_HOST -->
-  <data
-    android:scheme="https"
-    android:host="danasocial.page.link" />
+                <action android:name="android.intent.action.MAIN"/> 
+                <category android:name="android.intent.category.LAUNCHER"/>   
             </intent-filter>
         </activity>
         <!-- Don't delete the meta-data below.
@@ -88,11 +71,11 @@ xmlns:tools="http://schemas.android.com/tools"
             android:value="2" />
 
              <provider
-                android:name="androidx.core.content.FileProvider"
-                android:authorities="${applicationId}.fileProvider"
-                android:exported="false"
-                android:grantUriPermissions="true"
-                tools:replace="android:authorities">
+                 android:name="androidx.core.content.FileProvider"
+                 android:authorities="${applicationId}.fileProvider"
+                 android:exported="false"
+                 android:grantUriPermissions="true"
+                 tools:replace="android:authorities">
             <meta-data
                     android:name="android.support.FILE_PROVIDER_PATHS"
                     android:resource="@xml/filepaths"

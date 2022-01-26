@@ -4,15 +4,13 @@ import 'package:Dana/utils/constants.dart';
 import 'package:http/http.dart' as http;
 
 class HelperMethods {
-  static sendNotification(
-      String? token, context, String? userID,   body) async {
+  static sendNotification(String? token, context, String? userID, body) async {
     Map<String, String> headerMap = {
       'Content-Type': 'application/json',
       'Authorization': serverKey,
     };
 
     Map notificationMap = {
- 
       'body': body,
     };
 

@@ -78,7 +78,7 @@ class DatabaseService {
 
   static Future<Map<String, Call>>? searchCalls(
       String? name, String? currentUserID, bool isCaller) async {
-    Map<String, Call>? calls = {}; 
+    Map<String, Call>? calls = {};
 
     try {
       await callsRef
@@ -94,7 +94,7 @@ class DatabaseService {
         }
       });
 
-       await callsRef
+      await callsRef
           .doc(currentUserID)
           .collection('callHistory')
           .where('receiver_name', isEqualTo: name)
@@ -438,18 +438,18 @@ class DatabaseService {
     return posts;
   }
 
-  static Future<List<Post>> getAllFeedPosts(context) async {
+  static Future<List<Post>> getAllFeedPosts(context, AppUser user) async {
     List<Post> posts = [];
     List<Post> publicPosts = [];
 
     // QuerySnapshot usersSnapshot = await usersRef.get();
-    AppUser? currentUser =
-        Provider.of<UserData>(context, listen: false).currentUser;
+    // AppUser? currentUser =
+    //     Provider.of<UserData>(context, listen: false).currentUser;
 
     List<AppUser> followingUsers =
-        await DatabaseService.getUserFollowingUsers(currentUser?.id);
+        await DatabaseService.getUserFollowingUsers(user.id);
 
-    followingUsers.add(currentUser!);
+    followingUsers.add(user);
 
     for (var userDoc in followingUsers) {
       QuerySnapshot feedSnapshot = await postsRef

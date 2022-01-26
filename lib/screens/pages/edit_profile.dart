@@ -22,7 +22,6 @@ import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:group_radio_button/group_radio_button.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
@@ -52,9 +51,7 @@ class _EditProfileState extends State<EditProfile> {
 
   FirebaseAuth firebaseUser = FirebaseAuth.instance;
 
-  String? _verticalGroupValue = "On";
-
-  List<String>? _status = ["On", "Off"];
+  
 
   String _name = '';
   String _bio = '';

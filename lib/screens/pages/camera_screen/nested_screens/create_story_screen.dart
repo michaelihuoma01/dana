@@ -2,19 +2,18 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:Dana/calls/callscreens/pickup/pickup_layout.dart';
+import 'package:chewie/chewie.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:Dana/models/story_model.dart';
 import 'package:Dana/models/user_data.dart';
 import 'package:Dana/models/user_model.dart';
 import 'package:Dana/screens/pages/camera_screen/widgets/custom_text_form.dart';
 import 'package:Dana/screens/pages/camera_screen/widgets/duration_form.dart';
-import 'package:Dana/screens/pages/camera_screen/widgets/location_form.dart';
 import 'package:Dana/screens/pages/direct_messages/widgets/direct_messages_widget.dart';
 import 'package:Dana/screens/pages/stories_screen/widgets/circular_icon_button.dart';
 import 'package:Dana/services/api/storage_service.dart';
 import 'package:Dana/services/api/stories_service.dart';
 import 'package:Dana/services/core/filtered_image_converter.dart';
-import 'package:Dana/services/core/liquid_swipe_pages.dart';
 import 'package:Dana/services/core/url_validator_service.dart';
 import 'package:Dana/utilities/constants.dart';
 import 'package:Dana/utilities/custom_navigation.dart';
@@ -27,12 +26,14 @@ import 'package:flutter/rendering.dart';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:ionicons/ionicons.dart';
-import 'package:provider/provider.dart';
 import 'package:liquid_swipe/liquid_swipe.dart';
+import 'package:provider/provider.dart';
+import 'package:video_player/video_player.dart';
 
 class CreateStoryScreen extends StatefulWidget {
   final File imageFile;
-  CreateStoryScreen(this.imageFile);
+  final bool isVideo;
+  CreateStoryScreen(this.imageFile, this.isVideo);
   @override
   _CreateStoryScreenState createState() => _CreateStoryScreenState();
 }
@@ -57,14 +58,40 @@ class _CreateStoryScreenState extends State<CreateStoryScreen> {
   String _storyLink = '';
   int? _storyDuration = 10;
   Size? _screenSize;
-  late List<Container> _filterPages;
+  List<Container>? _filterPages;
+
+  VideoPlayerController? _controller;
+  ChewieController? chewieController;
 
   @override
   void dispose() {
     _captionController.dispose();
     _locationController.dispose();
     _linkController.dispose();
+    _controller?.dispose();
+    chewieController?.dispose();
     super.dispose();
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+
+    _controller = VideoPlayerController.file(widget.imageFile)
+      ..initialize().then((_) {
+        // Ensure the first frame is shown after the video is initialized, even before the play button has been pressed.
+        setState(() {});
+      });
+
+    chewieController = ChewieController(
+      videoPlayerController: _controller!,
+      autoPlay: false,
+      looping: false,
+      // allowFullScreen: false,
+      // autoInitialize: true,
+      // showOptions: false,
+    );
   }
 
   @override
@@ -109,7 +136,7 @@ class _CreateStoryScreenState extends State<CreateStoryScreen> {
     return PickupLayout(
       currentUser: _currentUser,
       scaffold: Scaffold(
-        backgroundColor: Theme.of(context).accentColor,
+        backgroundColor: Colors.black,
         body: Stack(
           children: <Widget>[
             // Center(
@@ -130,7 +157,17 @@ class _CreateStoryScreenState extends State<CreateStoryScreen> {
             //     ),
             //   ),
             // ),
-            Center(child: Image.file(widget.imageFile)),
+            (widget.isVideo == false)
+                ? Center(child: Image.file(widget.imageFile))
+                : Center(
+                    child: Hero(
+                      tag: widget.imageFile,
+                      child: _controller!.value.isInitialized
+                          ? Chewie(controller: chewieController!)
+                          : CircularProgressIndicator(color: lightColor),
+                    ),
+                  ),
+
             if (_newFilterTitle)
               // displays filter title once filtered changed
               _displayStoryTitle(),
@@ -146,10 +183,10 @@ class _CreateStoryScreenState extends State<CreateStoryScreen> {
                 alignment: Alignment.center,
                 child: CircularProgressIndicator(color: lightColor),
               ),
-    
+
             // displays row of buttons on top of the screen
             if (!_isLoading) _displayEditStoryButtons(_currentUser),
-    
+
             // displays post buttons on bottom of the screen
             if (!_isLoading) _displayBottomButtons(_currentUser!),
           ],
@@ -243,7 +280,7 @@ class _CreateStoryScreenState extends State<CreateStoryScreen> {
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(15)),
               onPressed: () => _createStory(_currentUser.id),
-              color: Theme.of(context).primaryColor.withOpacity(0.8),
+              color: lightColor,
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
@@ -431,30 +468,30 @@ class _CreateStoryScreenState extends State<CreateStoryScreen> {
                       ),
                     ),
                   ),
-                  CircularIconButton(
-                    padding: const EdgeInsets.only(right: 8),
-                    backColor: _storyLocation != ''
-                        ? kBlueColorWithOpacity
-                        : Colors.black26,
-                    splashColor: _storyLocation == ''
-                        ? kBlueColorWithOpacity
-                        : Colors.black26,
-                    icon: Icon(
-                      Ionicons.location_sharp,
-                      color: Colors.white,
-                      size: 22,
-                    ),
-                    onTap: () => _showEditStory(
-                        onSave: () {
-                          setState(() {
-                            _storyLocation = _locationController.text.trim();
-                          });
-                        },
-                        widget: LocationForm(
-                          screenSize: _screenSize,
-                          controller: _locationController,
-                        )),
-                  ),
+                  // CircularIconButton(
+                  //   padding: const EdgeInsets.only(right: 8),
+                  //   backColor: _storyLocation != ''
+                  //       ? kBlueColorWithOpacity
+                  //       : Colors.black26,
+                  //   splashColor: _storyLocation == ''
+                  //       ? kBlueColorWithOpacity
+                  //       : Colors.black26,
+                  //   icon: Icon(
+                  //     Ionicons.location_sharp,
+                  //     color: Colors.white,
+                  //     size: 22,
+                  //   ),
+                  //   onTap: () => _showEditStory(
+                  //       onSave: () {
+                  //         setState(() {
+                  //           _storyLocation = _locationController.text.trim();
+                  //         });
+                  //       },
+                  //       widget: LocationForm(
+                  //         screenSize: _screenSize,
+                  //         controller: _locationController,
+                  //       )),
+                  // ),
                   CircularIconButton(
                     backColor: _storyCaption != ''
                         ? kBlueColorWithOpacity
@@ -500,7 +537,13 @@ class _CreateStoryScreenState extends State<CreateStoryScreen> {
       //       errorMessage: 'Could not convert image.', context: context);
       //   return;
       // }
-      String imageUrl = await StroageService.uploadStoryImage(widget.imageFile);
+      String imageUrl;
+      if (widget.isVideo == true) {
+        imageUrl = await StroageService.uploadStoryVideo(widget.imageFile);
+      } else {
+        imageUrl = await StroageService.uploadStoryImage(widget.imageFile);
+      }
+
       final DateTime dateNow = DateTime.now();
       final Timestamp timeStart = Timestamp.fromDate(dateNow);
       final Timestamp timeEnd = Timestamp.fromDate(DateTime(
@@ -521,7 +564,7 @@ class _CreateStoryScreenState extends State<CreateStoryScreen> {
         caption: _storyCaption,
         views: {},
         location: _storyLocation,
-        filter: _filterTitle,
+        filter: (widget.isVideo == true) ? 'true' : 'false',
         duration: _storyDuration,
         linkUrl: _storyLink,
       );

@@ -77,11 +77,6 @@ class _ContactScreenState extends State<ContactScreen> {
     var friendList = [...followingUsers, ...followerUsers].toSet().toList();
 
     for (String? userId in friendList) {
-      // var isFollowing = await DatabaseService.isFollowingUser(
-      //   currentUserId: widget.currentUser!.id,
-      //   userId: userId,
-      // );
-
       var isFollowing = await DatabaseService.isUserFollower(
         currentUserId: widget.currentUser!.id,
         userId: userId,
@@ -104,8 +99,8 @@ class _ContactScreenState extends State<ContactScreen> {
           isRequest = true;
           _requests.add(friends);
         });
-      } 
-    } 
+      }
+    }
     setState(() {
       _isLoading = false;
     });

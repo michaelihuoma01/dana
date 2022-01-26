@@ -1,4 +1,3 @@
- 
 import 'package:Dana/screens/auth/login.dart';
 import 'package:Dana/screens/auth/verification.dart';
 import 'package:Dana/utils/constants.dart';
