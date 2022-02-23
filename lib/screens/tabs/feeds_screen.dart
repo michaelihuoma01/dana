@@ -41,7 +41,7 @@ class _FeedsScreenState extends State<FeedsScreen> {
   List<Post?> _posts = [];
   bool _isLoadingFeed = false;
   bool _isLoadingStories = false;
-  List<AppUser> _followingUsersWithStories = [];
+  List<AppUser?> _followingUsersWithStories = [];
   CameraConsumer _cameraConsumer = CameraConsumer.post;
   StreamSubscription? stream;
   bool unreadNotifications = false;
@@ -54,13 +54,34 @@ class _FeedsScreenState extends State<FeedsScreen> {
   void initState() {
     super.initState();
     // _getCurrentUser();
-    _setupFeed();
+
+    _setupAll();
   }
 
   @override
   void dispose() {
     stream!.cancel();
     super.dispose();
+  }
+
+  _setupAll() {
+    setState(() {
+      _posts = Provider.of<UserData>(context, listen: false).feeds;
+      _followingUsersWithStories =
+          Provider.of<UserData>(context, listen: false).stories;
+
+      // _isLoadingFeed = false;
+    });
+
+    stream =
+        usersRef.doc(widget.currentUser!.id).snapshots().listen((snapshot) {
+      AppUser user = AppUser.fromDoc(snapshot);
+      if (user.isVerified == true) {
+        setState(() {
+          unreadNotifications = true;
+        });
+      }
+    });
   }
 
   _setupFeed() async {
@@ -72,25 +93,16 @@ class _FeedsScreenState extends State<FeedsScreen> {
     setState(() => _isLoadingFeed = true);
 
     // List<Post> posts = await DatabaseService.getAllFeedPosts(context);
-    //  List<Post> posts = await DatabaseService.getAllFeedPosts(
-    //   widget.currentUser!.id
-    // );
+    _posts =
+        await DatabaseService.getAllFeedPosts(context, widget.currentUser!);
 
-    // posts.sort((a, b) => b.timestamp!.compareTo(a.timestamp!));
+    _posts.sort((a, b) => b!.timestamp!.compareTo(a!.timestamp!));
 
     setState(() {
-      _posts = Provider.of<UserData>(context, listen: false).feeds;
-      _isLoadingFeed = false;
-    });
+      // _posts = posts;
+      Provider.of<UserData>(context, listen: false).feeds = _posts;
 
-    stream =
-        usersRef.doc(widget.currentUser!.id).snapshots().listen((snapshot) {
-      AppUser user = AppUser.fromDoc(snapshot);
-      if (user.isVerified == true) {
-        setState(() {
-          unreadNotifications = true;
-        });
-      }
+      _isLoadingFeed = false;
     });
   }
 
@@ -110,17 +122,19 @@ class _FeedsScreenState extends State<FeedsScreen> {
       setState(() {
         _isLoadingStories = false;
         _followingUsersWithStories = followingUsers;
+        Provider.of<UserData>(context, listen: false).stories =
+            _followingUsersWithStories;
       });
     }
   }
 
-  void _getCurrentUser() async {
-    print('i have the current user now  ');
+  // void _getCurrentUser() async {
+  //   print('i have the current user now  ');
 
-    if (widget.currentUser!.name == null) {
-      AuthService.logout(context);
-    }
-  }
+  //   if (widget.currentUser!.name == null) {
+  //     AuthService.logout(context);
+  //   }
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -265,7 +279,7 @@ class _FeedsScreenState extends State<FeedsScreen> {
                             ? Container(
                                 height: 88,
                                 child: Center(
-                                  child: SpinKitCircle(
+                                  child: SpinKitFadingCircle(
                                       color: Colors.white, size: 40),
                                 ),
                               )
@@ -333,7 +347,7 @@ class _FeedsScreenState extends State<FeedsScreen> {
               )
             : Center(
                 // If posts is loading
-                child: SpinKitCircle(color: Colors.white, size: 40),
+                child: SpinKitFadingCircle(color: Colors.white, size: 40),
               ),
       ),
     ]);

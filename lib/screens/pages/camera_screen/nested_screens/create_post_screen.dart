@@ -59,8 +59,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
       setState(() {
         _captionController.value =
             TextEditingValue(text: widget.post!.caption!);
-        _locationController.value =
-            TextEditingValue(text: widget.post!.location!);
+
         _caption = widget.post!.caption;
 
         _post = widget.post;
@@ -110,7 +109,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
           imageUrl: _post!.imageUrl,
           videoUrl: _post!.videoUrl,
           caption: _captionController.text.trim(),
-          location: _locationController.text.trim(),
+          location: (_post!.location == 'true') ? "true" : "false",
           likeCount: _post!.likeCount,
           commentCount: _post!.commentCount,
           authorId: _post!.authorId,
@@ -130,7 +129,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
             Post post = Post(
                 imageUrl: imageUrl,
                 caption: _captionController.text,
-                location: _locationController.text,
+                location: (isPublic == true) ? "true" : "false",
                 likeCount: 0,
                 commentCount: 0,
                 videoUrl: null,
@@ -153,7 +152,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
             Post post = Post(
                 imageUrl: null,
                 caption: _captionController.text,
-                location: _locationController.text,
+                location: (isPublic == true) ? "true" : "false",
                 likeCount: 0,
                 commentCount: 0,
                 videoUrl: videoUrl,
@@ -161,7 +160,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
                 timestamp: Timestamp.fromDate(DateTime.now()),
                 commentsAllowed: true);
 
-           if (isPublic == true) {
+            if (isPublic == true) {
               DatabaseService.createPublicPost(post);
             } else {
               DatabaseService.createPost(post);
@@ -269,11 +268,6 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
                           });
                         },
                       ),
-                      // Divider(color: Colors.white),
-                      // LocationForm(
-                      //   screenSize: screenSize,
-                      //   controller: _locationController,
-                      // ),
                       Theme(
                           data: ThemeData(unselectedWidgetColor: lightColor),
                           child: CheckboxListTile(

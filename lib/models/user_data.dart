@@ -11,9 +11,12 @@ class UserData extends ChangeNotifier {
   // String profileImageUrl;
 
   List<AppUser?> friends = [];
+  List<AppUser?> requests = [];
   List<Post?> feeds = [];
   List<Call?> call = [];
   List<Story?> story = [];
+  List<AppUser?> stories = [];
+
   List<Chat?> chat = [];
   AppUser? currentUser;
 }

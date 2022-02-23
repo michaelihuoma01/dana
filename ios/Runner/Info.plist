@@ -24,10 +24,10 @@
 			<key>CFBundleTypeRole</key>
 			<string>Editor</string>
 			<key>CFBundleURLName</key>
-			<string>Bundle Id</string>
+			<string>Bundle ID</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>com.michaelihuoma.dana</string>
+				<string>com.dubaitechnologydesign.dana</string>
 			</array>
 		</dict>
 	</array>

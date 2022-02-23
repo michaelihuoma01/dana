@@ -14,13 +14,17 @@ import 'package:Dana/screens/auth/reset_password.dart';
 import 'package:Dana/screens/auth/verification.dart';
 import 'package:Dana/screens/home.dart';
 import 'package:Dana/screens/pages/edit_profile.dart';
+import 'package:Dana/screens/pages/user_post.dart';
 import 'package:Dana/screens/splash_screen.dart';
 import 'package:Dana/utilities/themes.dart';
+import 'package:Dana/utils/constants.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -77,6 +81,7 @@ class _MyAppState extends State<MyApp> {
     pushNotificationService.initialize(context);
     pushNotificationService.getToken(context);
     _listenToNotifications();
+    // initDynamicLinks();
 
     super.initState();
   }
@@ -138,48 +143,50 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
-    if (this._locale == null) {
-      return Container(
-        child: Center(
-          child: CircularProgressIndicator(
-              valueColor: AlwaysStoppedAnimation<Color?>(Colors.purple[800])),
-        ),
-      );
-    } else {
-      return MaterialApp(
-        navigatorKey: navigatorKey,
-        debugShowCheckedModeBanner: false,
-        home: _getScreenId(),
-        locale: _locale,
-        supportedLocales: S.delegate.supportedLocales,
-        localizationsDelegates: [
-          S.delegate,
-          GlobalMaterialLocalizations.delegate,
-          GlobalWidgetsLocalizations.delegate,
-          GlobalCupertinoLocalizations.delegate,
-        ],
-        localeResolutionCallback: (locale, supportedLocales) {
-          for (var supportedLocale in supportedLocales) {
-            if (supportedLocale.languageCode == locale!.languageCode &&
-                supportedLocale.countryCode == locale.countryCode) {
-              return supportedLocale;
-            }
+    // if (this._locale == null) {
+    //   return Scaffold(
+    //           child: Container(
+    //       color: darkColor,
+    //       child: Center(
+    //         child: SpinKitFadingCircle(color: Colors.white),
+    //       ),
+    //     ),
+    //   );
+    // } else {
+    return MaterialApp(
+      navigatorKey: navigatorKey,
+      debugShowCheckedModeBanner: false,
+      home: _getScreenId(),
+      locale: _locale,
+      supportedLocales: S.delegate.supportedLocales,
+      localizationsDelegates: [
+        S.delegate,
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+      localeResolutionCallback: (locale, supportedLocales) {
+        for (var supportedLocale in supportedLocales) {
+          if (supportedLocale.languageCode == locale!.languageCode &&
+              supportedLocale.countryCode == locale.countryCode) {
+            return supportedLocale;
           }
-          return supportedLocales.first;
-        },
-        // initialRoute: LoginScreen.id,
-        routes: {
-          SplashScreen.id: (context) => SplashScreen(),
-          LoginScreen.id: (context) => LoginScreen(),
-          RegisterScreen.id: (context) => RegisterScreen(),
-          SetupAccount.id: (context) => SetupAccount(),
-          ForgotPasswordScreen.id: (context) => ForgotPasswordScreen(),
-          ResetPasswordScreen.id: (context) => ResetPasswordScreen(),
-          VerificationScreen.id: (context) => VerificationScreen(),
-          HomeScreen.id: (context) => HomeScreen(),
-          EditProfile.id: (context) => EditProfile(),
-        },
-      );
-    }
+        }
+        return supportedLocales.first;
+      },
+      // initialRoute: LoginScreen.id,
+      routes: {
+        SplashScreen.id: (context) => SplashScreen(),
+        LoginScreen.id: (context) => LoginScreen(),
+        RegisterScreen.id: (context) => RegisterScreen(),
+        SetupAccount.id: (context) => SetupAccount(),
+        ForgotPasswordScreen.id: (context) => ForgotPasswordScreen(),
+        ResetPasswordScreen.id: (context) => ResetPasswordScreen(),
+        VerificationScreen.id: (context) => VerificationScreen(),
+        HomeScreen.id: (context) => HomeScreen(),
+        EditProfile.id: (context) => EditProfile(),
+      },
+    );
   }
 }
+// }

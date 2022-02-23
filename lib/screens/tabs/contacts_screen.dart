@@ -44,8 +44,8 @@ class _ContactScreenState extends State<ContactScreen> {
   Future<QuerySnapshot>? _users;
   String _searchText = '';
 
-  List<AppUser> _friends = [];
-  List<AppUser> _requests = [];
+  List<AppUser?> _friends = [];
+  List<AppUser?> _requests = [];
 
   bool _isLoading = false;
   bool isFollower = false;
@@ -62,9 +62,9 @@ class _ContactScreenState extends State<ContactScreen> {
 
   _setupAll() async {
     setState(() {
-      _isLoading = true;
+      _requests = Provider.of<UserData>(context, listen: false).requests;
+      _friends = Provider.of<UserData>(context, listen: false).friends;
     });
-    _setupFriends();
   }
 
   _setupFriends() async {
@@ -92,15 +92,26 @@ class _ContactScreenState extends State<ContactScreen> {
       if (isFollower == true && isFollowing == true) {
         setState(() {
           isFriends = true;
-          _friends.add(friends);
+          if (_friends.contains(friends)) {
+            print('==========No friend');
+
+            _friends.add(friends);
+          }
         });
       } else if (isFollowing == false && isFollower == true) {
         setState(() {
-          isRequest = true;
-          _requests.add(friends);
+          if (_requests.contains(friends)) {
+            print('==========No request');
+            isRequest = true;
+            _requests.add(friends);
+          }
         });
       }
     }
+    setState(() {
+      Provider.of<UserData>(context, listen: false).requests = _requests;
+      Provider.of<UserData>(context, listen: false).friends = _friends;
+    });
     setState(() {
       _isLoading = false;
     });
@@ -228,226 +239,240 @@ class _ContactScreenState extends State<ContactScreen> {
               ],
               brightness: Brightness.dark,
             )),
-        body: CustomModalProgressHUD(
-          inAsyncCall: _isLoading,
-          child: SingleChildScrollView(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 10),
-              child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    TextField(
-                      controller: _searchController,
-                      decoration: InputDecoration(
-                          focusedBorder: InputBorder.none,
-                          enabledBorder: InputBorder.none,
-                          hintText: S.of(context)!.searchby,
-                          suffixIcon: _searchText.trim().isEmpty
-                              ? null
-                              : GestureDetector(
-                                  onTap: _clearSearch,
-                                  child: Icon(Icons.clear, color: Colors.white),
-                                ),
-                          hintStyle: TextStyle(color: Colors.grey),
-                          prefixIcon: Icon(Icons.search, color: Colors.white)),
-                      style: TextStyle(color: Colors.white),
-                      cursorColor: Colors.white,
-                      onChanged: (value) {
-                        if (value.trim().isNotEmpty) {
-                          setState(() {
-                            _searchText = value;
-                            String? sentence = toBeginningOfSentenceCase(value);
-                            _users = DatabaseService.searchUsers(sentence);
-                          });
-                        }
-                      },
-                      onSubmitted: (input) {
-                        if (input.trim().isNotEmpty) {
-                          setState(() {
-                            _searchText = input;
-                            String? sentence = toBeginningOfSentenceCase(input);
-                            _users = DatabaseService.searchUsers(sentence);
-                          });
-                        }
-                      },
-                    ),
-                    SizedBox(height: 10),
-                    _users == null
-                        ? Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                                Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      Text(
-                                          '${_requests.length} ${S.of(context)!.request}',
-                                          style: TextStyle(
-                                              color: Colors.white,
-                                              fontSize: 16,
-                                              fontFamily: 'Poppins-Regular')),
-                                      // InkWell(
-                                      //   onTap: () {
-                                      //     Navigator.push(
-                                      //         context,
-                                      //         MaterialPageRoute(
-                                      //             builder: (context) =>
-                                      //                 FriendRequest()));
-                                      //   },
-                                      //   child: Text('Show all',
-                                      //       style: TextStyle(
-                                      //           color: lightColor,
-                                      //           fontFamily: 'Poppins-Regular')),
-                                      // ),
-                                    ]),
-                                SizedBox(height: 10),
-                                (_requests.length != 0)
-                                    ? Container(
-                                        height: 80,
-                                        child: ListView.builder(
-                                          itemCount: _requests.length,
-                                          scrollDirection: Axis.horizontal,
-                                          itemBuilder: (BuildContext context,
-                                              int index) {
-                                            AppUser following =
-                                                _requests[index];
-                                            String result = following.name!;
-                                            if (result.contains(' ')) {
-                                              result = following.name!
-                                                  .substring(
-                                                      0,
-                                                      following.name!
-                                                          .indexOf(' '));
-                                            }
+        body: RefreshIndicator(
+          onRefresh: () => _setupFriends(),
+          child: CustomModalProgressHUD(
+            inAsyncCall: _isLoading,
+            child: SingleChildScrollView(
+              child: Padding(
+                padding:
+                    const EdgeInsets.symmetric(vertical: 0, horizontal: 10),
+                child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      TextField(
+                        controller: _searchController,
+                        decoration: InputDecoration(
+                            focusedBorder: InputBorder.none,
+                            enabledBorder: InputBorder.none,
+                            hintText: S.of(context)!.searchby,
+                            suffixIcon: _searchText.trim().isEmpty
+                                ? null
+                                : GestureDetector(
+                                    onTap: _clearSearch,
+                                    child:
+                                        Icon(Icons.clear, color: Colors.white),
+                                  ),
+                            hintStyle: TextStyle(color: Colors.grey),
+                            prefixIcon:
+                                Icon(Icons.search, color: Colors.white)),
+                        style: TextStyle(color: Colors.white),
+                        cursorColor: Colors.white,
+                        onChanged: (value) {
+                          if (value.trim().isNotEmpty) {
+                            setState(() {
+                              _searchText = value;
+                              String? sentence =
+                                  toBeginningOfSentenceCase(value);
+                              _users = DatabaseService.searchUsers(sentence);
+                            });
+                          }
+                        },
+                        onSubmitted: (input) {
+                          if (input.trim().isNotEmpty) {
+                            setState(() {
+                              _searchText = input;
+                              String? sentence =
+                                  toBeginningOfSentenceCase(input);
+                              _users = DatabaseService.searchUsers(sentence);
+                            });
+                          }
+                        },
+                      ),
+                      SizedBox(height: 10),
+                      _users == null
+                          ? Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                  Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Text(
+                                            '${_requests.length} ${S.of(context)!.request}',
+                                            style: TextStyle(
+                                                color: Colors.white,
+                                                fontSize: 16,
+                                                fontFamily: 'Poppins-Regular')),
+                                        // InkWell(
+                                        //   onTap: () {
+                                        //     Navigator.push(
+                                        //         context,
+                                        //         MaterialPageRoute(
+                                        //             builder: (context) =>
+                                        //                 FriendRequest()));
+                                        //   },
+                                        //   child: Text('Show all',
+                                        //       style: TextStyle(
+                                        //           color: lightColor,
+                                        //           fontFamily: 'Poppins-Regular')),
+                                        // ),
+                                      ]),
+                                  SizedBox(height: 10),
+                                  (_requests.length != 0)
+                                      ? Container(
+                                          height: 80,
+                                          child: ListView.builder(
+                                            itemCount: _requests.length,
+                                            scrollDirection: Axis.horizontal,
+                                            itemBuilder: (BuildContext context,
+                                                int index) {
+                                              AppUser? following =
+                                                  _requests[index];
+                                              String result = following!.name!;
+                                              if (result.contains(' ')) {
+                                                result = following.name!
+                                                    .substring(
+                                                        0,
+                                                        following.name!
+                                                            .indexOf(' '));
+                                              }
 
-                                            return Padding(
-                                              padding:
-                                                  const EdgeInsets.symmetric(
-                                                      horizontal: 8.0),
-                                              child: GestureDetector(
-                                                onTap: () => Navigator.push(
-                                                    context,
-                                                    MaterialPageRoute(
-                                                      builder: (_) => UserProfile(
-                                                          userId: following.id,
-                                                          currentUserId: widget
-                                                              .currentUser!.id),
-                                                    )),
-                                                child: Column(
-                                                  children: [
-                                                    GestureDetector(
-                                                      child: Container(
-                                                        height: 50,
-                                                        width: 50,
-                                                        child: CircleAvatar(
-                                                          radius: 25.0,
-                                                          backgroundColor:
-                                                              Colors.grey,
-                                                          backgroundImage: (following
-                                                                  .profileImageUrl!
-                                                                  .isEmpty
-                                                              ? AssetImage(
-                                                                  placeHolderImageRef)
-                                                              : CachedNetworkImageProvider(
-                                                                  following
-                                                                      .profileImageUrl!,
-                                                                )) as ImageProvider<
-                                                              Object>?,
+                                              return Padding(
+                                                padding:
+                                                    const EdgeInsets.symmetric(
+                                                        horizontal: 8.0),
+                                                child: GestureDetector(
+                                                  onTap: () => Navigator.push(
+                                                      context,
+                                                      MaterialPageRoute(
+                                                        builder: (_) => UserProfile(
+                                                            userId:
+                                                                following.id,
+                                                            currentUserId: widget
+                                                                .currentUser!
+                                                                .id),
+                                                      )),
+                                                  child: Column(
+                                                    children: [
+                                                      GestureDetector(
+                                                        child: Container(
+                                                          height: 50,
+                                                          width: 50,
+                                                          child: CircleAvatar(
+                                                            radius: 25.0,
+                                                            backgroundColor:
+                                                                Colors.grey,
+                                                            backgroundImage: (following
+                                                                    .profileImageUrl!
+                                                                    .isEmpty
+                                                                ? AssetImage(
+                                                                    placeHolderImageRef)
+                                                                : CachedNetworkImageProvider(
+                                                                    following
+                                                                        .profileImageUrl!,
+                                                                  )) as ImageProvider<
+                                                                Object>?,
+                                                          ),
                                                         ),
                                                       ),
-                                                    ),
-                                                    Text(result,
-                                                        style: TextStyle(
-                                                            color:
-                                                                Colors.white))
-                                                  ],
+                                                      Text(result,
+                                                          style: TextStyle(
+                                                              color:
+                                                                  Colors.white))
+                                                    ],
+                                                  ),
                                                 ),
-                                              ),
-                                            );
-                                          },
-                                        ),
-                                      )
-                                    : Center(
-                                        child: Text(S.of(context)!.norequest,
-                                            style:
-                                                TextStyle(color: Colors.grey))),
-                                SizedBox(height: 20),
-                                Text(
-                                    '${_friends.length.toString()} ${(_friends.length == 1) ? S.of(context)!.friends : S.of(context)!.friends} ',
-                                    style: TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 16,
-                                        fontFamily: 'Poppins-Regular')),
-                                SizedBox(height: 20),
-                                (_friends != null)
-                                    ? Container(
-                                        height: 500,
-                                        child: ListView.builder(
-                                          itemCount: _friends.length,
-                                          itemBuilder: (BuildContext context,
-                                              int index) {
-                                            AppUser follower = _friends[index];
+                                              );
+                                            },
+                                          ),
+                                        )
+                                      : Center(
+                                          child: Text(S.of(context)!.norequest,
+                                              style: TextStyle(
+                                                  color: Colors.grey))),
+                                  SizedBox(height: 20),
+                                  Text(
+                                      '${_friends.length.toString()} ${(_friends.length == 1) ? S.of(context)!.friends : S.of(context)!.friends} ',
+                                      style: TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 16,
+                                          fontFamily: 'Poppins-Regular')),
+                                  SizedBox(height: 20),
+                                  (_friends != null)
+                                      ? Container(
+                                          height: 500,
+                                          child: ListView.builder(
+                                            itemCount: _friends.length,
+                                            itemBuilder: (BuildContext context,
+                                                int index) {
+                                              AppUser? follower =
+                                                  _friends[index];
 
-                                            return InkWell(
-                                                onTap: () => Navigator.push(
-                                                    context,
-                                                    MaterialPageRoute(
-                                                      builder: (_) => UserProfile(
-                                                          userId: follower.id,
-                                                          currentUserId: widget
-                                                              .currentUser!.id),
-                                                    )),
-                                                child: ContactTile(
-                                                    appUser: follower));
-                                          },
-                                        ),
-                                      )
-                                    : Center(
-                                        child: SpinKitWanderingCubes(
-                                            color: Colors.white, size: 40)),
-                              ])
-                        : FutureBuilder(
-                            future: _users,
-                            builder: (context, snapshot) {
-                              if (!snapshot.hasData) {
-                                return Center(
-                                  child: SpinKitWanderingCubes(
-                                      color: Colors.white, size: 40),
-                                );
-                              }
-                              if ((snapshot.data! as QuerySnapshot)
-                                      .docs
-                                      .length ==
-                                  0) {
-                                return Center(
-                                  child: Text(
-                                      'No Users found! Please try again.',
-                                      style: TextStyle(color: Colors.white)),
-                                );
-                              }
-                              return Container(
-                                height: 500,
-                                child: ListView.builder(
-                                    itemCount: (snapshot.data! as QuerySnapshot)
+                                              return InkWell(
+                                                  onTap: () => Navigator.push(
+                                                      context,
+                                                      MaterialPageRoute(
+                                                        builder: (_) => UserProfile(
+                                                            userId:
+                                                                follower!.id,
+                                                            currentUserId: widget
+                                                                .currentUser!
+                                                                .id),
+                                                      )),
+                                                  child: ContactTile(
+                                                      appUser: follower));
+                                            },
+                                          ),
+                                        )
+                                      : Center(
+                                          child: SpinKitFadingCircle(
+                                              color: Colors.white, size: 40)),
+                                ])
+                          : FutureBuilder(
+                              future: _users,
+                              builder: (context, snapshot) {
+                                if (!snapshot.hasData) {
+                                  return Center(
+                                    child: SpinKitFadingCircle(
+                                        color: Colors.white, size: 40),
+                                  );
+                                }
+                                if ((snapshot.data! as QuerySnapshot)
                                         .docs
-                                        .length,
-                                    itemBuilder:
-                                        (BuildContext context, int index) {
-                                      AppUser user = AppUser.fromDoc(
+                                        .length ==
+                                    0) {
+                                  return Center(
+                                    child: Text(
+                                        'No Users found! Please try again.',
+                                        style: TextStyle(color: Colors.white)),
+                                  );
+                                }
+                                return Container(
+                                  height: 500,
+                                  child: ListView.builder(
+                                      itemCount:
                                           (snapshot.data! as QuerySnapshot)
-                                              .docs[index]);
-                                      // Prevent current user to send messages to himself
-                                      return (widget.searchFrom !=
-                                                  SearchFrom.homeScreen &&
-                                              user.id == _currentUserId)
-                                          ? SizedBox.shrink()
-                                          : _buildUserTile(user);
-                                    }),
-                              );
-                            },
-                          )
-                  ]),
+                                              .docs
+                                              .length,
+                                      itemBuilder:
+                                          (BuildContext context, int index) {
+                                        AppUser user = AppUser.fromDoc(
+                                            (snapshot.data! as QuerySnapshot)
+                                                .docs[index]);
+                                        // Prevent current user to send messages to himself
+                                        return (widget.searchFrom !=
+                                                    SearchFrom.homeScreen &&
+                                                user.id == _currentUserId)
+                                            ? SizedBox.shrink()
+                                            : _buildUserTile(user);
+                                      }),
+                                );
+                              },
+                            )
+                    ]),
+              ),
             ),
           ),
         ),

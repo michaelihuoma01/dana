@@ -194,7 +194,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                   onRefresh: () => _setupActivities(),
                   child: _isLoading
                       ? Center(
-                          child: SpinKitWanderingCubes(
+                          child: SpinKitFadingCircle(
                               color: Colors.white, size: 40))
                       : ListView.builder(
                           itemCount: _activities.length,

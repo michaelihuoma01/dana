@@ -317,7 +317,7 @@ class _MessagesScreenState extends State<MessagesScreen> {
             builder: (BuildContext context, AsyncSnapshot snapshot) {
               if (!snapshot.hasData) {
                 return Center(
-                  child: SpinKitWanderingCubes(color: Colors.white, size: 40),
+                  child: SpinKitFadingCircle(color: Colors.white, size: 40),
                 );
               }
               return Padding(

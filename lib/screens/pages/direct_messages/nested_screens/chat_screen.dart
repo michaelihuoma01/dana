@@ -140,7 +140,7 @@ class _ChatScreenState extends State<ChatScreen> {
     bool isChatExist = chat != null;
 
     if (widget.groupMembers != null) {
-      for (AppUser? user in widget.groupMembers as Iterable<AppUser?>) {
+      for (AppUser? user in widget.groupMembers!) {
         groupMembers.add(user);
       }
     }

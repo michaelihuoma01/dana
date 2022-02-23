@@ -66,7 +66,7 @@ class _SplashScreenState extends State<SplashScreen> {
                 Center(
                     child: Image.asset('assets/images/icon.png', height: 150)),
                 SizedBox(height: 50),
-                SpinKitWanderingCubes(color: Colors.white, size: 40)
+                SpinKitFadingCircle(color: Colors.white, size: 40)
               ],
             ),
           ),

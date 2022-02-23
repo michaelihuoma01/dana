@@ -119,15 +119,11 @@ class _TextPostState extends State<TextPost> {
   }
 
   Future<Uri> createDynamicLink(
-    String? code, {
-    // String route = '/invite',
-    String param = 'id',
-    bool short = true,
-  }) async {
+      String? currentUserId, postId, authorId, public) async {
     final DynamicLinkParameters parameters = DynamicLinkParameters(
-      uriPrefix: 'https://danasocial.page.link', //$route',
+      uriPrefix: 'https://danasocialapp.page.link', //$route',
       link: Uri.parse(
-          'https://danasocial.page.link/?$param=$code'), //$route?code=$code'),
+          'https://danasocialapp.page.link/?userId=$currentUserId&postId=$postId&authorId=$authorId&public=$public'), //$route?code=$code'),
       androidParameters: AndroidParameters(
           packageName: 'com.michaelihuoma.dana', minimumVersion: 1),
       iosParameters: IOSParameters(
@@ -137,19 +133,11 @@ class _TextPostState extends State<TextPost> {
       navigationInfoParameters:
           NavigationInfoParameters(forcedRedirectEnabled: true),
     );
+    Uri dynamicUrl;
 
-    // Uri dynamicUrl = short
-    //     ? (await parameters.buildShortLink()).shortUrl
-    //     : (await parameters.buildUrl());
-
-     Uri dynamicUrl;
-    if (short == true) {
-      dynamicUrl =
-          (await FirebaseDynamicLinks.instance.buildShortLink(parameters))
-              .shortUrl;
-    } else {
-      dynamicUrl = (await FirebaseDynamicLinks.instance.buildLink(parameters));
-    }
+    dynamicUrl =
+        (await FirebaseDynamicLinks.instance.buildShortLink(parameters))
+            .shortUrl;
 
     return dynamicUrl;
   }
@@ -162,23 +150,27 @@ class _TextPostState extends State<TextPost> {
     // final RenderBox box = context.findRenderObject() as RenderBox;
     var documentDirectory;
 
-    Uri dynamicLink = await createDynamicLink(widget.post!.id);
+    Uri dynamicLink = await createDynamicLink(widget.currentUserId,
+        widget.post!.id, widget.author!.id, widget.post!.location);
 
-    var response = await get(Uri.parse(widget.post!.imageUrl!));
-    if (Platform.isAndroid) {
-      documentDirectory = (await getExternalStorageDirectory())!.path;
+    if (widget.post!.imageUrl != null) {
+      var response = await get(Uri.parse(widget.post!.imageUrl!));
+      if (Platform.isAndroid) {
+        documentDirectory = (await getExternalStorageDirectory())!.path;
+      } else {
+        documentDirectory = (await getApplicationDocumentsDirectory()).path;
+      }
+
+      File imgFile = new File('$documentDirectory/${widget.post!.id}.png');
+      imgFile.writeAsBytesSync(response.bodyBytes);
+      Share.shareFiles([imgFile.path],
+          subject: 'Have a look at ${widget.author!.name} post!',
+          text:
+              'Have a look at ${widget.author!.name} post: ${widget.post!.caption} \n${dynamicLink.toString()}');
     } else {
-      documentDirectory = (await getApplicationDocumentsDirectory()).path;
+      Share.share(
+          'Have a look at ${widget.author!.name} post: ${widget.post!.caption} \n${dynamicLink.toString()}');
     }
-
-    File imgFile = new File('$documentDirectory/${widget.post!.id}.png');
-    imgFile.writeAsBytesSync(response.bodyBytes);
-
-    Share.shareFiles([imgFile.path],
-        subject: 'Have a look at ${widget.author!.name} post!',
-        text:
-            'Have a look at ${widget.author!.name} post: ${widget.post!.caption} \n${dynamicLink.toString()}');
-    // sharePositionOrigin: box.localToGlobal(Offset.zero) & box.size);
   }
 
   _iosBottomSheet() {

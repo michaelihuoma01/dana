@@ -1,7 +1,13 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:Dana/calls/call.dart';
+import 'package:Dana/calls/call_methods.dart';
+import 'package:Dana/calls/callscreens/call_screen.dart';
+import 'package:Dana/calls/constants/strings.dart';
 import 'package:Dana/models/models.dart';
+import 'package:Dana/screens/pages/user_post.dart';
+import 'package:Dana/services/services.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:camera/camera.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -26,8 +32,10 @@ import 'package:Dana/utilities/show_error_dialog.dart';
 import 'package:Dana/utils/constants.dart';
 import 'package:Dana/utils/shared_preferences_utils.dart';
 import 'package:Dana/utils/utility.dart';
+import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -82,6 +90,11 @@ class _HomeScreenState extends State<HomeScreen>
   bool isFriends = false;
   bool isRequest = false;
   StreamSubscription<ConnectivityResult>? subscription;
+  CallMethods callMethods = CallMethods();
+CollectionReference callCollection =
+      FirebaseFirestore.instance.collection(CALL_COLLECTION);
+
+
 
   @override
   void initState() {
@@ -105,6 +118,7 @@ class _HomeScreenState extends State<HomeScreen>
     _getCameras();
     checkUnreadMessages();
     _setupFriends();
+    initDynamicLinks();
     // _initPageView();
     AuthService.updateToken();
     tabController = TabController(length: 5, vsync: this);
@@ -132,6 +146,100 @@ class _HomeScreenState extends State<HomeScreen>
     }
   }
 
+  void initDynamicLinks() async {
+    final PendingDynamicLinkData? initialLink =
+        await FirebaseDynamicLinks.instance.getInitialLink();
+
+    if (initialLink != null) {
+      final Uri deepLink = initialLink.link;
+      String? currentUserId = deepLink.queryParameters['userId'];
+      String? postId = deepLink.queryParameters['postId'];
+      String? authorId = deepLink.queryParameters['authorId'];
+      String? public = deepLink.queryParameters['public'];
+      String? joinCall = deepLink.queryParameters['joinCall'];
+      String? video = deepLink.queryParameters['video'];
+
+      bool isAudio = false;
+
+      var snaps = await callMethods
+          .joinCall(uid: 'eTsAImJDPTfHXE7FPu6mRyyHINF2')
+          .then((value) => print(value.id));
+
+      if (joinCall != null) {
+        if (video == 'true') {
+          isAudio = false;
+        } else {
+          isAudio = true;
+        }
+
+        Call call = Call(channelId: joinCall);
+        Navigator.of(context).push(MaterialPageRoute(
+            builder: (context) => CallScreen(
+                  currentUserId: currentUserId,
+                  call: call,
+                  isAudio: isAudio,
+                )));
+      } else {
+        Navigator.of(context).push(MaterialPageRoute(
+            builder: (context) => UserPost(
+                currentUserId: currentUserId,
+                authorId: authorId,
+                postId: postId,
+                public: public)));
+      }
+    }
+    FirebaseDynamicLinks.instance.onLink.listen((event) async {
+     
+ DocumentSnapshot callSnapshot =
+        await  callCollection.doc('eTsAImJDPTfHXE7FPu6mRyyHINF2').get();
+ Call call = Call.fromMap(callSnapshot);
+
+      String? currentUserId = event.link.queryParameters['userId'];
+      String? postId = event.link.queryParameters['postId'];
+      String? authorId = event.link.queryParameters['authorId'];
+      String? public = event.link.queryParameters['public'];
+      String? joinCall = event.link.queryParameters['joinCall'];
+      String? video = event.link.queryParameters['video'];
+
+      bool isAudio = false;
+
+      if (joinCall != null) {
+        if (video == 'true') {
+          isAudio = true;
+        } else {
+          isAudio = false;
+        } 
+        Navigator.of(context).push(MaterialPageRoute(
+            builder: (context) => CallScreen(
+                  currentUserId: currentUserId,
+                  call: call,
+                  isAudio: isAudio,
+                )));
+      } else {
+        Navigator.of(context).push(MaterialPageRoute(
+            builder: (context) => UserPost(
+                currentUserId: currentUserId,
+                authorId: authorId,
+                postId: postId,
+                public: public)));
+      }
+
+      print('--------------------------------------');
+
+      print(currentUserId);
+
+      Navigator.of(context).push(MaterialPageRoute(
+          builder: (context) => UserPost(
+              currentUserId: currentUserId,
+              authorId: authorId,
+              postId: postId,
+              public: public)));
+    }).onError((e) async {
+      print("deeplink error");
+      print(e.message);
+    });
+  }
+
   _setupFriends() async {
     List<String?> followingUsers =
         await DatabaseService.getUserFollowingIds(widget.currentUserId);
@@ -142,11 +250,6 @@ class _HomeScreenState extends State<HomeScreen>
     var friendList = [...followingUsers, ...followerUsers].toSet().toList();
 
     for (String? userId in friendList) {
-      // var isFollowing = await DatabaseService.isFollowingUser(
-      //   currentUserId: widget.currentUser!.id,
-      //   userId: userId,
-      // );
-
       var isFollowing = await DatabaseService.isUserFollower(
         currentUserId: widget.currentUserId,
         userId: userId,
@@ -160,20 +263,16 @@ class _HomeScreenState extends State<HomeScreen>
       var friends = await DatabaseService.getUserWithId(userId);
 
       if (isFollower == true && isFollowing == true) {
-        setState(() {
-          isFriends = true;
-          _friends.add(friends);
-        });
+        isFriends = true;
+        _friends.add(friends);
       } else if (isFollowing == false && isFollower == true) {
-        setState(() {
-          isRequest = true;
-          _requests.add(friends);
-        });
+        isRequest = true;
+        _requests.add(friends);
       }
     }
-    setState(() {
-      _isLoading = false;
-    });
+
+    Provider.of<UserData>(context, listen: false).friends = _friends;
+    Provider.of<UserData>(context, listen: false).requests = _requests;
   }
 
   checkUnreadMessages() async {
@@ -231,6 +330,9 @@ class _HomeScreenState extends State<HomeScreen>
   }
 
   void _getCurrentUser() async {
+    setState(() {
+      _isLoading = true;
+    });
     AppUser currentUser =
         await DatabaseService.getUserWithId(widget.currentUserId);
 
@@ -238,18 +340,25 @@ class _HomeScreenState extends State<HomeScreen>
       Navigator.push(
           context, MaterialPageRoute(builder: (context) => LoginScreen()));
     }
-
-    List<Post> posts =
-        await DatabaseService.getAllFeedPosts(context, currentUser);
-
-    posts.sort((a, b) => b.timestamp!.compareTo(a.timestamp!));
-
-    Provider.of<UserData>(context, listen: false).feeds = posts;
-
     Provider.of<UserData>(context, listen: false).currentUser = currentUser;
 
     setState(() => _currentUser = currentUser);
     AuthService.updateTokenWithUser(currentUser);
+    print('=====||||||||||||||=========Fetching feeds');
+    // Fetching Feeds
+    List<Post> posts =
+        await DatabaseService.getAllFeedPosts(context, currentUser);
+    posts.sort((a, b) => b.timestamp!.compareTo(a.timestamp!));
+    // Fetching Stories
+    List<AppUser> followingUsers =
+        await DatabaseService.getUserFollowingUsers(widget.currentUserId);
+    print('=====||||||||||||||=========${posts.length}');
+    Provider.of<UserData>(context, listen: false).feeds = posts;
+    Provider.of<UserData>(context, listen: false).stories = followingUsers;
+
+    setState(() {
+      _isLoading = false;
+    });
   }
 
   void _selectPage(int index) {
@@ -435,25 +544,29 @@ class _HomeScreenState extends State<HomeScreen>
                 onTap: onItemClicked,
               ),
               backgroundColor: Colors.transparent,
-              body: TabBarView(
-                // physics: NeverScrollableScrollPhysics(),
-                controller: tabController,
-                children: [
-                  FeedsScreen(
-                    homeController: homeController,
-                    currentUser: _currentUser,
-                    goToCameraScreen: _goToCameraScreen,
-                  ),
-                  MessagesScreen(
-                      currentUser: _currentUser,
-                      searchFrom: SearchFrom.homeScreen),
-                  CallsScreen(currentUser: _currentUser),
-                  ContactScreen(
-                      currentUser: _currentUser,
-                      searchFrom: SearchFrom.homeScreen),
-                  ProfileScreen(user: _currentUser),
-                ],
-              )),
+              body: (_isLoading == true)
+                  ? Center(
+                      child: SpinKitFadingCircle(color: Colors.white, size: 40),
+                    )
+                  : TabBarView(
+                      // physics: NeverScrollableScrollPhysics(),
+                      controller: tabController,
+                      children: [
+                        FeedsScreen(
+                          homeController: homeController,
+                          currentUser: _currentUser,
+                          goToCameraScreen: _goToCameraScreen,
+                        ),
+                        MessagesScreen(
+                            currentUser: _currentUser,
+                            searchFrom: SearchFrom.homeScreen),
+                        CallsScreen(currentUser: _currentUser),
+                        ContactScreen(
+                            currentUser: _currentUser,
+                            searchFrom: SearchFrom.homeScreen),
+                        ProfileScreen(user: _currentUser),
+                      ],
+                    )),
         ),
       ],
     );

@@ -25,7 +25,7 @@ class SearchTile extends StatelessWidget {
                   imageUrl: url!,
                   fit: BoxFit.cover,
                   placeholder: (context, url) => Container(
-                      height: 200, child: SpinKitCircle(color: Colors.white)),
+                      height: 200, child: SpinKitFadingCircle(color: Colors.white)),
                   errorWidget: (context, url, error) => Icon(Icons.error),
                 ),
               ),

@@ -9,6 +9,9 @@ class CallMethods {
   Stream<DocumentSnapshot> callStream({String? uid}) =>
       callCollection.doc(uid).snapshots();
 
+        Future<DocumentSnapshot> joinCall({String? uid}) =>
+      callCollection.doc(uid).get();
+
   Future<bool> makeCall({required Call call}) async {
     try {
       call.hasDialled = true;
@@ -26,6 +29,24 @@ class CallMethods {
       return false;
     }
   }
+
+  //   Future<bool> makeMultipleCall({required Call call}) async {
+  //   try {
+  //     call.hasDialled = true;
+  //     Map<String, dynamic> hasDialledMap = call.toMap(call);
+
+  //     call.hasDialled = false;
+  //     Map<String, dynamic> hasNotDialledMap = call.toMap(call);
+
+  //     await callCollection.doc(call.callerId).set(hasDialledMap);
+  //     await callCollection.doc(call.receiverId).set(hasNotDialledMap);
+
+  //     return true;
+  //   } catch (e) {
+  //     print(e);
+  //     return false;
+  //   }
+  // }
 
   Future<bool> endCall(
       {required Call call,

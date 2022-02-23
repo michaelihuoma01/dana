@@ -17,6 +17,7 @@ import 'package:Dana/widgets/common_widgets/user_badges.dart';
 import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:ionicons/ionicons.dart';
@@ -126,38 +127,27 @@ class _PostViewState extends State<PostView> {
   }
 
   Future<Uri> createDynamicLink(
-    String? code, {
-    // String route = '/invite',
-    String param = 'id',
-    bool short = true,
-  }) async {
+      String? currentUserId, postId, authorId, public) async {
     final DynamicLinkParameters parameters = DynamicLinkParameters(
-      uriPrefix: 'https://danasocial.page.link', //$route',
+      uriPrefix: 'https://danasocialapp.page.link', //$route',
       link: Uri.parse(
-          'https://danasocial.page.link/?$param=$code'), //$route?code=$code'),
+          'https://danasocialapp.page.link/?userId=$currentUserId&postId=$postId&authorId=$authorId&public=$public'), //$route?code=$code'),
       androidParameters: AndroidParameters(
           packageName: 'com.michaelihuoma.dana', minimumVersion: 1),
       iosParameters: IOSParameters(
-          bundleId: 'com.michaelihuoma.dana',
+          bundleId: 'com.dubaitechnologydesign.dana',
           minimumVersion: '1',
           appStoreId: '1589760284'),
       navigationInfoParameters:
           NavigationInfoParameters(forcedRedirectEnabled: true),
     );
-
-    // Uri dynamicUrl = short
-    //     ? (await parameters.buildShortLink()).shortUrl
-    //     : (await parameters.buildUrl());
-
     Uri dynamicUrl;
-    if (short == true) {
-      dynamicUrl =
-          (await FirebaseDynamicLinks.instance.buildShortLink(parameters))
-              .shortUrl;
-    } else {
-      dynamicUrl = (await FirebaseDynamicLinks.instance.buildLink(parameters));
-    }
 
+    dynamicUrl =
+        (await FirebaseDynamicLinks.instance.buildShortLink(parameters))
+            .shortUrl;
+
+    print(dynamicUrl);
     return dynamicUrl;
   }
 
@@ -169,7 +159,10 @@ class _PostViewState extends State<PostView> {
     // final RenderBox box = context.findRenderObject() as RenderBox;
 
     var documentDirectory;
-    Uri dynamicLink = await createDynamicLink(widget.post!.id);
+    Uri dynamicLink = await createDynamicLink(widget.currentUserId,
+        widget.post!.id, widget.author!.id, widget.post!.location);
+
+    Clipboard.setData(ClipboardData(text: dynamicLink.toString()));
 
     var response = await get(Uri.parse(widget.post!.imageUrl!));
 
@@ -387,21 +380,11 @@ class _PostViewState extends State<PostView> {
                                       ),
                                     ),
                                     SizedBox(width: 3),
-                                    Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Text(widget.author!.name!,
-                                            style: TextStyle(
-                                                color: Colors.white,
-                                                fontWeight: FontWeight.w700)),
-                                        if (_post!.location != "")
-                                          Text(_post!.location!,
-                                              style: TextStyle(
-                                                  color: Colors.white,
-                                                  fontSize: 12))
-                                      ],
-                                    ),
+                                    Text(widget.author!.name!,
+                                        style: TextStyle(
+                                            color: Colors.white,
+                                            fontWeight: FontWeight.w600,
+                                            fontSize: 18)),
                                   ],
                                 ))))),
                 // if (widget.author!.id == widget.currentUserId)

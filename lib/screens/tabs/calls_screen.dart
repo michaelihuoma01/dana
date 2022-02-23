@@ -244,8 +244,7 @@ class _CallsScreenState extends State<CallsScreen> {
                               (BuildContext context, AsyncSnapshot snapshot) {
                             if (!snapshot.hasData) {
                               return Center(
-                                child: SpinKitWanderingCubes(
-                                    color: Colors.white, size: 40),
+                                child: SpinKitFadingCircle(color: Colors.white, size:40),
                               );
                             }
 
@@ -266,8 +265,7 @@ class _CallsScreenState extends State<CallsScreen> {
                     builder: (BuildContext context, AsyncSnapshot snapshot) {
                       if (!snapshot.hasData) {
                         return Center(
-                          child: SpinKitWanderingCubes(
-                              color: Colors.white, size: 40),
+                          child: SpinKitFadingCircle(color: Colors.white, size: 40),
                         );
                       }
 

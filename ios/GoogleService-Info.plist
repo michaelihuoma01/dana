@@ -3,9 +3,9 @@
 <plist version="1.0">
 <dict>
 	<key>CLIENT_ID</key>
-	<string>598487625194-8pkbj1vkil6e0ei3s1hdfov2pbftipqm.apps.googleusercontent.com</string>
+	<string>598487625194-p355fab64071n33echgug8vm4264gmig.apps.googleusercontent.com</string>
 	<key>REVERSED_CLIENT_ID</key>
-	<string>com.googleusercontent.apps.598487625194-8pkbj1vkil6e0ei3s1hdfov2pbftipqm</string>
+	<string>com.googleusercontent.apps.598487625194-p355fab64071n33echgug8vm4264gmig</string>
 	<key>API_KEY</key>
 	<string>AIzaSyA0WGyr0_d4ivtudaP6ux8rAsW0azsBYJ8</string>
 	<key>GCM_SENDER_ID</key>
@@ -13,7 +13,7 @@
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
-	<string>com.michaelihuoma.dana</string>
+	<string>com.dubaitechnologydesign.dana</string>
 	<key>PROJECT_ID</key>
 	<string>dana-d2485</string>
 	<key>STORAGE_BUCKET</key>
@@ -29,6 +29,6 @@
 	<key>IS_SIGNIN_ENABLED</key>
 	<true></true>
 	<key>GOOGLE_APP_ID</key>
-	<string>1:598487625194:ios:859d73040768bfb0469693</string>
+	<string>1:598487625194:ios:678fa278fa6f8221469693</string>
 </dict>
 </plist>

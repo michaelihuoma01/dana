@@ -143,15 +143,11 @@ class _VideoPostViewState extends State<VideoPostView> {
   }
 
   Future<Uri> createDynamicLink(
-    String? code, {
-    // String route = '/invite',
-    String param = 'id',
-    bool short = true,
-  }) async {
+      String? currentUserId, postId, authorId, public) async {
     final DynamicLinkParameters parameters = DynamicLinkParameters(
-      uriPrefix: 'https://danasocial.page.link', //$route',
+      uriPrefix: 'https://danasocialapp.page.link', //$route',
       link: Uri.parse(
-          'https://danasocial.page.link/?$param=$code'), //$route?code=$code'),
+          'https://danasocialapp.page.link/?userId=$currentUserId&postId=$postId&authorId=$authorId&public=$public'), //$route?code=$code'),
       androidParameters: AndroidParameters(
           packageName: 'com.michaelihuoma.dana', minimumVersion: 1),
       iosParameters: IOSParameters(
@@ -162,14 +158,12 @@ class _VideoPostViewState extends State<VideoPostView> {
           NavigationInfoParameters(forcedRedirectEnabled: true),
     );
     Uri dynamicUrl;
-    if (short == true) {
-      dynamicUrl =
-          (await FirebaseDynamicLinks.instance.buildShortLink(parameters))
-              .shortUrl;
-    } else {
-      dynamicUrl = (await FirebaseDynamicLinks.instance.buildLink(parameters));
-    }
 
+    dynamicUrl =
+        (await FirebaseDynamicLinks.instance.buildShortLink(parameters))
+            .shortUrl;
+
+    print(dynamicUrl);
     return dynamicUrl;
   }
 
@@ -180,7 +174,8 @@ class _VideoPostViewState extends State<VideoPostView> {
   _saveAndShareFile() async {
     // final RenderBox box = context.findRenderObject() as RenderBox;
 
-    Uri dynamicLink = await createDynamicLink(widget.post!.id);
+    Uri dynamicLink = await createDynamicLink(widget.currentUserId,
+        widget.post!.id, widget.author!.id, widget.post!.location);
 
     var response = await get(Uri.parse(widget.post!.imageUrl!));
     var documentDirectory;

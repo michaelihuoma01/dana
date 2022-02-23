@@ -190,10 +190,17 @@ class DatabaseService {
       collection = 'deletedPosts';
     }
 
-    postsRef.doc(post.authorId).collection(collection).doc(post.id).update({
-      'caption': post.caption,
-      'location': post.location,
-    });
+    if (post.location == 'true') {
+      publicPostsRef.doc(post.id).update({
+        'caption': post.caption,
+        'location': post.location,
+      });
+    } else {
+      postsRef.doc(post.authorId).collection(collection).doc(post.id).update({
+        'caption': post.caption,
+        'location': post.location,
+      });
+    }
   }
 
   static void allowDisAllowPostComments(Post post, bool commentsAllowed) {
@@ -220,7 +227,11 @@ class DatabaseService {
     // postStatus == PostStatus.feedPost
     //     ? collection = 'userPosts'
     //     : collection = 'archivedPosts';
-    postsRef.doc(post.authorId).collection('userPosts').doc(post.id).delete();
+    if (post.location == 'true') {
+      publicPostsRef.doc(post.id).delete();
+    } else {
+      postsRef.doc(post.authorId).collection('userPosts').doc(post.id).delete();
+    }
   }
 
   static void archivePost(Post post, PostStatus postStatus) {
@@ -507,17 +518,28 @@ class DatabaseService {
     return posts;
   }
 
-  //   static Future<List<Post>> getPost(String? postId, String? userId) async {
-  //   QuerySnapshot userPostsSnapshot = await postsRef
-  //       .doc(userId)
-  //       .collection('userPosts')
-  //       .doc(postId)
-  //       // .orderBy('timestamp', descending: true)
-  //       .get();
-  //   List<Post> posts =
-  //       userPostsSnapshot.docs.map((doc) => Post.fromDoc(doc)).toList();
-  //   return posts;
-  // }
+  static Future<Post> getPost(String? postId, String? userId) async {
+    DocumentSnapshot postSnapshot =
+        await postsRef.doc(userId).collection('userPosts').doc(postId).get();
+
+    var pos = Post.fromDoc(postSnapshot);
+    print('------_________-------------${pos.imageUrl}');
+
+    if (postSnapshot.exists) {
+      return Post.fromDoc(postSnapshot);
+    }
+    return Post();
+  }
+
+  static Future<Post> getPublicPost(String? postId) async {
+    DocumentSnapshot postSnapshot = await publicPostsRef.doc(postId).get();
+    // print('------||||||||-------------${postSnapshot.id}');
+
+    if (postSnapshot.exists) {
+      return Post.fromDoc(postSnapshot);
+    }
+    return Post();
+  }
 
   static Future<AppUser> getUserWithId(String? userId) async {
     DocumentSnapshot userDocSnapshot = await usersRef.doc(userId).get();
@@ -532,13 +554,30 @@ class DatabaseService {
       required Post post,
       String? receiverToken,
       context}) async {
-    DocumentReference postRef =
-        postsRef.doc(post.authorId).collection('userPosts').doc(post.id);
-    postRef.get().then((doc) {
-      int likeCount = doc['likeCount'];
-      postRef.update({'likeCount': likeCount + 1});
-      likesRef.doc(post.id).collection('postLikes').doc(currentUserId).set({});
-    });
+    if (post.location == 'true') {
+      DocumentReference postRef = publicPostsRef.doc(post.id);
+      postRef.get().then((doc) {
+        int likeCount = doc['likeCount'];
+        postRef.update({'likeCount': likeCount + 1});
+        likesRef
+            .doc(post.id)
+            .collection('postLikes')
+            .doc(currentUserId)
+            .set({});
+      });
+    } else {
+      DocumentReference postRef =
+          postsRef.doc(post.authorId).collection('userPosts').doc(post.id);
+      postRef.get().then((doc) {
+        int likeCount = doc['likeCount'];
+        postRef.update({'likeCount': likeCount + 1});
+        likesRef
+            .doc(post.id)
+            .collection('postLikes')
+            .doc(currentUserId)
+            .set({});
+      });
+    }
 
     addActivityItem(
       currentUserId: currentUserId,

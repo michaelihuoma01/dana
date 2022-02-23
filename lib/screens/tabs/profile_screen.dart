@@ -145,7 +145,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           builder: (BuildContext context, AsyncSnapshot snapshot) {
             if (!snapshot.hasData) {
               return Center(
-                child: SpinKitWanderingCubes(color: Colors.white, size: 40),
+                child: SpinKitFadingCircle(color: Colors.white, size: 40),
               );
             }
             AppUser user = AppUser.fromDoc(snapshot.data);

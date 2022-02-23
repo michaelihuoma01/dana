@@ -1,3 +1,4 @@
+import 'package:Dana/utils/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 
@@ -33,12 +34,12 @@ class CustomModalProgressHUD extends StatelessWidget {
   CustomModalProgressHUD({
     Key? key,
     required this.inAsyncCall,
-    this.opacity = 0.3,
+    this.opacity = 0.2,
     this.color = Colors.black,
     this.progressIndicator = const Dialog(
         backgroundColor: Colors.transparent,
         elevation: 0,
-        child: SpinKitWanderingCubes(color: Colors.white, size: 40)),
+        child: SpinKitFadingCircle(color: lightColor, size: 40)),
     this.offset,
     this.dismissible = false,
     required this.child,

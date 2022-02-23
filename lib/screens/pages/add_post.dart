@@ -139,11 +139,12 @@ class _AddPostState extends State<AddPost> {
         likeCount: 0,
         commentCount: 0,
         authorId: _currentUserId,
+        location: (isPublic == true) ? "true" : "false",
         timestamp: Timestamp.fromDate(DateTime.now()),
         commentsAllowed: true,
       );
 
-      if (isPublic == true) {
+      if (isPublic == true) { 
         DatabaseService.createPublicPost(post);
       } else {
         DatabaseService.createPost(post);

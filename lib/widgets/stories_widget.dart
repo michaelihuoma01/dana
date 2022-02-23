@@ -1,3 +1,4 @@
+import 'package:Dana/utils/constants.dart';
 import 'package:camera/camera.dart';
 import 'package:Dana/models/models.dart';
 import 'package:Dana/screens/home.dart';
@@ -7,11 +8,12 @@ import 'package:Dana/utilities/show_error_dialog.dart';
 import 'package:Dana/widgets/blank_story_circle.dart';
 import 'package:Dana/widgets/story_circle.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:provider/provider.dart';
 import '../../../models/user_model.dart';
 
 class StoriesWidget extends StatefulWidget {
-  final List<AppUser> users;
+  final List<AppUser?> users;
   final Function goToCameraScreen;
   const StoriesWidget(this.users, this.goToCameraScreen);
 
@@ -83,9 +85,9 @@ class _StoriesWidgetState extends State<StoriesWidget> {
       setState(() => _isCurrentUserHasStories = true);
     }
 
-    for (AppUser user in widget.users) {
+    for (AppUser? user in widget.users) {
       List<Story>? userStories =
-          await StoriesService.getStoriesByUserId(user.id, true);
+          await StoriesService.getStoriesByUserId(user!.id, true);
       if (!mounted) return;
 
       if (userStories != null && userStories.isNotEmpty) {
@@ -130,11 +132,8 @@ class _StoriesWidgetState extends State<StoriesWidget> {
                 return _buildStoryCircle(index);
               },
             ))
-        : Container(
-            height: 90,
-            child: Center(
-              child: CircularProgressIndicator(),
-            ),
+        : Center(
+            child: SpinKitFadingCircle(color: lightColor, size: 30),
           );
   }
 
