@@ -12,6 +12,7 @@ class PickupLayout extends StatelessWidget {
   final AppUser? currentUser;
 
   PickupLayout({required this.scaffold, this.currentUser});
+ 
 
   @override
   Widget build(BuildContext context) {

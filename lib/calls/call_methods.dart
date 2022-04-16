@@ -64,7 +64,7 @@ class CallMethods {
       }
       Map<String, dynamic> hasDialledMap = call.toMap(call);
       hasDialledMap["duration"] = duration;
-      hasDialledMap["timestamp"] = timestamp;
+      hasDialledMap["timestamp"] = timestamp ?? Timestamp.now();
       hasDialledMap["isMissed"] = isMissed;
 
       if (isMissed == false) {
@@ -74,7 +74,7 @@ class CallMethods {
       }
       Map<String, dynamic> hasNotDialledMap = call.toMap(call);
       hasNotDialledMap["duration"] = duration;
-      hasNotDialledMap["timestamp"] = timestamp;
+      hasNotDialledMap["timestamp"] = timestamp ?? Timestamp.now();
       hasNotDialledMap["isMissed"] = isMissed;
 
       await FirebaseFirestore.instance

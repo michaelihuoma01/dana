@@ -17,6 +17,7 @@ import 'package:Dana/widgets/common_widgets/post_view.dart';
 import 'package:Dana/widgets/common_widgets/video_post_view.dart';
 import 'package:Dana/widgets/qrcode.dart';
 import 'package:Dana/widgets/text_post_tile.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
@@ -36,6 +37,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   int _followersCount = 0;
   int _followingCount = 0;
   List<Post> _posts = [];
+  List<Post> _publicPosts = [];
   int _displayPosts = 0; // 0 - grid, 1 - column
   AppUser? _profileUser;
   List<Story>? _userStories;
@@ -50,9 +52,22 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   _setupPosts() async {
     List<Post> posts = await DatabaseService.getUserPosts(widget.user!.id);
+    QuerySnapshot postSnapshot = await publicPostsRef.get();
+    // _publicPosts = postSnapshot.docs.map((doc) => Post.fromDoc(doc)).toList();
+
+    for (var p in postSnapshot.docs.map((doc) => Post.fromDoc(doc)).toList()) {
+      if (p.authorId == widget.user!.id) {
+        _publicPosts.add(p);
+      }
+    }
+
+    var allPosts = [...posts, ..._publicPosts].toSet().toList();
+
+    allPosts.sort((a, b) => b.timestamp!.compareTo(a.timestamp!));
+
     if (!mounted) return;
     setState(() {
-      _posts = posts;
+      _posts = allPosts;
     });
   }
 

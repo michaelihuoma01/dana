@@ -160,6 +160,7 @@ class PushNotificationService {
 
       fcm.subscribeToTopic('allusers');
     }
+    return token;
   }
 
   static String getuserID(Map<String, dynamic> message) {

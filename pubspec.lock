@@ -644,6 +644,20 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "4.4.0"
+  linkable:
+    dependency: "direct main"
+    description:
+      name: linkable
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "3.0.1"
+  linkwell:
+    dependency: "direct main"
+    description:
+      name: linkwell
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "2.0.6"
   liquid_swipe:
     dependency: "direct main"
     description:

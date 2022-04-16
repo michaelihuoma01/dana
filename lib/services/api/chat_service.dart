@@ -95,6 +95,7 @@ class ChatService {
       recieverToken: receiverUser.token,
     );
     AppUser user = await DatabaseService.getUserWithId(message.senderId);
+    print('---------------------${receiverUser.token}');
     HelperMethods.sendNotification(receiverUser.token, context, receiverUser.id,
         '${user.name} sent you a message');
   }

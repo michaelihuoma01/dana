@@ -49,7 +49,7 @@ class DatabaseService {
     try {
       users = usersRef
           // .where('name', isGreaterThanOrEqualTo: name)
-          .where('pin', isEqualTo: name)
+          .where('name', isEqualTo: name)
           .get();
     } on FirebaseException catch (e) {
       print(e);
@@ -522,8 +522,7 @@ class DatabaseService {
     DocumentSnapshot postSnapshot =
         await postsRef.doc(userId).collection('userPosts').doc(postId).get();
 
-    var pos = Post.fromDoc(postSnapshot);
-    print('------_________-------------${pos.imageUrl}');
+    var pos = Post.fromDoc(postSnapshot); 
 
     if (postSnapshot.exists) {
       return Post.fromDoc(postSnapshot);
@@ -532,8 +531,7 @@ class DatabaseService {
   }
 
   static Future<Post> getPublicPost(String? postId) async {
-    DocumentSnapshot postSnapshot = await publicPostsRef.doc(postId).get();
-    // print('------||||||||-------------${postSnapshot.id}');
+    DocumentSnapshot postSnapshot = await publicPostsRef.doc(postId).get(); 
 
     if (postSnapshot.exists) {
       return Post.fromDoc(postSnapshot);

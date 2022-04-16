@@ -105,12 +105,17 @@ class _MessagesScreenState extends State<MessagesScreen> {
         dataToReturn.removeWhere((chat) => chat.id == chatWithUserInfo.id);
 
         dataToReturn.add(chatWithUserInfo);
+        dataToReturn
+            .sort((a, b) => b.recentTimestamp!.compareTo(a.recentTimestamp!));
       }
-      dataToReturn
-          .sort((a, b) => b.recentTimestamp!.compareTo(a.recentTimestamp!));
+
+      setState(() {
+        isRead = true;
+      });
 
       yield dataToReturn;
     }
+
     // } catch (err) {
     //   print('////$err');
     // }

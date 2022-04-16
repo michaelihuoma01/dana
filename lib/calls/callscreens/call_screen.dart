@@ -1,8 +1,12 @@
 import 'dart:async';
 
+import 'package:Dana/models/models.dart';
+import 'package:Dana/services/services.dart';
+import 'package:Dana/utilities/constants.dart';
 import 'package:Dana/utils/utility.dart';
 import 'package:Dana/widgets/button_widget.dart';
 import 'package:agora_rtc_engine/rtc_engine.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:Dana/calls/call.dart';
 import 'package:Dana/calls/call_methods.dart';
@@ -20,10 +24,12 @@ import 'package:flutter/painting.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:ionicons/ionicons.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 import 'package:agora_rtc_engine/rtc_local_view.dart' as rtc_local_view;
 import 'package:agora_rtc_engine/rtc_remote_view.dart' as rtc_remote_view;
+import 'package:share/share.dart';
 
 class CallScreen extends StatefulWidget {
   final Call call;
@@ -47,13 +53,25 @@ class _CallScreenState extends State<CallScreen> {
   bool muted = false;
   bool onSpeaker = false;
   bool start = false;
+  bool isVideoEnabled = true;
   RtcEngine? _engine;
-  int? _remoteUid;
+  int? _remoteUid, _uid;
   Timer? _timer;
   int _counter = 0 * 60;
   double height = 180;
   double width = 120;
   Uri? dynamicUrl;
+  var link;
+  String? state;
+  List<AppUser> _userFollowing = [];
+  List<String?> _selectedUsers = [];
+
+  List<bool> _userFollowingState = [];
+  int _followingCount = 0;
+  bool _isLoading = false;
+  bool? _selected = false;
+  final TextEditingController _messageController = TextEditingController();
+  bool isSending = false;
 
   @override
   void initState() {
@@ -89,6 +107,8 @@ class _CallScreenState extends State<CallScreen> {
     await _engine!.setParameters(
         '''{\"che.video.lowBitRateStreamParameter\":{\"width\":320,\"height\":180,\"frameRate\":15,\"bitRate\":140}}''');
     await _engine!.joinChannel(null, widget.call.channelId!, null, 0);
+    link = await createVideoLink();
+    await _setupFollowing();
   }
 
   addPostFrameCallback() {
@@ -112,12 +132,48 @@ class _CallScreenState extends State<CallScreen> {
     });
   }
 
-  /// Create agora sdk instance and initialize
+  Future _setupFollowing() async {
+    setState(() {
+      _isLoading = true;
+    });
+
+    int userFollowingCount =
+        await DatabaseService.numFollowing(widget.currentUserId);
+    if (!mounted) return;
+    setState(() {
+      _followingCount = userFollowingCount;
+    });
+
+    List<String> userFollowingIds =
+        await DatabaseService.getUserFollowingIds(widget.currentUserId);
+
+    List<AppUser> userFollowing = [];
+    List<bool> userFollowingState = [];
+    for (String userId in userFollowingIds) {
+      AppUser user = await DatabaseService.getUserWithId(userId);
+      userFollowingState.add(true);
+      userFollowing.add(user);
+    }
+    setState(() {
+      _userFollowingState = userFollowingState;
+      _userFollowing = userFollowing;
+      _followingCount = userFollowing.length;
+      if (_followingCount != _followingCount) {
+        setState(() => _followingCount = _followingCount);
+      }
+    });
+    setState(() {
+      _isLoading = false;
+    });
+  }
+
+  // Create agora sdk instance and initialize
   Future<void> _initAgoraRtcEngine() async {
     _engine = await RtcEngine.create(APP_ID);
 
     if (widget.isAudio == false) {
       await _engine!.enableVideo();
+      isVideoEnabled = true;
     }
   }
 
@@ -193,6 +249,14 @@ class _CallScreenState extends State<CallScreen> {
         final info = 'firstRemoteVideo: $uid ${width}x $height';
         _infoStrings.add(info);
       });
+    }, remoteVideoStateChanged: (uid, stats, reason, ela) {
+      setState(() {
+        print('-------$uid');
+        _uid = uid;
+        print('-------${stats.name}');
+        state = stats.name;
+        print('-------$reason');
+      });
     }));
   }
 
@@ -229,11 +293,84 @@ class _CallScreenState extends State<CallScreen> {
           style: TextStyle(fontSize: 18, color: Colors.white));
 
   List<Widget> _getRenderViews() {
-    final List<StatefulWidget> list = [];
-    list.add(rtc_local_view.SurfaceView());
-    _users
-        .forEach((int uid) => list.add(rtc_remote_view.SurfaceView(uid: uid)));
+    final List<Widget> list = [];
+    list.add((isVideoEnabled == true)
+        ? rtc_local_view.SurfaceView()
+        : Container(
+            child: Center(
+                child: Text('Camera off',
+                    style: TextStyle(color: Colors.white)))));
+    _users.forEach((int uid) => list.add((state == 'Stopped' && _uid == uid)
+        ? Container(
+            child: Center(
+                child:
+                    Text('Camera off', style: TextStyle(color: Colors.white))))
+        : rtc_remote_view.SurfaceView(uid: uid)));
     return list;
+  }
+
+  _sendMessage(
+      {String? text,
+      String? imageUrl,
+      String? giphyUrl,
+      String? audioUrl,
+      String? videoUrl,
+      String? fileUrl,
+      String? fileName,
+      AppUser? receiver}) async {
+    if ((text != null && text.trim().isNotEmpty) ||
+        (fileName != null && fileName.trim().isNotEmpty) ||
+        imageUrl != null ||
+        audioUrl != null ||
+        videoUrl != null ||
+        fileUrl != null ||
+        giphyUrl != null) {
+      setState(() => isSending = true);
+
+      List<String?> userIds = [];
+      userIds.add(widget.currentUserId);
+      userIds.add(receiver!.id);
+
+      Chat? chat = await ChatService.getChatByUsers(userIds);
+
+      bool isChatExist = chat != null;
+
+      if (!isChatExist) {
+        chat = await ChatService.createChat([
+          Provider.of<UserData>(context, listen: false).currentUser,
+          receiver
+        ], userIds, context);
+
+        setState(() {
+          isChatExist = true;
+        });
+      }
+
+      if (imageUrl == null &&
+          giphyUrl == null &&
+          audioUrl == null &&
+          videoUrl == null &&
+          fileUrl == null) {
+        _messageController.clear();
+      }
+
+      Message message = Message(
+        senderId: widget.currentUserId,
+        text: text,
+        imageUrl: imageUrl,
+        fileName: fileName,
+        giphyUrl: giphyUrl,
+        audioUrl: audioUrl,
+        videoUrl: videoUrl,
+        fileUrl: fileUrl,
+        timestamp: Timestamp.now(),
+        isLiked: false,
+      );
+
+      ChatService.sendChatMessage(chat, message, receiver, context, false);
+      chatsRef.doc(chat.id).update({'readStatus.${receiver.id}': false});
+      setState(() => isSending = false);
+    }
   }
 
   /// Video view wrapper
@@ -363,87 +500,128 @@ class _CallScreenState extends State<CallScreen> {
   }
 
   void _addUsers() async {
-    var link = await createVideoLink();
-    showDialog(
+    showModalBottomSheet(
         context: context,
-        barrierDismissible: true,
-        builder: (BuildContext context) => Dialog(
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10.0),
-            ),
-            elevation: 0.0,
-            backgroundColor: Colors.transparent,
-            child: Container(
-                height: 230,
-                margin: EdgeInsets.all(30),
-                width: double.infinity,
-                decoration: BoxDecoration(
-                    color: darkColor, borderRadius: BorderRadius.circular(10)),
-                child: Padding(
-                    padding: EdgeInsets.symmetric(vertical: 10),
-                    child: Padding(
-                        padding: const EdgeInsets.all(10),
-                        child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text('Switching to group call',
-                                  textAlign: TextAlign.center,
-                                  style: TextStyle(
-                                      fontSize: 20,
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.w600)),
-                              SizedBox(height: 10),
-                              Text(
-                                  'Here\'s the link to join your group call. \nCopy this link and send to friends on Dana to join your call \n (4 participants max).',
-                                  style: TextStyle(
-                                      fontSize: 14, color: Colors.white)),
-                              SizedBox(height: 5),
-                              Divider(color: Colors.grey),
-                              SizedBox(height: 5),
-                              GestureDetector(
-                                  onTap: () {
-                                    Clipboard.setData(
-                                        ClipboardData(text: link.toString()));
+        builder: (BuildContext context) {
+          return Container(
+              width: double.infinity,
+              decoration: BoxDecoration(color: darkColor),
+              child: Padding(
+                  padding: const EdgeInsets.all(10),
+                  child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.only(
+                              left: 10, right: 10, top: 10),
+                          child: Text('Add people to call',
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                  fontSize: 18,
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.w600)),
+                        ),
+                        SizedBox(height: 10),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceAround,
+                          children: [
+                            GestureDetector(
+                                onTap: () {
+                                  Clipboard.setData(
+                                      ClipboardData(text: link.toString()));
+                                },
+                                child: Text(link.toString(),
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(
+                                        fontSize: 16, color: lightColor))),
+                            GestureDetector(
+                              onTap: () {
+                                Clipboard.setData(
+                                    ClipboardData(text: link.toString()));
 
-                                    Utility.showMessage(context,
-                                        bgColor: Colors.green,
-                                        message: 'Link copied',
-                                        pulsate: false);
-                                  },
-                                  child: Text(link.toString(),
-                                      textAlign: TextAlign.center,
-                                      style: TextStyle(
-                                          fontSize: 14, color: lightColor))),
-                              SizedBox(height: 15),
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceAround,
-                                children: [
-                                  Text('Copy',
-                                      textAlign: TextAlign.center,
-                                      style: TextStyle(
-                                          fontSize: 16, color: Colors.white)),
-                                  Container(
-                                    color: lightColor,
-                                    child: Padding(
-                                      padding: const EdgeInsets.all(8.0),
-                                      child: Row(
-                                        children: [
-                                          Icon(Icons.ios_share,
-                                              color: Colors.white, size: 17),
-                                          SizedBox(width: 5),
-                                          Text('Share',
-                                              textAlign: TextAlign.center,
-                                              style: TextStyle(
-                                                  fontSize: 16,
-                                                  color: Colors.white)),
-                                        ],
-                                      ),
+                                Utility.showMessage(context,
+                                    bgColor: Colors.green,
+                                    message: 'Link copied',
+                                    pulsate: false);
+                              },
+                              child: Icon(Icons.copy_outlined,
+                                  color: Colors.white),
+                            ),
+                            GestureDetector(
+                              onTap: () {
+                                Share.share(
+                                    'Click to join ${widget.call.callerName}\'s group call: \n${dynamicUrl.toString()}');
+                              },
+                              child: Icon(Icons.ios_share, color: Colors.white),
+                            ),
+                          ],
+                        ),
+                        SizedBox(height: 10),
+                        Divider(color: Colors.white),
+                        SizedBox(height: 10),
+                        Expanded(
+                          child: Container(
+                            child: ListView.builder(
+                              itemCount: _userFollowing.length,
+                              itemBuilder: (BuildContext context, int index) {
+                                AppUser follower = _userFollowing[index];
+                                String? filteritem = _selectedUsers.firstWhere(
+                                    (item) => item == follower.id,
+                                    orElse: () => null);
+                                return ListTile(
+                                  leading: Container(
+                                    height: 40,
+                                    width: 40,
+                                    child: CircleAvatar(
+                                      radius: 25.0,
+                                      backgroundColor: Colors.grey,
+                                      backgroundImage: (follower
+                                                  .profileImageUrl!.isEmpty
+                                              ? AssetImage(placeHolderImageRef)
+                                              : CachedNetworkImageProvider(
+                                                  follower
+                                                      .profileImageUrl!))
+                                          as ImageProvider<Object>?,
                                     ),
                                   ),
-                                ],
-                              )
-                            ]))))));
+                                  title: Text(follower.name!,
+                                      style: TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 18)),
+                                  subtitle: Text('PIN: ${follower.pin}',
+                                      maxLines: 3,
+                                      style: TextStyle(color: Colors.grey)),
+                                  trailing: GestureDetector(
+                                    onTap: () async {
+                                      AppUser receiver =
+                                          await DatabaseService
+                                              .getUserWithId(follower.id);
+
+                                      _sendMessage(
+                                          text: link.toString(),
+                                          receiver: receiver,
+                                          imageUrl: null,
+                                          giphyUrl: null,
+                                          audioUrl: null,
+                                          videoUrl: null,
+                                          fileName: null,
+                                          fileUrl: null);
+                                      Utility.showMessage(context,
+                                          message: 'Link sent',
+                                          pulsate: false,
+                                          bgColor: Colors.green[600]!);
+                                    },
+                                    child: Icon(Ionicons.send,
+                                        color: lightColor, size: 19),
+                                  ),
+                                );
+                              },
+                            ),
+                          ),
+                        ),
+                         
+                      ])));
+        });
   }
 
   void _onToggleMute() {
@@ -489,10 +667,9 @@ class _CallScreenState extends State<CallScreen> {
                     shape: BoxShape.circle,
                     color: Colors.white.withOpacity(0.3),
                   ),
-                  padding: const EdgeInsets.all(14),
-                  // width: 30.0,
-                  child: Icon(Icons.supervisor_account_rounded,
-                      color: Colors.white, size: 20.0))),
+                  padding: const EdgeInsets.all(12),
+                  child:
+                      Icon(Icons.link_rounded, color: Colors.white, size: 18))),
           SizedBox(width: 20),
           GestureDetector(
               onTap: _onToggleMute,
@@ -501,12 +678,11 @@ class _CallScreenState extends State<CallScreen> {
                     shape: BoxShape.circle,
                     color: muted ? Colors.white : Colors.white.withOpacity(0.3),
                   ),
-                  padding: const EdgeInsets.all(14),
-                  // width: 30.0,
-                  child: Icon(muted ? Icons.mic : Icons.mic_off,
+                  padding: const EdgeInsets.all(12),
+                  child: Icon(muted ? Icons.mic_off : Icons.mic_off,
                       color:
                           muted ? Colors.black.withOpacity(0.7) : Colors.white,
-                      size: 20.0))),
+                      size: 18))),
           SizedBox(width: 20),
           GestureDetector(
               onTap: () async {
@@ -551,9 +727,9 @@ class _CallScreenState extends State<CallScreen> {
                     child: Icon(
                       Icons.flip_camera_ios_rounded,
                       color: Colors.white,
-                      size: 20.0,
+                      size: 18,
                     ),
-                    padding: const EdgeInsets.all(15.0),
+                    padding: const EdgeInsets.all(12),
                   ),
                 )
               : GestureDetector(
@@ -565,13 +741,43 @@ class _CallScreenState extends State<CallScreen> {
                             ? Colors.white
                             : Colors.white.withOpacity(0.3),
                       ),
-                      padding: const EdgeInsets.all(15),
+                      padding: const EdgeInsets.all(12),
                       // width: 30.0,
                       child: Icon(FontAwesomeIcons.volumeUp,
                           color: onSpeaker
                               ? Colors.black.withOpacity(0.8)
                               : Colors.white,
-                          size: 17.0))),
+                          size: 15))),
+          SizedBox(width: 20),
+          if (widget.isAudio == false)
+            GestureDetector(
+                onTap: () {
+                  if (isVideoEnabled == true) {
+                    setState(() {
+                      isVideoEnabled = false;
+                      _engine!.enableLocalVideo(false);
+                    });
+                  } else {
+                    setState(() {
+                      isVideoEnabled = true;
+                      _engine!.enableLocalVideo(true);
+                    });
+                  }
+                },
+                child: Container(
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: isVideoEnabled
+                          ? Colors.white.withOpacity(0.3)
+                          : Colors.white,
+                    ),
+                    padding: const EdgeInsets.all(12),
+                    // width: 30.0,
+                    child: Icon(Icons.videocam_off_rounded,
+                        color: isVideoEnabled
+                            ? Colors.white
+                            : Colors.black.withOpacity(0.7),
+                        size: 18))),
         ],
       ),
     );

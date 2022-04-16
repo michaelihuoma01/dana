@@ -22,6 +22,8 @@ final String user = 'userFeed';
 final String usersFollowers = 'userFollowers';
 final String userFollowing = 'userFollowing';
 final String placeHolderImageRef = 'assets/images/user_placeholder.jpg';
+bool isRead = true;
+bool isHomeRequest = false;
 
 final DateFormat timeFormat = DateFormat('E, h:mm a');
 

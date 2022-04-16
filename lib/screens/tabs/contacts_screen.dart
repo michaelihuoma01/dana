@@ -7,17 +7,13 @@ import 'package:Dana/generated/l10n.dart';
 import 'package:Dana/models/user_data.dart';
 import 'package:Dana/models/user_model.dart';
 import 'package:Dana/screens/pages/direct_messages/nested_screens/chat_screen.dart';
-import 'package:Dana/screens/pages/friend_request.dart';
 import 'package:Dana/screens/pages/user_profile.dart';
 import 'package:Dana/services/api/database_service.dart';
 import 'package:Dana/utilities/constants.dart';
-import 'package:Dana/utilities/custom_navigation.dart';
 import 'package:Dana/utilities/themes.dart';
 import 'package:Dana/utils/constants.dart';
-import 'package:Dana/widgets/add_story.dart';
 import 'package:Dana/widgets/contact_tile.dart';
 import 'package:Dana/widgets/custom_modal_progress_hud.dart';
-import 'package:Dana/widgets/search_tile.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:intl/intl.dart';
@@ -64,6 +60,8 @@ class _ContactScreenState extends State<ContactScreen> {
     setState(() {
       _requests = Provider.of<UserData>(context, listen: false).requests;
       _friends = Provider.of<UserData>(context, listen: false).friends;
+
+      isHomeRequest = false;
     });
   }
 

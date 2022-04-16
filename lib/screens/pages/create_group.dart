@@ -1,6 +1,8 @@
 import 'dart:io';
 
 import 'package:Dana/calls/callscreens/pickup/pickup_layout.dart';
+import 'package:Dana/utils/utility.dart';
+import 'package:Dana/widgets/button_widget.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:Dana/generated/l10n.dart';
@@ -33,7 +35,7 @@ class _CreateGroupState extends State<CreateGroup> {
   Future<QuerySnapshot>? _users;
   String _searchText = '';
   List<AppUser> _userFollowing = [];
-  List<AppUser?> _selectedUsers = [];
+  List<String?> _selectedUsers = [];
 
   List<bool> _userFollowingState = [];
   int _followingCount = 0;
@@ -48,47 +50,56 @@ class _CreateGroupState extends State<CreateGroup> {
   final TextEditingController textEditingController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
 
-  Future<Chat> startGroup() async {
-    imageUrl = await StroageService.uploadMessageImage(_profileImage!);
-    
-    _selectedUsers.add(widget.currentUser);
+  // Future<Chat>
+  startGroup() async {
+        Utility.showMessage(context,
+        bgColor: Colors.green,
+        message: 'Group created',
+        pulsate: false,
+        type: MessageTypes.info);
+    if (_profileImage != null) {
+      imageUrl = await StroageService.uploadMessageImage(_profileImage!);
+    } else {
+      imageUrl = '';
+    }
+
+    _selectedUsers.add(widget.currentUser!.id);
 
     Timestamp timestamp = Timestamp.now();
     Map<String?, dynamic> readStatus = {};
 
     readStatus[widget.currentUser!.id] = false;
 
-    for (AppUser? user in _selectedUsers) {
-      readStatus[user!.id] = false;
+    for (var user in _selectedUsers) {
+      readStatus[user] = false;
     }
 
     String groupName = textEditingController.text;
-    // _profileImageUrl
 
     DocumentReference res = await chatsRef.add({
       'groupName': groupName,
       'admin': widget.currentUser!.id,
       'groupUrl': imageUrl,
-      'memberIds': _selectedUsers.map((item) => item!.id).toList(),
+      'memberIds': _selectedUsers,
       'recentMessage': 'Chat Created',
       'recentSender': '',
       'recentTimestamp': timestamp,
       'readStatus': readStatus
     });
 
-    Navigator.pop(context);
 
-    return Chat(
-      id: res.id,
-      recentMessage: 'Chat Created',
-      admin: widget.currentUser!.id,
-      groupName: groupName,
-      groupUrl: imageUrl,
-      recentSender: '',
-      recentTimestamp: timestamp,
-      memberIds: _selectedUsers.map((item) => item!.id).toList(),
-      readStatus: readStatus,
-    );
+
+    // return Chat(
+    //   id: res.id,
+    //   recentMessage: 'Chat Created',
+    //   admin: widget.currentUser!.id,
+    //   groupName: groupName,
+    //   groupUrl: imageUrl,
+    //   recentSender: '',
+    //   recentTimestamp: timestamp,
+    //   memberIds: _selectedUsers.map((item) => item!.id).toList(),
+    //   readStatus: readStatus,
+    // );
   }
 
   @override
@@ -176,211 +187,219 @@ class _CreateGroupState extends State<CreateGroup> {
             fit: BoxFit.cover,
           ),
         ),
-        PickupLayout(
-          currentUser: widget.currentUser,
-          scaffold: Scaffold(
-              backgroundColor: Colors.transparent,
-              appBar: PreferredSize(
-                  preferredSize: const Size.fromHeight(50),
-                  child: AppBar(
-                    actions: [
-                      GestureDetector(
-                        onTap: () {
-                          if (_selectAll == false) {
-                            _userFollowing.forEach((element) {
-                              setState(() {
-                                _selectedUsers.add(element);
-                                _selectAll = true;
-                              });
+        // PickupLayout(
+        //   currentUser: widget.currentUser,
+        // scaffold:
+        Scaffold(
+            backgroundColor: Colors.transparent,
+            appBar: PreferredSize(
+                preferredSize: const Size.fromHeight(50),
+                child: AppBar(
+                  actions: [
+                    GestureDetector(
+                      onTap: () {
+                        if (_selectAll == false) {
+                          _userFollowing.forEach((element) {
+                            setState(() {
+                              _selectedUsers.add(element.id);
+                              _selectAll = true;
                             });
-                          } else {
-                            _userFollowing.forEach((element) {
-                              setState(() {
-                                _selectedUsers.remove(element);
-                                _selectAll = false;
-                              });
+                          });
+                        } else {
+                          _userFollowing.forEach((element) {
+                            setState(() {
+                              _selectedUsers.remove(element);
+                              _selectAll = false;
                             });
-                          }
-                        },
-                        child: Padding(
-                          padding: const EdgeInsets.only(right: 15, left: 15),
-                          child: Icon(Icons.done_all, color: lightColor),
-                        ),
-                      )
-                    ],
-                    title: Text(S.of(context)!.creategroup,
+                          });
+                        }
+                      },
+                      child: Padding(
+                        padding: const EdgeInsets.only(right: 15, left: 15),
+                        child: Icon(Icons.done_all, color: lightColor),
+                      ),
+                    )
+                  ],
+                  title: Text(S.of(context)!.creategroup,
+                      style: TextStyle(
+                          color: Colors.white, fontFamily: 'Poppins-Regular')),
+                  backgroundColor: darkColor,
+                  centerTitle: true,
+                  elevation: 5,
+                  automaticallyImplyLeading: true,
+                  iconTheme: IconThemeData(color: Colors.white),
+                )),
+            bottomSheet: Container(
+              color: darkColor,
+              width: double.infinity,
+              child: Padding(
+                padding: const EdgeInsets.all(20),
+                child: OutlinedButton(
+                    style: ButtonStyle(
+                        shape: MaterialStateProperty.all(RoundedRectangleBorder(
+                            borderRadius: new BorderRadius.circular(10))),
+                        backgroundColor: MaterialStateProperty.all(lightColor)),
+                    onPressed: () async {
+                      Navigator.of(context).pop();
+                      await startGroup();
+                    },
+                    child: Text('Create Group',
                         style: TextStyle(
+                            fontSize: 14,
                             color: Colors.white,
-                            fontFamily: 'Poppins-Regular')),
-                    backgroundColor: darkColor,
-                    centerTitle: true,
-                    elevation: 5,
-                    automaticallyImplyLeading: true,
-                    iconTheme: IconThemeData(color: Colors.white),
-                    brightness: Brightness.dark,
-                  )),
-              floatingActionButton: new FloatingActionButton(
-                backgroundColor: lightColor,
-                child: const Icon(Icons.done),
-                mini: true,
-                onPressed: () async {
-                  startGroup();
-                },
-                elevation: 5,
-                isExtended: true,
+                            fontFamily: 'Poppins-Regular'))),
               ),
-              body: Padding(
-                padding: const EdgeInsets.all(10),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.all(15),
-                      child: Center(
-                        child: Stack(
-                          children: [
-                            Container(
-                              height: 70,
-                              width: 70,
-                              child: _profileImage == null
-                                  ? Container(
-                                      child: CircleAvatar(
-                                        radius: 25.0,
-                                        backgroundColor: Colors.grey,
-                                        backgroundImage:
-                                            AssetImage(placeHolderImageRef),
-                                      ),
-                                    )
-                                  : Container(
-                                      child: CircleAvatar(
-                                        radius: 25.0,
-                                        backgroundColor: Colors.grey,
-                                        backgroundImage:
-                                            FileImage(_profileImage!),
-                                      ),
-                                    ),
-                            ),
-                            Positioned.fill(
-                              child: Align(
-                                  alignment: Alignment.bottomRight,
-                                  child: Container(
-                                    decoration: BoxDecoration(
-                                        color: Colors.white,
-                                        borderRadius: BorderRadius.all(
-                                            Radius.circular(250))),
-                                    child: Padding(
-                                      padding: const EdgeInsets.all(4),
-                                      child: InkWell(
-                                          onTap: () {
-                                            pickImageFromGallery();
-                                            print(_imagePath);
-                                          },
-                                          child: Icon(Icons.camera_alt_outlined,
-                                              size: 20)),
-                                    ),
-                                  )),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 10.0),
-                      child: TextField(
-                        controller: textEditingController,
-                        decoration: InputDecoration(
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(5),
-                            borderSide: BorderSide(color: lightColor, width: 1),
-                          ),
-                          enabledBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(5),
-                            borderSide: BorderSide(color: lightColor, width: 1),
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(5),
-                              borderSide:
-                                  BorderSide(color: lightColor, width: 1)),
-                          hintText: 'Group name',
-                          hintStyle: TextStyle(color: Colors.grey),
-                        ),
-                        style: TextStyle(color: Colors.white),
-                        cursorColor: lightColor,
-                      ),
-                    ),
-                    SizedBox(height: 10),
-                    Expanded(
-                      child: Container(
-                        child: ListView.builder(
-                          itemCount: _userFollowing.length,
-                          itemBuilder: (BuildContext context, int index) {
-                            AppUser follower = _userFollowing[index];
-                            AppUser? filteritem = _selectedUsers.firstWhere(
-                                (item) => item!.id == follower.id,
-                                orElse: () => null);
-                            return Theme(
-                              data:
-                                  ThemeData(unselectedWidgetColor: lightColor),
-                              child: CheckboxListTile(
-                                value: (_selectAll == true)
-                                    ? true
-                                    : filteritem != null,
-                                checkColor: darkColor,
-                                activeColor: lightColor,
-                                selectedTileColor: lightColor,
-                                title: Row(children: [
-                                  Container(
-                                    height: 40,
-                                    width: 40,
+            ),
+            body: Padding(
+              padding: const EdgeInsets.all(10),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.all(15),
+                    child: Center(
+                      child: Stack(
+                        children: [
+                          Container(
+                            height: 70,
+                            width: 70,
+                            child: _profileImage == null
+                                ? Container(
                                     child: CircleAvatar(
                                       radius: 25.0,
                                       backgroundColor: Colors.grey,
-                                      backgroundImage: (follower
-                                                  .profileImageUrl!.isEmpty
-                                              ? AssetImage(placeHolderImageRef)
-                                              : CachedNetworkImageProvider(
-                                                  follower.profileImageUrl!))
-                                          as ImageProvider<Object>?,
-                                    ),
-                                  ),
-                                  SizedBox(width: 15),
-                                  Flexible(
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Text(follower.name!,
-                                            style: TextStyle(
-                                                color: Colors.white,
-                                                fontSize: 18)),
-                                        Text('PIN: ${follower.pin}',
-                                            maxLines: 3,
-                                            style:
-                                                TextStyle(color: Colors.grey)),
-                                      ],
+                                      backgroundImage:
+                                          AssetImage(placeHolderImageRef),
                                     ),
                                   )
-                                ]),
-                                onChanged: (value) {
-                                  setState(() {
-                                    if (value == true) {
-                                      _selectedUsers.add(follower);
-                                    } else {
-                                      _selectedUsers.removeWhere(
-                                          (item) => item!.id == follower.id);
-                                    }
-                                  });
-                                },
-                              ),
-                            );
-                          },
-                        ),
+                                : Container(
+                                    child: CircleAvatar(
+                                      radius: 25.0,
+                                      backgroundColor: Colors.grey,
+                                      backgroundImage:
+                                          FileImage(_profileImage!),
+                                    ),
+                                  ),
+                          ),
+                          Positioned.fill(
+                            child: Align(
+                                alignment: Alignment.bottomRight,
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                      color: Colors.white,
+                                      borderRadius: BorderRadius.all(
+                                          Radius.circular(250))),
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(4),
+                                    child: InkWell(
+                                        onTap: () {
+                                          pickImageFromGallery();
+                                          print(_imagePath);
+                                        },
+                                        child: Icon(Icons.camera_alt_outlined,
+                                            size: 20)),
+                                  ),
+                                )),
+                          ),
+                        ],
                       ),
                     ),
-                  ],
-                ),
-              )),
-        ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                    child: TextField(
+                      controller: textEditingController,
+                      decoration: InputDecoration(
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(5),
+                          borderSide: BorderSide(color: lightColor, width: 1),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(5),
+                          borderSide: BorderSide(color: lightColor, width: 1),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(5),
+                            borderSide:
+                                BorderSide(color: lightColor, width: 1)),
+                        hintText: 'Group name',
+                        hintStyle: TextStyle(color: Colors.grey),
+                      ),
+                      style: TextStyle(color: Colors.white),
+                      cursorColor: lightColor,
+                    ),
+                  ),
+                  SizedBox(height: 10),
+                  Expanded(
+                    child: Container(
+                      child: ListView.builder(
+                        itemCount: _userFollowing.length,
+                        itemBuilder: (BuildContext context, int index) {
+                          AppUser follower = _userFollowing[index];
+                          String? filteritem = _selectedUsers.firstWhere(
+                              (item) => item == follower.id,
+                              orElse: () => null);
+                          return Theme(
+                            data: ThemeData(unselectedWidgetColor: lightColor),
+                            child: CheckboxListTile(
+                              value: (_selectAll == true)
+                                  ? true
+                                  : filteritem != null,
+                              checkColor: darkColor,
+                              activeColor: lightColor,
+                              selectedTileColor: lightColor,
+                              title: Row(children: [
+                                Container(
+                                  height: 40,
+                                  width: 40,
+                                  child: CircleAvatar(
+                                    radius: 25.0,
+                                    backgroundColor: Colors.grey,
+                                    backgroundImage: (follower
+                                                .profileImageUrl!.isEmpty
+                                            ? AssetImage(placeHolderImageRef)
+                                            : CachedNetworkImageProvider(
+                                                follower.profileImageUrl!))
+                                        as ImageProvider<Object>?,
+                                  ),
+                                ),
+                                SizedBox(width: 15),
+                                Flexible(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(follower.name!,
+                                          style: TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 18)),
+                                      Text('PIN: ${follower.pin}',
+                                          maxLines: 3,
+                                          style: TextStyle(color: Colors.grey)),
+                                    ],
+                                  ),
+                                )
+                              ]),
+                              onChanged: (value) {
+                                setState(() {
+                                  if (value == true) {
+                                    _selectedUsers.add(follower.id);
+                                  } else {
+                                    _selectedUsers.removeWhere(
+                                        (item) => item == follower.id);
+                                  }
+                                });
+                              },
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            )),
+        // ),
       ],
     );
   }

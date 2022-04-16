@@ -65,8 +65,6 @@ class _HomeScreenState extends State<HomeScreen>
   List<CameraDescription>? _cameras;
   CameraConsumer _cameraConsumer = CameraConsumer.post;
   final ScrollController homeController = ScrollController();
-  bool isRead = true;
-  bool isSeen = true;
 
   AppUser? user;
   TabController? tabController;
@@ -88,13 +86,10 @@ class _HomeScreenState extends State<HomeScreen>
   bool isFollower = false;
   bool isFollowingUser = false;
   bool isFriends = false;
-  bool isRequest = false;
   StreamSubscription<ConnectivityResult>? subscription;
   CallMethods callMethods = CallMethods();
-CollectionReference callCollection =
+  CollectionReference callCollection =
       FirebaseFirestore.instance.collection(CALL_COLLECTION);
-
-
 
   @override
   void initState() {
@@ -189,10 +184,9 @@ CollectionReference callCollection =
       }
     }
     FirebaseDynamicLinks.instance.onLink.listen((event) async {
-     
- DocumentSnapshot callSnapshot =
-        await  callCollection.doc('eTsAImJDPTfHXE7FPu6mRyyHINF2').get();
- Call call = Call.fromMap(callSnapshot);
+      DocumentSnapshot callSnapshot =
+          await callCollection.doc('eTsAImJDPTfHXE7FPu6mRyyHINF2').get();
+      Call call = Call.fromMap(callSnapshot);
 
       String? currentUserId = event.link.queryParameters['userId'];
       String? postId = event.link.queryParameters['postId'];
@@ -208,7 +202,7 @@ CollectionReference callCollection =
           isAudio = true;
         } else {
           isAudio = false;
-        } 
+        }
         Navigator.of(context).push(MaterialPageRoute(
             builder: (context) => CallScreen(
                   currentUserId: currentUserId,
@@ -266,7 +260,7 @@ CollectionReference callCollection =
         isFriends = true;
         _friends.add(friends);
       } else if (isFollowing == false && isFollower == true) {
-        isRequest = true;
+        isHomeRequest = true;
         _requests.add(friends);
       }
     }
@@ -287,6 +281,7 @@ CollectionReference callCollection =
         Chat chatFromDoc = Chat.fromDoc(doc);
         if (chatFromDoc.readStatus[widget.currentUserId] == true) {
           setState(() {
+       
             isRead = true;
           });
         } else {
@@ -405,6 +400,9 @@ CollectionReference callCollection =
           break;
         case 1:
           isSelected1 = false;
+          setState(() {
+            isRead = true;
+          });
           isSelected2 = true;
           isSelected3 = false;
           isSelected4 = false;
@@ -414,6 +412,7 @@ CollectionReference callCollection =
           isSelected1 = false;
           isSelected2 = false;
           isSelected3 = true;
+          
           isSelected4 = false;
           isSelected5 = false;
           break;
@@ -467,7 +466,7 @@ CollectionReference callCollection =
                         //   }
                         // },
                         child: SvgPicture.asset('assets/images/feeds.svg',
-                            color: isSelected1 ? lightColor : Colors.grey),
+                            color: isSelected1 ? lightColor : Colors.grey,  height: 18),
                       ),
                       title: Text(isSelected1 ? S.of(context)!.feeds : '',
                           style: TextStyle(
@@ -482,7 +481,7 @@ CollectionReference callCollection =
                             Icon(Icons.circle, color: Colors.red, size: 6),
                           SizedBox(height: 3),
                           SvgPicture.asset('assets/images/message.svg',
-                              color: isSelected2 ? lightColor : Colors.grey),
+                              color: isSelected2 ? lightColor : Colors.grey, height: 18),
                         ],
                       ),
                       title: Text(isSelected2 ? S.of(context)!.messages : '',
@@ -493,7 +492,7 @@ CollectionReference callCollection =
                                   : Colors.transparent))),
                   BottomNavigationBarItem(
                       icon: SvgPicture.asset('assets/images/call.svg',
-                          color: isSelected3 ? lightColor : Colors.grey),
+                          color: isSelected3 ? lightColor : Colors.grey,  height: 18),
                       title: Text(isSelected3 ? S.of(context)!.calls : '',
                           style: TextStyle(
                               fontSize: 10,
@@ -503,11 +502,11 @@ CollectionReference callCollection =
                   BottomNavigationBarItem(
                       icon: Column(
                         children: [
-                          if (isRequest == true)
+                          if (isHomeRequest == true)
                             Icon(Icons.circle, color: Colors.red, size: 6),
                           SizedBox(height: 3),
                           SvgPicture.asset('assets/images/groups.svg',
-                              color: isSelected4 ? lightColor : Colors.grey),
+                              color: isSelected4 ? lightColor : Colors.grey,  height: 18),
                         ],
                       ),
                       title: Text(isSelected4 ? S.of(context)!.friends : '',
@@ -519,11 +518,11 @@ CollectionReference callCollection =
                   BottomNavigationBarItem(
                       icon: (_currentUser?.profileImageUrl == null)
                           ? Icon(FontAwesomeIcons.userAlt,
-                              size: 17,
+                              size: 15,
                               color: isSelected5 ? lightColor : Colors.grey)
                           : Container(
-                              height: 28,
-                              width: 28,
+                              height: 25,
+                              width: 25,
                               child: CircleAvatar(
                                 radius: 25.0,
                                 backgroundColor: Colors.grey,

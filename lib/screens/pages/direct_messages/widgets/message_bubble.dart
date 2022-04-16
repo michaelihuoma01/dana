@@ -20,6 +20,8 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:linkable/linkable.dart';
+import 'package:linkwell/linkwell.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -255,12 +257,22 @@ class _MessageBubbleState extends State<MessageBubble>
         child: Padding(
           padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 12.0),
           child: Container(
-            child: Text(
-              widget.message!.text!,
-              style: TextStyle(
-                  color: isMe ? Colors.white : Colors.black, fontSize: 14),
-            ),
-          ),
+              child:
+                  //    Linkable(
+                  //     linkColor: Colors.black,
+                  //     textColor:  isMe ? Colors.white : Colors.black,
+                  //  text:   widget.message!.text!,
+                  //     style: TextStyle(
+                  //         color: isMe ? Colors.white : Colors.black, fontSize: 14),
+                  //   ),
+                  LinkWell(widget.message!.text!,
+                      style: TextStyle(
+                          color: isMe ? Colors.white : Colors.black,
+                          fontSize: 13),
+                      linkStyle: TextStyle(
+                        decoration: TextDecoration.underline,
+                          color: isMe ? Colors.white : Colors.black,
+                          fontSize: 13))),
         ),
       );
     }

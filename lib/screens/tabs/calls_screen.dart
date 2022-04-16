@@ -33,6 +33,7 @@ class _CallsScreenState extends State<CallsScreen> {
   Future<Map<String, Call>>? _users;
   bool isCaller = false;
   List<String>? callerID = [];
+  Map count = {};
 
   Stream<List<Call>> getCalls() async* {
     // try {
@@ -67,11 +68,11 @@ class _CallsScreenState extends State<CallsScreen> {
             duration: callFromDoc.duration,
             isAudio: callFromDoc.isAudio);
 
-        // dataToReturn.removeWhere((call) => call. == callWithUserInfo.id);
+          dataToReturn.add(callWithUserInfo);
+  
 
-        dataToReturn.add(callWithUserInfo);
+        dataToReturn.sort((a, b) => b.timestamp!.compareTo(a.timestamp!));
       }
-      dataToReturn.sort((a, b) => b.timestamp!.compareTo(a.timestamp!));
 
       yield dataToReturn;
     }
@@ -96,22 +97,32 @@ class _CallsScreenState extends State<CallsScreen> {
                   )) as ImageProvider<Object>?,
           ),
         ),
-        title: Text(
-            (call.receiverName! == widget.currentUser?.name)
-                ? call.callerName!
-                : call.receiverName!,
-            style: TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.w600,
-                fontSize: 18)),
+        title: (call.receiverName! == widget.currentUser?.name)
+            ? Text(call.callerName!,
+                style: TextStyle(
+                    color: (call.isMissed == true) ? Colors.red : Colors.white,
+                    fontWeight: FontWeight.w600,
+                    fontSize: 16))
+            : (call.callerName! == widget.currentUser?.name)
+                ? Text(call.receiverName!,
+                    style: TextStyle(
+                        color:
+                            (call.isMissed == true) ? Colors.red : Colors.white,
+                        fontWeight: FontWeight.w600,
+                        fontSize: 16))
+                : Text('User',
+                    style: TextStyle(
+                        color: Colors.grey,
+                        fontWeight: FontWeight.w600,
+                        fontSize: 16)),
         subtitle: Row(
           children: [
             call.isAudio!
-                ? Icon(FontAwesomeIcons.phoneAlt, color: Colors.grey, size: 13)
-                : Icon(FontAwesomeIcons.video, size: 13, color: Colors.grey),
+                ? Icon(FontAwesomeIcons.phoneAlt, color: Colors.grey, size: 12)
+                : Icon(FontAwesomeIcons.video, size: 12, color: Colors.grey),
             SizedBox(width: 10),
             if (call.isMissed == true)
-              Text('Cancelled', style: TextStyle(color: Colors.red)),
+              Text('Cancelled', style: TextStyle(color: Colors.grey)),
             if (call.hasDialled == true)
               Text('${S.of(context)!.outgoing} (${call.duration})',
                   style: TextStyle(color: Colors.grey)),
@@ -121,7 +132,7 @@ class _CallsScreenState extends State<CallsScreen> {
           ],
         ),
         trailing: Text(timeago.format(call.timestamp!.toDate()),
-            style: TextStyle(color: Colors.white)),
+            style: TextStyle(color: Colors.grey)),
         onTap: () {
           if (call.isAudio!) {
             try {
@@ -172,128 +183,123 @@ class _CallsScreenState extends State<CallsScreen> {
       Scaffold(
         backgroundColor: Colors.transparent,
         appBar: PreferredSize(
-            preferredSize: const Size.fromHeight(50),
+            preferredSize: const Size.fromHeight(65),
             child: AppBar(
-              title: Text(S.of(context)!.calls,
-                  style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 25,
-                      fontFamily: 'Poppins-Regular',
-                      fontWeight: FontWeight.bold)),
+              title: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  SizedBox(height: 20),
+                  Text(S.of(context)!.calls,
+                      style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 23,
+                          fontFamily: 'Poppins-Regular',
+                          fontWeight: FontWeight.bold)),
+                  TextField(
+                    controller: _searchController,
+                    decoration: InputDecoration(
+                        focusedBorder: InputBorder.none,
+                        enabledBorder: InputBorder.none,
+                        hintText: 'Search',
+                        suffixIcon: _searchText.trim().isEmpty
+                            ? null
+                            : GestureDetector(
+                                onTap: _clearSearch,
+                                child: Icon(Icons.clear, color: Colors.white),
+                              ),
+                        hintStyle: TextStyle(color: Colors.grey),
+                        prefixIcon: Icon(Icons.search, color: Colors.white)),
+                    style: TextStyle(color: Colors.white),
+                    cursorColor: Colors.white,
+                    onChanged: (value) {
+                      if (value.trim().isNotEmpty) {
+                        setState(() {
+                          _searchText = value;
+                          String? sentence = toBeginningOfSentenceCase(value);
+
+                          if (callerID!.contains(widget.currentUser!.id)) {
+                            isCaller = true;
+                            print('============+++++Truueeeeeee');
+                          } else {
+                            isCaller = false;
+                            print('============+++++Falseeeeee');
+                          }
+
+                          _users = DatabaseService.searchCalls(
+                              sentence, widget.currentUser!.id, isCaller);
+                        });
+                      }
+                    },
+                    onSubmitted: (input) {
+                      if (input.trim().isNotEmpty) {
+                        setState(() {
+                          _searchText = input;
+                          String? sentence = toBeginningOfSentenceCase(input);
+
+                          _users = DatabaseService.searchCalls(
+                              sentence, widget.currentUser!.id, isCaller);
+                        });
+                      }
+                    },
+                  ),
+                ],
+              ),
               backgroundColor: Colors.transparent,
               centerTitle: false,
               automaticallyImplyLeading: false,
               elevation: 0,
               brightness: Brightness.dark,
             )),
-        body: Column(
-          children: [
-            TextField(
-              controller: _searchController,
-              decoration: InputDecoration(
-                  focusedBorder: InputBorder.none,
-                  enabledBorder: InputBorder.none,
-                  hintText: 'Search',
-                  suffixIcon: _searchText.trim().isEmpty
-                      ? null
-                      : GestureDetector(
-                          onTap: _clearSearch,
-                          child: Icon(Icons.clear, color: Colors.white),
-                        ),
-                  hintStyle: TextStyle(color: Colors.grey),
-                  prefixIcon: Icon(Icons.search, color: Colors.white)),
-              style: TextStyle(color: Colors.white),
-              cursorColor: Colors.white,
-              onChanged: (value) {
-                if (value.trim().isNotEmpty) {
-                  setState(() {
-                    _searchText = value;
-                    String? sentence = toBeginningOfSentenceCase(value);
+        body: (_users == null)
+            ? StreamBuilder(
+                stream: getCalls(),
+                builder: (BuildContext context, AsyncSnapshot snapshot) {
+                  if (!snapshot.hasData) {
+                    return Center(
+                      child: SpinKitFadingCircle(color: Colors.white, size: 40),
+                    );
+                  }
 
-                    if (callerID!.contains(widget.currentUser!.id)) {
-                      isCaller = true;
-                      print('============+++++Truueeeeeee');
-                    } else {
-                      isCaller = false;
-                      print('============+++++Falseeeeee');
-                    }
+                  return ListView.builder(
+                    itemBuilder: (BuildContext context, int index) {
+                      Call call = snapshot.data[index];
 
-                    _users = DatabaseService.searchCalls(
-                        sentence, widget.currentUser!.id, isCaller);
-                  });
-                }
-              },
-              onSubmitted: (input) {
-                if (input.trim().isNotEmpty) {
-                  setState(() {
-                    _searchText = input;
-                    String? sentence = toBeginningOfSentenceCase(input);
+                      return _buildCall(call, widget.currentUser!.id);
+                    },
+                    itemCount: snapshot.data.length,
+                  );
+                })
+            : FutureBuilder(
+                future: _users,
+                builder: (BuildContext context, AsyncSnapshot snapshot) {
+                  if (!snapshot.hasData) {
+                    return Center(
+                      child: SpinKitFadingCircle(color: Colors.white, size: 40),
+                    );
+                  }
 
-                    _users = DatabaseService.searchCalls(
-                        sentence, widget.currentUser!.id, isCaller);
-                  });
-                }
-              },
-            ),
-            (_users == null)
-                ? Expanded(
-                    child: Container(
-                      child: StreamBuilder(
-                          stream: getCalls(),
-                          builder:
-                              (BuildContext context, AsyncSnapshot snapshot) {
-                            if (!snapshot.hasData) {
-                              return Center(
-                                child: SpinKitFadingCircle(color: Colors.white, size:40),
-                              );
-                            }
+                  if ((snapshot.data!).length == 0) {
+                    return Center(
+                      child: Text('No record!',
+                          style: TextStyle(color: Colors.white)),
+                    );
+                  }
 
-                            return Expanded(
-                                child: ListView.builder(
-                              itemBuilder: (BuildContext context, int index) {
-                                Call call = snapshot.data[index];
+                  return Expanded(
+                      child: Align(
+                    alignment: Alignment.topCenter,
+                    child: ListView.builder(
+                      itemCount: (snapshot.data!).length,
+                      itemBuilder: (BuildContext context, int index) {
+                        // Call call = snapshot.data[index];
 
-                                return _buildCall(call, widget.currentUser!.id);
-                              },
-                              itemCount: snapshot.data.length,
-                            ));
-                          }),
+                        Call call = (snapshot.data!).values.elementAt(index);
+
+                        return _buildCall(call, widget.currentUser!.id);
+                      },
                     ),
-                  )
-                : FutureBuilder(
-                    future: _users,
-                    builder: (BuildContext context, AsyncSnapshot snapshot) {
-                      if (!snapshot.hasData) {
-                        return Center(
-                          child: SpinKitFadingCircle(color: Colors.white, size: 40),
-                        );
-                      }
-
-                      if ((snapshot.data!).length == 0) {
-                        return Center(
-                          child: Text('No record!',
-                              style: TextStyle(color: Colors.white)),
-                        );
-                      }
-
-                      return Expanded(
-                          child: Align(
-                        alignment: Alignment.topCenter,
-                        child: ListView.builder(
-                          itemCount: (snapshot.data!).length,
-                          itemBuilder: (BuildContext context, int index) {
-                            // Call call = snapshot.data[index];
-
-                            Call call =
-                                (snapshot.data!).values.elementAt(index);
-
-                            return _buildCall(call, widget.currentUser!.id);
-                          },
-                        ),
-                      ));
-                    }),
-          ],
-        ),
+                  ));
+                }),
       ),
     ]);
   }

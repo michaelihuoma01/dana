@@ -135,9 +135,9 @@ class _PostViewState extends State<PostView> {
       androidParameters: AndroidParameters(
           packageName: 'com.michaelihuoma.dana', minimumVersion: 1),
       iosParameters: IOSParameters(
-          bundleId: 'com.dubaitechnologydesign.dana',
+          bundleId: '',
           minimumVersion: '1',
-          appStoreId: '1589760284'),
+          appStoreId: ''),
       navigationInfoParameters:
           NavigationInfoParameters(forcedRedirectEnabled: true),
     );

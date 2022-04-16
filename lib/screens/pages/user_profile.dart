@@ -309,7 +309,7 @@ class _UserProfileState extends State<UserProfile> {
               crossAxisSpacing: 2.0,
               shrinkWrap: true,
               physics: NeverScrollableScrollPhysics(),
-              children: tiles,
+              children: tiles
             );
     } else {
       // Column

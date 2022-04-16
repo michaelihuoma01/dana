@@ -66,7 +66,7 @@ class Call {
     callMap["channel_id"] = call.channelId;
     callMap["has_dialled"] = call.hasDialled;
     callMap["duration"] = call.duration;
-    callMap["timestamp"] = call.timestamp;
+    callMap["timestamp"] = call.timestamp ?? Timestamp.now();
     callMap["isMissed"] = call.isMissed;
     callMap["isAudio"] = call.isAudio;
     callMap["id"] = call.id;
