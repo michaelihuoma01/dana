@@ -627,7 +627,7 @@ class _ChatScreenState extends State<ChatScreen> {
                             GiphyGif? gif = await GiphyGet.getGif(
                               context: context,
                               apiKey:
-                                  'XTqy1ONihK1xvtVZauKuaFt5zxUaoGaQ', //YOUR API KEY HERE
+                                  '', //YOUR API KEY HERE
                               lang: GiphyLanguage.spanish,
                             );
                             if (gif != null && mounted) {
